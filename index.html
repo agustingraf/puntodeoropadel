@@ -36,9 +36,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,34,56,0.9
 section{padding:5rem 2rem}
 
 /* HERO */
-.hero{background:var(--azul);padding:7rem 2rem 4.5rem;display:flex;align-items:center;position:relative;overflow:hidden}
+.hero{background:var(--azul);padding:7rem 2rem 4.5rem;display:flex;align-items:center;position:relative;overflow:hidden;min-height:92vh}
+.hero-bg-img{position:absolute;inset:0;background-image:url('https://raw.githubusercontent.com/agustingraf/puntodeoropadel/main/hero.jpg');background-size:cover;background-position:center 30%;opacity:0.28;pointer-events:none}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(105deg,rgba(13,34,56,0.97) 0%,rgba(13,34,56,0.85) 45%,rgba(13,34,56,0.4) 100%);pointer-events:none}
 .hero-orb{position:absolute;right:-80px;top:50%;transform:translateY(-50%);width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,0.07) 0%,transparent 65%);pointer-events:none}
 .hero-content{max-width:560px;position:relative;z-index:1;color:#fff}
+.hero-nombre{font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;color:var(--oro);letter-spacing:2px;text-transform:uppercase;margin-bottom:.5rem}
 .hero-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem}
 .hero-eyebrow-line{width:28px;height:1px;background:var(--oro);opacity:.6}
 .hero-eyebrow span{font-size:.7rem;color:rgba(255,255,255,.45);letter-spacing:2.5px;text-transform:uppercase}
@@ -345,9 +348,12 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 
 <!-- HERO -->
 <section class="hero" id="inicio">
+  <div class="hero-bg-img"></div>
+  <div class="hero-overlay"></div>
   <div class="hero-orb"></div>
   <div class="hero-content">
-    <div class="hero-eyebrow"><div class="hero-eyebrow-line"></div><span>Profesor de pádel · Buenos Aires</span></div>
+    <div class="hero-nombre">Agustín Graf</div>
+    <div class="hero-eyebrow"><div class="hero-eyebrow-line"></div><span>Entrenador de Pádel · Buenos Aires</span></div>
     <h1>Tu mejor versión<br><em>en cancha.</em></h1>
     <p class="hero-sub">Clases particulares, dobles y grupales para todos los niveles. Progreso real desde el primer turno.</p>
     <div class="hero-btns">
@@ -356,7 +362,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     </div>
     <div class="hero-stats">
       <div><div class="stat-num">35+</div><div class="stat-lbl">Alumnos activos</div></div>
-      <div><div class="stat-num">Lun–Dom</div><div class="stat-lbl">Disponibilidad</div></div>
+      <div><div class="stat-num" style="font-size:1.1rem;letter-spacing:-.5px;line-height:1.2">Lunes a<br>Domingo</div><div class="stat-lbl">Disponibilidad</div></div>
     </div>
   </div>
 </section>
@@ -514,7 +520,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <div>
       <div class="info-boxes">
         <div class="ib"><div class="ib-lbl">Ubicación</div><div class="ib-val">Av. Boyacá 1766</div></div>
-        <div class="ib"><div class="ib-lbl">Días</div><div class="ib-val">Lun – Dom</div></div>
+        <div class="ib"><div class="ib-lbl">Días</div><div class="ib-val">Lunes a Domingo</div></div>
         <div class="ib"><div class="ib-lbl">Clases</div><div class="ib-val">Todos los niveles</div></div>
         <div class="ib"><div class="ib-lbl">Web</div><div class="ib-val">puntodeoropadel.com.ar</div></div>
       </div>
