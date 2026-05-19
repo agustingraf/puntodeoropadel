@@ -160,6 +160,27 @@ section{padding:5rem 2rem}
 .turno-foot{padding:.75rem 1.75rem;background:var(--crema);border-top:1px solid rgba(0,0,0,.04);display:flex;gap:1.5rem;flex-wrap:wrap}
 .tf-item{display:flex;align-items:center;gap:5px;font-size:.75rem;color:var(--gris)}
 .tf-item strong{color:var(--azul);font-weight:500}
+.comunidad-sec{background:var(--azul);border-radius:20px;padding:2rem 1.75rem;margin-top:1.5rem;position:relative;overflow:hidden}
+.comunidad-bg{position:absolute;right:-40px;top:-40px;width:220px;height:220px;border-radius:50%;background:rgba(212,175,55,0.06);pointer-events:none}
+.comunidad-bg2{position:absolute;left:-30px;bottom:-30px;width:150px;height:150px;border-radius:50%;background:rgba(212,175,55,0.04);pointer-events:none}
+.comunidad-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:.6rem}
+.comunidad-eyebrow-line{width:20px;height:1px;background:var(--oro);opacity:.6}
+.comunidad-eyebrow span{font-size:.68rem;color:rgba(255,255,255,.4);letter-spacing:2.5px;text-transform:uppercase;font-weight:500}
+.comunidad-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,40px);font-weight:500;color:#fff;line-height:1.05;margin-bottom:.5rem}
+.comunidad-title em{color:var(--oro);font-style:italic}
+.comunidad-sub{font-size:.88rem;color:rgba(255,255,255,.45);font-weight:300;line-height:1.65;margin-bottom:1.75rem;max-width:460px}
+.grupos-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grupo-card{border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1.4rem 1.25rem;background:rgba(255,255,255,.05);transition:all .25s;text-decoration:none;display:flex;flex-direction:column;gap:.75rem;position:relative;overflow:hidden}
+.grupo-card:hover{background:rgba(255,255,255,.1);border-color:rgba(212,175,55,.35);transform:translateY(-2px)}
+.grupo-card.gold{border-color:rgba(212,175,55,.2);background:rgba(212,175,55,.07)}
+.grupo-card.gold:hover{background:rgba(212,175,55,.14);border-color:rgba(212,175,55,.5)}
+.grupo-cat{display:inline-flex;align-items:center;gap:5px;background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.25);border-radius:100px;padding:.28rem .75rem;font-size:.68rem;font-weight:500;color:var(--oro);letter-spacing:.5px;width:fit-content}
+.grupo-titulo{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:500;color:#fff;line-height:1.1}
+.grupo-desc{font-size:.76rem;color:rgba(255,255,255,.4);font-weight:300;line-height:1.5}
+.grupo-cta{display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:500;color:var(--oro);margin-top:auto}
+.grupo-arrow{font-size:.8rem;transition:transform .2s}
+.grupo-card:hover .grupo-arrow{transform:translateX(4px)}
+.grupo-icon{position:absolute;top:1.1rem;right:1.1rem;font-size:1.5rem;opacity:.2}
 
 /* OPINIONES */
 .opiniones-sec{background:var(--crema)}
@@ -338,6 +359,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <li><a href="#precios">Precios</a></li>
     <li><a href="#reservas">Reservar</a></li>
     <li><a href="#abiertas">Abiertas</a></li>
+    <li><a href="#abiertas">Comunidad</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
   <div class="nav-btns">
