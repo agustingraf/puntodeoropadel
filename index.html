@@ -5,6 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Punto de Oro Pádel · Agus Graf</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>emailjs.init("s9RZ9uZs4ztG66Xss");</script>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -925,7 +927,7 @@ function clsStep(n){
   if(n===2){const nombre=document.getElementById('cls-nombre').value.trim(),tel=document.getElementById('cls-tel').value.trim();if(!nombre||!tel){document.getElementById('cls-err').style.display='block';return;}document.getElementById('cls-err').style.display='none';CLS.nombre=nombre;CLS.tel=tel;}
   if(n===3){const fmt='$'+CLS.precio.toLocaleString('es-AR');document.getElementById('cls-monto-mp').innerHTML=fmt+'<small> ARS</small>';document.getElementById('cls-monto-tr').innerHTML=fmt+'<small> ARS</small>';const isMp=CLS.metodo==='mp';document.getElementById('cls-s3-title').textContent=isMp?'Pagá con Mercado Pago':'Transferí el monto';document.getElementById('cls-mp').style.display=isMp?'block':'none';document.getElementById('cls-transfer').style.display=isMp?'none':'block';}
   if(n===4){const fmt='$'+CLS.precio.toLocaleString('es-AR');document.getElementById('cls-resumen').innerHTML=`<div class="sr-row"><span class="sr-label">Turno</span><span class="sr-val">${DIAS_L[CLS.dia]} ${CLS.hora} hs</span></div><div class="sr-row"><span class="sr-label">Clase</span><span class="sr-val">${CLS.tipo}</span></div><div class="sr-row"><span class="sr-label">Total</span><span class="sr-val" style="color:var(--oro-dark)">${fmt}</span></div><div class="sr-row"><span class="sr-label">Método</span><span class="sr-val">${CLS.metodo==='mp'?'Mercado Pago':'Transferencia'}</span></div>`;
-    const nr={id:Date.now(),dia:CLS.dia,hora:CLS.hora,nombre:CLS.nombre,tel:CLS.tel,tipo:CLS.tipo,precio:CLS.precio,metodo:CLS.metodo,estado:'pendiente',fecha:new Date().toLocaleDateString('es-AR')};S.reservas.push(nr);saveReserva(nr);renderAlumnoGrid(CLS.dia);}
+    const nr={id:Date.now(),dia:CLS.dia,hora:CLS.hora,nombre:CLS.nombre,tel:CLS.tel,tipo:CLS.tipo,precio:CLS.precio,metodo:CLS.metodo,estado:'pendiente',fecha:new Date().toLocaleDateString('es-AR')};S.reservas.push(nr);saveReserva(nr);renderAlumnoGrid(CLS.dia);sendEmailNotification('Clase '+CLS.tipo, nr);}
   document.querySelectorAll('#modal-clase .step').forEach(s=>s.classList.remove('active'));document.getElementById('cls-'+n).classList.add('active');
   const pcts={1:'33%',2:'66%',3:'90%',4:'100%'};document.getElementById('prog-clase').style.width=pcts[n]||'33%';
 }
@@ -952,7 +954,7 @@ async function abStep(n){
   if(n===2){const nombre=document.getElementById('ab-nombre').value.trim(),tel=document.getElementById('ab-tel').value.trim();if(!nombre||!tel){document.getElementById('ab-err').style.display='block';return;}document.getElementById('ab-err').style.display='none';AB.nombre=nombre;AB.tel=tel;
     const fmt='$'+AB.precio.toLocaleString('es-AR');document.getElementById('ab-monto-mp').innerHTML=fmt+'<small> ARS</small>';document.getElementById('ab-monto-tr').innerHTML=fmt+'<small> ARS</small>';const isMp=AB.metodo==='mp';document.getElementById('ab-s2-title').textContent=isMp?'Pagá con Mercado Pago':'Transferí el monto';document.getElementById('ab-mp').style.display=isMp?'block':'none';document.getElementById('ab-transfer').style.display=isMp?'none':'block';}
   if(n===3){const lista=AB.turno==='tarde'?S.ins_tarde:S.ins_noche;if(lista.length>=MAX_CUPOS){toast('No quedan cupos');cerrarModal('modal-abierta');return;}
-    const ni={id:Math.floor(Date.now()/1000),nombre:AB.nombre,tel:AB.tel,opcion:AB.opcion,precio:AB.precio,metodo:AB.metodo,estado:'pendiente',fecha:new Date().toLocaleDateString('es-AR')};lista.push(ni);await saveInscripto(AB.turno,ni);renderCupos();renderListaInscriptos();renderAdmAbiertas();
+    const ni={id:Math.floor(Date.now()/1000),nombre:AB.nombre,tel:AB.tel,opcion:AB.opcion,precio:AB.precio,metodo:AB.metodo,estado:'pendiente',fecha:new Date().toLocaleDateString('es-AR')};lista.push(ni);await saveInscripto(AB.turno,ni);renderCupos();renderListaInscriptos();renderAdmAbiertas();sendEmailNotification('Cancha abierta '+AB.turno+' '+(AB.opcion==='con_pizza'?'con pizza':'sin pizza'), {dia:'Sábado',hora:AB.turno==='tarde'?'15:00-18:00':'18:00-21:00',nombre:AB.nombre,tel:AB.tel,precio:AB.precio,metodo:AB.metodo,fecha:ni.fecha});
     const turnoTxt=AB.turno==='tarde'?'Tarde 15–18 hs':'Noche 18–21 hs';const opTxt=AB.opcion==='con_pizza'?'Con pizza libre':'Solo partido';document.getElementById('ab-resumen').innerHTML=`<div class="sr-row"><span class="sr-label">Turno</span><span class="sr-val">${turnoTxt}</span></div><div class="sr-row"><span class="sr-label">Opción</span><span class="sr-val">${opTxt}</span></div><div class="sr-row"><span class="sr-label">Total</span><span class="sr-val" style="color:var(--oro-dark)">$${AB.precio.toLocaleString('es-AR')}</span></div><div class="sr-row"><span class="sr-label">Método</span><span class="sr-val">${AB.metodo==='mp'?'Mercado Pago':'Transferencia'}</span></div>`;}
   document.querySelectorAll('#modal-abierta .step').forEach(s=>s.classList.remove('active'));document.getElementById('ab-'+n).classList.add('active');
   document.getElementById('prog-ab').style.width=n===1?'50%':n===2?'85%':'100%';
@@ -1162,6 +1164,24 @@ function checkResetAbiertas(){
       S.ultimoResetNoche = hoyStr;
       save();
     }
+  }
+}
+
+async function sendEmailNotification(tipo, datos){
+  try{
+    await emailjs.send('service_rt6h3zl', 'template_4b3ckcc', {
+      tipo_clase: tipo,
+      dia: datos.dia || '',
+      hora: datos.hora || '',
+      nombre: datos.nombre || '',
+      tel: datos.tel || '',
+      monto: '$' + (datos.precio||0).toLocaleString('es-AR'),
+      metodo: datos.metodo === 'mp' ? 'Mercado Pago' : datos.metodo === 'admin' ? 'Cargado por admin' : 'Transferencia bancaria',
+      fecha: datos.fecha || new Date().toLocaleDateString('es-AR')
+    });
+    console.log('Email enviado OK');
+  } catch(e){
+    console.warn('Error enviando email:', e);
   }
 }
 
