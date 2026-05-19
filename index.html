@@ -63,18 +63,19 @@ section{padding:5rem 2rem}
 
 /* PRECIOS */
 .precios-sec{background:var(--blanco)}
-.precios-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:1rem}
-.pc{border:1px solid rgba(0,0,0,.07);border-radius:18px;padding:1.75rem 1.5rem;transition:all .25s;background:var(--blanco);position:relative;overflow:hidden}
-.pc:hover{border-color:rgba(212,175,55,.4);transform:translateY(-3px);box-shadow:0 12px 32px rgba(212,175,55,.08)}
-.pc.best{background:var(--azul);border-color:var(--azul)}
+.precios-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+.pc{border:1px solid rgba(0,0,0,.07);border-radius:20px;padding:1.75rem 1.5rem;transition:all .25s;background:var(--blanco);position:relative;overflow:hidden;display:flex;flex-direction:column}
+.pc:hover{border-color:rgba(212,175,55,.5);transform:translateY(-3px);box-shadow:0 12px 32px rgba(212,175,55,.1)}
 .pc-icon{font-size:1.75rem;margin-bottom:.85rem}
-.pc h3{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:500;margin-bottom:.3rem;color:var(--azul)}
-.pc.best h3{color:#fff}
-.pc-desc{font-size:.78rem;color:#999;line-height:1.6;margin-bottom:1.2rem;font-weight:300}
-.pc.best .pc-desc{color:rgba(255,255,255,.45)}
-.pc-precio{font-family:'Cormorant Garamond',serif;font-size:1.85rem;font-weight:500;color:var(--azul)}
-.pc.best .pc-precio{color:var(--oro)}
-.pc-precio small{font-size:.8rem;font-weight:300;font-family:'DM Sans',sans-serif;opacity:.55}
+.pc h3{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:500;margin-bottom:.25rem;color:var(--azul)}
+.pc-desc{font-size:.78rem;color:#999;line-height:1.6;margin-bottom:.75rem;font-weight:300;flex:1}
+.pc-precio-wrap{margin-bottom:.5rem}
+.pc-precio{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:500;color:var(--azul);line-height:1}
+.pc-precio small{font-size:.75rem;font-weight:300;font-family:'DM Sans',sans-serif;color:var(--gris)}
+.pc-seña{font-size:.72rem;color:var(--gris);margin-top:.25rem;line-height:1.4}
+.pc-seña strong{color:var(--oro-dark)}
+.pc-btn{display:flex;align-items:center;justify-content:center;gap:7px;background:var(--azul);color:var(--oro);border:none;border-radius:100px;padding:.72rem 1.25rem;font-size:.82rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;margin-top:1.1rem;width:100%;text-decoration:none}
+.pc-btn:hover{background:#1a3a5c;transform:translateY(-1px)}
 .pop-badge{position:absolute;top:14px;right:14px;background:var(--oro);color:var(--azul);font-size:.62rem;font-weight:500;letter-spacing:.5px;padding:3px 10px;border-radius:100px}
 .aviso{margin-top:1.75rem;background:var(--oro-light);border-radius:12px;padding:1rem 1.5rem;display:flex;align-items:center;gap:12px;border:1px solid rgba(212,175,55,.2)}
 .aviso span{font-size:.86rem;color:var(--oro-dark)}
@@ -364,11 +365,43 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 <section class="precios-sec" id="precios">
   <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>Modalidades</span></div>
   <div class="sec-title">Precios de clases</div>
-  <div class="sec-sub">Todos los precios son por hora. Elegís el formato que más te convenga.</div>
+  <div class="sec-sub">Precio por persona. El que reserva abona su parte online, el resto el día de la clase.</div>
   <div class="precios-grid">
-    <div class="pc"><div class="pc-icon">👤</div><h3>Individual</h3><p class="pc-desc">Atención exclusiva, corrección técnica y progreso acelerado.</p><div class="pc-precio">$30.000<small> / hora</small></div></div>
-    <div class="pc best"><div class="pop-badge">Popular</div><div class="pc-icon">👥</div><h3>Doble</h3><p class="pc-desc">Dos alumnos. Táctica de pareja y dinámica real de partido.</p><div class="pc-precio">$48.000<small> / hora</small></div></div>
-    <div class="pc"><div class="pc-icon">👨‍👩‍👧</div><h3>Grupal</h3><p class="pc-desc">Grupos pequeños, mucho juego y buen ambiente.</p><div class="pc-precio">$20.000<small> / hora</small></div></div>
+
+    <div class="pc">
+      <div class="pc-icon">👤</div>
+      <h3>Individual</h3>
+      <p class="pc-desc">Atención exclusiva, corrección técnica y progreso acelerado.</p>
+      <div class="pc-precio-wrap">
+        <div class="pc-precio">$30.000<small> / hora</small></div>
+        <div class="pc-seña">Pago total al reservar.</div>
+      </div>
+      <button class="pc-btn" onclick="elegirClase('Individual',30000,30000)">Reservar turno →</button>
+    </div>
+
+    <div class="pc">
+      <div class="pop-badge">Popular</div>
+      <div class="pc-icon">👥</div>
+      <h3>Doble</h3>
+      <p class="pc-desc">Dos alumnos. Táctica de pareja y dinámica real de partido.</p>
+      <div class="pc-precio-wrap">
+        <div class="pc-precio">$24.000<small> c/u · hora</small></div>
+        <div class="pc-seña">Reservás pagando <strong>$24.000</strong>. Tu compañero/a abona el día de la clase.</div>
+      </div>
+      <button class="pc-btn" onclick="elegirClase('Doble',24000,24000)">Reservar turno →</button>
+    </div>
+
+    <div class="pc">
+      <div class="pc-icon">👨‍👩‍👧</div>
+      <h3>Triple / Cuádruple</h3>
+      <p class="pc-desc">Grupos de 3 o 4. Mucho juego, buen ambiente y precio accesible.</p>
+      <div class="pc-precio-wrap">
+        <div class="pc-precio">$20.000<small> c/u · hora</small></div>
+        <div class="pc-seña">Reservás pagando <strong>$20.000</strong>. El resto abona el día de la clase.</div>
+      </div>
+      <button class="pc-btn" onclick="elegirClase('Grupal',20000,20000)">Reservar turno →</button>
+    </div>
+
   </div>
   <div class="aviso"><span>✦</span><span><strong>Hay cupos para principiantes.</strong> Consultá disponibilidad por WhatsApp.</span></div>
 </section>
@@ -503,14 +536,17 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <div class="step active" id="cls-1">
       <div class="step-header"><div class="step-num">Paso 1 de 3 · Tus datos</div><div class="step-title">Completá tu información</div><div class="step-sub">Sin registro. Solo nombre y WhatsApp.</div></div>
       <div class="turno-pill" id="cls-pill">📅 —</div>
+      <div style="background:var(--oro-light);border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:.65rem 1rem;font-size:.8rem;color:var(--oro-dark);margin-bottom:.65rem;line-height:1.5" id="cls-sena-info"></div>
+      <div style="display:none" id="cls-tipo-wrap">
+        <select id="cls-tipo-sel" onchange="cambiarTipoClase(this.value)" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.65rem;color:var(--azul);outline:none;background:var(--blanco)">
+          <option value="Individual">👤 Individual — $30.000 (pago total)</option>
+          <option value="Doble">👥 Doble — $24.000 c/u (señás $24.000)</option>
+          <option value="Grupal">👨‍👩‍👧 Triple/Cuádruple — $20.000 c/u (señás $20.000)</option>
+        </select>
+      </div>
       <div class="err" id="cls-err">Completá nombre y WhatsApp.</div>
       <input type="text" id="cls-nombre" placeholder="Tu nombre completo">
       <input type="tel" id="cls-tel" placeholder="WhatsApp (ej: 1134567890)">
-      <select id="cls-tipo" onchange="actualizarPrecioClase()">
-        <option value="Individual" data-precio="30000">Individual — $30.000</option>
-        <option value="Doble" data-precio="48000">Doble — $48.000</option>
-        <option value="Grupal" data-precio="20000">Grupal — $20.000</option>
-      </select>
       <div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-clase')">Cancelar</button><button class="mb pri" onclick="clsStep(2)">Continuar →</button></div>
     </div>
     <div class="step" id="cls-2">
@@ -790,16 +826,49 @@ function renderAlumnoGrid(d){
 
 /* MODAL CLASE */
 function abrirModalClase(d,h){
-  CLS={dia:d,hora:h,nombre:'',tel:'',tipo:'Individual',precio:30000,metodo:'mp'};
-  document.getElementById('cls-nombre').value='';document.getElementById('cls-tel').value='';
-  document.getElementById('cls-tipo').value='Individual';document.getElementById('cls-err').style.display='none';
-  ['cls-pill','cls-pill2'].forEach(id=>document.getElementById(id).textContent='📅 '+DIAS_L[d]+' '+h+' hs');
-  selPago('cls','mp');clsStep(1);
+  const pre = window._clasePreseleccionada || {tipo:'Individual',precio:30000,seña:30000};
+  CLS={dia:d,hora:h,nombre:'',tel:'',tipo:pre.tipo,precio:pre.seña,metodo:'mp'};
+  document.getElementById('cls-nombre').value='';
+  document.getElementById('cls-tel').value='';
+  document.getElementById('cls-err').style.display='none';
+  ['cls-pill','cls-pill2'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.textContent='📅 '+DIAS_L[d]+' '+h+' hs';
+  });
+  const senaInfo=document.getElementById('cls-sena-info');
+  if(senaInfo){
+    const monto='$'+pre.seña.toLocaleString('es-AR');
+    const iconos={Individual:'👤',Doble:'👥',Grupal:'👨‍👩‍👧'};
+    const icono=iconos[pre.tipo]||'🎾';
+    if(pre.tipo==='Individual')
+      senaInfo.innerHTML=icono+' <strong>'+pre.tipo+'</strong> · Pagás '+monto+' ahora (total).';
+    else if(pre.tipo==='Doble')
+      senaInfo.innerHTML=icono+' <strong>'+pre.tipo+'</strong> · Señás '+monto+'. Tu compañero/a abona el día de la clase.';
+    else
+      senaInfo.innerHTML=icono+' <strong>'+pre.tipo+'</strong> · Señás '+monto+'. El resto del grupo abona el día de la clase.';
+  }
+  // Show type selector if no preselection
+  const tipoWrap=document.getElementById('cls-tipo-wrap');
+  if(tipoWrap){
+    if(!window._clasePreseleccionada){
+      tipoWrap.style.display='block';
+      // Set default
+      window._clasePreseleccionada={tipo:'Individual',precio:30000,seña:30000};
+      cambiarTipoClase('Individual');
+    } else {
+      tipoWrap.style.display='none';
+    }
+  }
+  selPago('cls','mp');
+  clsStep(1);
   document.getElementById('modal-clase').classList.add('show');
 }
-function actualizarPrecioClase(){CLS.tipo=document.getElementById('cls-tipo').value;CLS.precio=PRECIOS[CLS.tipo]||30000;}
+function actualizarPrecioClase(){
+  const pre=window._clasePreseleccionada||{tipo:'Individual',precio:30000,seña:30000};
+  CLS.tipo=pre.tipo;CLS.precio=pre.seña;
+}
 function clsStep(n){
-  if(n===2){const nombre=document.getElementById('cls-nombre').value.trim(),tel=document.getElementById('cls-tel').value.trim();if(!nombre||!tel){document.getElementById('cls-err').style.display='block';return;}document.getElementById('cls-err').style.display='none';CLS.nombre=nombre;CLS.tel=tel;actualizarPrecioClase();}
+  if(n===2){const nombre=document.getElementById('cls-nombre').value.trim(),tel=document.getElementById('cls-tel').value.trim();if(!nombre||!tel){document.getElementById('cls-err').style.display='block';return;}document.getElementById('cls-err').style.display='none';CLS.nombre=nombre;CLS.tel=tel;}
   if(n===3){const fmt='$'+CLS.precio.toLocaleString('es-AR');document.getElementById('cls-monto-mp').innerHTML=fmt+'<small> ARS</small>';document.getElementById('cls-monto-tr').innerHTML=fmt+'<small> ARS</small>';const isMp=CLS.metodo==='mp';document.getElementById('cls-s3-title').textContent=isMp?'Pagá con Mercado Pago':'Transferí el monto';document.getElementById('cls-mp').style.display=isMp?'block':'none';document.getElementById('cls-transfer').style.display=isMp?'none':'block';}
   if(n===4){const fmt='$'+CLS.precio.toLocaleString('es-AR');document.getElementById('cls-resumen').innerHTML=`<div class="sr-row"><span class="sr-label">Turno</span><span class="sr-val">${DIAS_L[CLS.dia]} ${CLS.hora} hs</span></div><div class="sr-row"><span class="sr-label">Clase</span><span class="sr-val">${CLS.tipo}</span></div><div class="sr-row"><span class="sr-label">Total</span><span class="sr-val" style="color:var(--oro-dark)">${fmt}</span></div><div class="sr-row"><span class="sr-label">Método</span><span class="sr-val">${CLS.metodo==='mp'?'Mercado Pago':'Transferencia'}</span></div>`;
     const nr={id:Date.now(),dia:CLS.dia,hora:CLS.hora,nombre:CLS.nombre,tel:CLS.tel,tipo:CLS.tipo,precio:CLS.precio,metodo:CLS.metodo,estado:'pendiente',fecha:new Date().toLocaleDateString('es-AR')};S.reservas.push(nr);saveReserva(nr);renderAlumnoGrid(CLS.dia);}
@@ -927,6 +996,31 @@ function copiar(txt){navigator.clipboard.writeText(txt).then(()=>toast('Copiado 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
 
 let selectedStars=0;
+
+function cambiarTipoClase(tipo){
+  const precios={Individual:{precio:30000,seña:30000},Doble:{precio:24000,seña:24000},Grupal:{precio:20000,seña:20000}};
+  const p=precios[tipo];
+  window._clasePreseleccionada={tipo,precio:p.precio,seña:p.seña};
+  CLS.tipo=tipo;CLS.precio=p.seña;
+  const senaInfo=document.getElementById('cls-sena-info');
+  const monto='$'+p.seña.toLocaleString('es-AR');
+  const iconos={Individual:'👤',Doble:'👥',Grupal:'👨‍👩‍👧'};
+  if(tipo==='Individual') senaInfo.innerHTML=iconos[tipo]+' <strong>Individual</strong> · Pagás '+monto+' ahora (total).';
+  else if(tipo==='Doble') senaInfo.innerHTML=iconos[tipo]+' <strong>Doble</strong> · Señás '+monto+'. Tu compañero/a abona el día de la clase.';
+  else senaInfo.innerHTML=iconos[tipo]+' <strong>Triple/Cuádruple</strong> · Señás '+monto+'. El resto abona el día de la clase.';
+}
+
+function elegirClase(tipo, precio, seña){
+  window._clasePreseleccionada = {tipo, precio, seña};
+  // Scroll to reservas section
+  document.getElementById('reservas').scrollIntoView({behavior:'smooth'});
+  // Highlight the section briefly
+  const sec = document.getElementById('reservas');
+  sec.style.transition = 'background .4s';
+  sec.style.background = 'rgba(212,175,55,0.08)';
+  setTimeout(()=>sec.style.background='', 1200);
+  toast('Elegí un turno disponible 👇');
+}
 function initStars(){
   const btns=document.querySelectorAll('.star-btn');
   btns.forEach(b=>{
