@@ -417,6 +417,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <div class="hero-btns">
       <a href="#reservas" class="btn-oro">📅 Reservar clase</a>
       <a href="#abiertas" class="btn-ghost">🎾 Canchas abiertas</a>
+      <a href="#partidos" class="btn-ghost">🏅 Partidos</a>
     </div>
     <div class="hero-stats">
       <div><div class="stat-num">35+</div><div class="stat-lbl">Alumnos activos</div></div>
@@ -835,12 +836,12 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <div id="adm-abiertas" style="display:none">
       <div class="adm-title">Inscriptos abiertas</div>
       <div class="adm-sub">Listado completo por turno. Confirmá los pagos recibidos.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem" id="adm-ab-grid"></div>
+    </div>
     <div id="adm-partidos" style="display:none">
       <div class="adm-title">Partidos organizados</div>
       <div class="adm-sub">Publicá partidos de caballeros, damas o mixtos. Los jugadores se anotan y pagan solos.</div>
       <div id="adm-partidos-content"></div>
-    </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem" id="adm-ab-grid"></div>
     </div>
   </div>
 </div>
@@ -1517,71 +1518,7 @@ function selCat(cat,btn){
   PART.form.cat=cat;
 }
 
-async function partStep2(){
-  const nombre=document.getElementById('part-nombre').value.trim();
-  const tel=document.getElementById('part-tel').value.trim();
-  const errEl=document.getElementById('part-err');
-
-  if(!nombre||!tel){errEl.textContent='Completá nombre y WhatsApp.';errEl.style.display='block';return;}
-  if(!PART.form.cat){errEl.textContent='Elegí tu categoría.';errEl.style.display='block';return;}
-  if(PART.form.tipo==='Mixto'&&!PART.form.genero){errEl.textContent='Indicá tu género.';errEl.style.display='block';return;}
-  errEl.style.display='none';
-
-  const s=PART.slots.find(x=>x.id===PART.selectedSlotId);
-  if(!s)return;
-  const ins=s.inscriptos||[];
-  const esPrimero=ins.length===0;
-
-  /* Validar género en mixto: máx 2 de cada uno */
-  if(PART.form.tipo==='Mixto'||s.tipo==='Mixto'){
-    const cnt=ins.filter(i=>i.genero===PART.form.genero).length;
-    if(cnt>=2){errEl.textContent='Ya hay 2 '+(PART.form.genero==='M'?'caballeros':'damas')+' anotados.';errEl.style.display='block';return;}
-  }
-
-  PART.form.nombre=nombre;PART.form.tel=tel;
-
-  /* Si es el primero, setear tipo y cat_base en el slot */
-  const updSlot={};
-  if(esPrimero){
-    updSlot.tipo=PART.form.tipo;
-    updSlot.cat_base=PART.form.cat;
-    s.tipo=PART.form.tipo;
-    s.cat_base=PART.form.cat;
-    await updatePartidoSlot(s.id,updSlot);
-  }
-
-  const ni={
-    id:Math.floor(Date.now()/1000)+'_'+Math.random().toString(36).slice(2,6),
-    slot_id:s.id,
-    nombre:PART.form.nombre,
-    tel:PART.form.tel,
-    tipo:PART.form.tipo||s.tipo,
-    cat:PART.form.cat,
-    genero:PART.form.genero||'M',
-    fecha:new Date().toLocaleDateString('es-AR')
-  };
-  ins.push(ni);
-  await savePartidoInscripto(ni);
-  renderPartidos();
-
-  /* Resumen */
-  const tipo=s.tipo||PART.form.tipo;
-  document.getElementById('part-resumen').innerHTML=`
-    <div class="sr-row"><span class="sr-label">Fecha</span><span class="sr-val">${fmtFechaPartido(s.fecha)} ${s.hora} hs</span></div>
-    <div class="sr-row"><span class="sr-label">Tipo</span><span class="sr-val">${tipo}</span></div>
-    <div class="sr-row"><span class="sr-label">Categoría</span><span class="sr-val">${PART.form.cat}</span></div>
-    <div class="sr-row"><span class="sr-label">Nombre</span><span class="sr-val">${nombre}</span></div>`;
-
-  document.querySelectorAll('#modal-partido .step').forEach(x=>x.classList.remove('active'));
-  document.getElementById('part-2').classList.add('active');
-  document.getElementById('prog-partido').style.width='100%';
-}
-
-function partWhatsapp(){
-  const s=PART.slots.find(x=>x.id===PART.selectedSlotId)||{};
-  const msg=encodeURIComponent(`Hola Agus! Me anoté al partido del ${fmtFechaPartido(s.fecha||'')} ${s.hora||''} hs.\n👤 ${PART.form.nombre}\n📱 ${PART.form.tel}\n🎾 ${s.tipo||PART.form.tipo} · ${PART.form.cat}`);
-  window.open('https://wa.me/5491134634000?text='+msg,'_blank');
-}
+/* partStep2 y partWhatsapp definidos más abajo */
 
 /* ── ADMIN: tab Partidos ── */
 function renderAdmPartidos(){
