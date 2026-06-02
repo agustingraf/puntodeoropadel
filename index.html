@@ -372,6 +372,37 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 .pcat-btn.active{background:var(--azul);color:#fff;border-color:var(--azul)}
 .pcat-btn:disabled{opacity:.35;cursor:not-allowed}
 
+
+/* ── TORNEOS ── */
+.torneos-sec{background:var(--blanco)}
+.torneo-card{border:1px solid rgba(0,0,0,.07);border-radius:20px;overflow:hidden;margin-bottom:1.25rem;background:var(--blanco)}
+.torneo-head{padding:1.25rem 1.75rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;border-bottom:1px solid rgba(0,0,0,.05);background:linear-gradient(135deg,var(--azul) 0%,#1a3a5c 100%)}
+.torneo-fecha-badge{background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);border-radius:12px;padding:.6rem 1rem;text-align:center;flex-shrink:0;min-width:72px}
+.torneo-fecha-badge .tf-dia{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--oro);line-height:1;font-weight:500}
+.torneo-fecha-badge .tf-mes{font-size:.6rem;color:rgba(212,175,55,.7);text-transform:uppercase;letter-spacing:1px}
+.torneo-info{flex:1;min-width:160px}
+.torneo-nombre{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:500;color:#fff;line-height:1.1}
+.torneo-meta-row{display:flex;gap:.5rem;margin-top:5px;flex-wrap:wrap}
+.torneo-tag{font-size:.65rem;font-weight:500;padding:2px 9px;border-radius:100px;letter-spacing:.3px}
+.torneo-tag.tipo-cab{background:rgba(96,165,250,.2);color:#93c5fd}
+.torneo-tag.tipo-dam{background:rgba(244,114,182,.2);color:#f9a8d4}
+.torneo-tag.tipo-mix{background:rgba(167,139,250,.2);color:#c4b5fd}
+.torneo-tag.cat{background:rgba(212,175,55,.15);color:var(--oro)}
+.torneo-tag.lugar{background:rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+.torneo-precio-wrap{text-align:right;flex-shrink:0}
+.torneo-precio-lbl{font-size:.6rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.5px}
+.torneo-precio-val{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--oro);line-height:1;font-weight:500}
+.torneo-precio-sub{font-size:.62rem;color:rgba(255,255,255,.35);margin-top:2px}
+.torneo-body{padding:1.25rem 1.75rem}
+.torneo-desc{font-size:.85rem;color:var(--gris);line-height:1.65;margin-bottom:1rem;font-weight:300}
+.torneo-cupos-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.torneo-parejas{display:flex;flex-wrap:wrap;gap:.4rem;margin:1rem 0;min-height:32px}
+.pareja-pill{display:inline-flex;align-items:center;gap:5px;background:var(--crema);border:1px solid rgba(0,0,0,.07);border-radius:100px;padding:.25rem .75rem;font-size:.73rem;color:var(--azul)}
+.pareja-pill.cab{background:#e8f0f8;border-color:rgba(13,34,56,.12)}
+.pareja-pill.dam{background:#f8e8f5;border-color:rgba(124,58,109,.12);color:#7c3a6d}
+.pareja-pill.mix{background:linear-gradient(135deg,#e8f0f8,#f8e8f5);border-color:rgba(13,34,56,.08)}
+.torneo-foot{padding:.85rem 1.75rem;background:var(--crema);border-top:1px solid rgba(0,0,0,.04);display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+
 @media(max-width:640px){
   .nav-links{display:none}
   .cg{grid-template-columns:1fr}
@@ -396,6 +427,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <li><a href="#abiertas">Abiertas</a></li>
     <li><a href="#abiertas">Comunidad</a></li>
     <li><a href="#partidos">Partidos</a></li>
+    <li><a href="#torneos">Torneos</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
   <div class="nav-btns">
@@ -418,6 +450,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <a href="#reservas" class="btn-oro">📅 Reservar clase</a>
       <a href="#abiertas" class="btn-ghost">🎾 Canchas abiertas</a>
       <a href="#partidos" class="btn-ghost">🏅 Partidos</a>
+      <a href="#torneos" class="btn-ghost">🏆 Torneos</a>
     </div>
     <div class="hero-stats">
       <div><div class="stat-num">35+</div><div class="stat-lbl">Alumnos activos</div></div>
@@ -645,6 +678,114 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
   </div>
 </div>
 
+
+<!-- TORNEOS -->
+<section class="torneos-sec" id="torneos">
+  <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>Competencia</span></div>
+  <div class="sec-title">Torneos</div>
+  <div class="sec-sub">Inscribite con tu pareja. La seña es de <strong>$25.000 por pareja</strong>. El resto se abona el día del torneo.</div>
+  <div id="torneos-lista"></div>
+</section>
+
+<!-- MODAL TORNEO -->
+<div class="modal-bg" id="modal-torneo">
+  <div class="modal">
+    <div class="progress-bar"><div class="progress-fill" id="prog-torneo" style="width:33%"></div></div>
+
+    <!-- PASO 1: datos de la pareja -->
+    <div class="step active" id="torn-1">
+      <div class="step-header">
+        <div class="step-num">Paso 1 de 3 · Datos de la pareja</div>
+        <div class="step-title" id="torn-titulo">Inscribirse al torneo</div>
+      </div>
+      <div style="background:var(--oro-light);border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:.65rem 1rem;font-size:.8rem;color:var(--oro-dark);margin-bottom:.75rem">
+        🏆 <strong>Seña: $25.000 por pareja</strong> · El resto se abona el día del torneo.
+      </div>
+      <div class="err" id="torn-err">Completá todos los campos.</div>
+
+      <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.4rem">Jugador 1</div>
+      <input type="text" id="torn-j1-nombre" placeholder="Nombre completo">
+      <input type="tel" id="torn-j1-tel" placeholder="WhatsApp">
+      <select id="torn-j1-cat">
+        <option value="">Categoría...</option>
+        <option>9ª</option><option>8ª</option><option>7ª</option><option>6ª</option>
+        <option>5ª</option><option>4ª</option><option>3ª</option><option>2ª</option><option>1ª</option>
+      </select>
+
+      <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin:.6rem 0 .4rem">Jugador 2</div>
+      <input type="text" id="torn-j2-nombre" placeholder="Nombre completo">
+      <input type="tel" id="torn-j2-tel" placeholder="WhatsApp (opcional)">
+      <select id="torn-j2-cat">
+        <option value="">Categoría...</option>
+        <option>9ª</option><option>8ª</option><option>7ª</option><option>6ª</option>
+        <option>5ª</option><option>4ª</option><option>3ª</option><option>2ª</option><option>1ª</option>
+      </select>
+
+      <div class="mbtns" style="margin-top:.75rem">
+        <button class="mb sec" onclick="cerrarModal('modal-torneo')">Cancelar</button>
+        <button class="mb pri" onclick="tornStep(2)">Elegir pago →</button>
+      </div>
+    </div>
+
+    <!-- PASO 2: método de pago -->
+    <div class="step" id="torn-2">
+      <div class="step-header">
+        <div class="step-num">Paso 2 de 3 · Método de pago</div>
+        <div class="step-title">¿Cómo querés pagar la seña?</div>
+        <div class="step-sub">Seña de $25.000 por pareja. Confirma tu lugar en el torneo.</div>
+      </div>
+      <div class="pago-opts">
+        <div class="pago-opt selected" id="torn-opt-mp" onclick="selPagoT('mp')"><div class="pago-opt-icon">💳</div><div class="pago-opt-name">Mercado Pago</div><div class="pago-opt-desc">Link directo</div></div>
+        <div class="pago-opt" id="torn-opt-transfer" onclick="selPagoT('transfer')"><div class="pago-opt-icon">🏦</div><div class="pago-opt-name">Transferencia</div><div class="pago-opt-desc">Alias / CVU</div></div>
+      </div>
+      <div class="mbtns">
+        <button class="mb sec" onclick="tornGoStep(1)">← Atrás</button>
+        <button class="mb pri" onclick="tornGoStep(3)">Ver instrucciones →</button>
+      </div>
+    </div>
+
+    <!-- PASO 3: instrucciones pago -->
+    <div class="step" id="torn-3">
+      <div class="step-header">
+        <div class="step-num">Paso 3 de 3 · Realizá el pago</div>
+        <div class="step-title" id="torn-s3-title">Pagá con Mercado Pago</div>
+      </div>
+      <div id="torn-mp-box">
+        <div class="pago-box mp">
+          <div class="pago-box-title">Seña a pagar</div>
+          <div class="pago-box-monto">$25.000<small> ARS</small></div>
+          <div class="pago-dato"><span class="pago-dato-label">A nombre de</span><span class="pago-dato-val">Agustín Graf</span></div>
+          <a href="https://link.mercadopago.com.ar/agustingraf" target="_blank" class="btn-mp-link">💳 Ir a Mercado Pago ↗</a>
+        </div>
+        <div class="aviso-comprobante"><strong>⚠️ Importante</strong>Después de pagar, enviá el comprobante por WhatsApp para confirmar tu inscripción.</div>
+        <button class="mb wa" onclick="tornEnviarComp()">💬 Enviar comprobante por WhatsApp</button>
+        <button class="mb sec full" onclick="tornGoStep(2)">← Cambiar método</button>
+      </div>
+      <div id="torn-transfer-box" style="display:none">
+        <div class="pago-box transfer">
+          <div class="pago-box-title">Seña a transferir</div>
+          <div class="pago-box-monto">$25.000<small> ARS</small></div>
+          <div class="pago-dato"><span class="pago-dato-label">Alias</span><span class="pago-dato-val">Agusgrafmp</span><button class="copy-btn" onclick="copiar('Agusgrafmp')">Copiar</button></div>
+          <div class="pago-dato"><span class="pago-dato-label">A nombre de</span><span class="pago-dato-val">Agustín Graf</span></div>
+        </div>
+        <div class="aviso-comprobante"><strong>⚠️ Importante</strong>Después de transferir, enviá el comprobante por WhatsApp para confirmar tu inscripción.</div>
+        <button class="mb wa" onclick="tornEnviarComp()">💬 Enviar comprobante por WhatsApp</button>
+        <button class="mb sec full" onclick="tornGoStep(2)">← Cambiar método</button>
+      </div>
+    </div>
+
+    <!-- PASO 4: éxito -->
+    <div class="step" id="torn-4">
+      <div class="success-icon">🏆</div>
+      <div class="success-title">¡Casi listo!</div>
+      <div class="success-sub">Tu pareja está anotada. Agus confirma la inscripción cuando recibe el comprobante.</div>
+      <div class="success-resumen" id="torn-resumen"></div>
+      <button class="mb wa" onclick="tornEnviarComp()">💬 Reenviar comprobante</button>
+      <button class="mb sec full" onclick="cerrarModal('modal-torneo')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <!-- OPINIONES -->
 <section class="opiniones-sec" id="opiniones">
   <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>Lo que dicen</span></div>
@@ -818,6 +959,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <button class="atab" onclick="adminTab('clases',this)">Reservas</button>
       <button class="atab" onclick="adminTab('abiertas',this)">Abiertas</button>
       <button class="atab" onclick="adminTab('partidos',this)">Partidos</button>
+      <button class="atab" onclick="adminTab('torneos',this)">Torneos</button>
     </div>
     <button class="logout" onclick="logout()">Salir ×</button>
   </div>
@@ -837,6 +979,11 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <div class="adm-title">Inscriptos abiertas</div>
       <div class="adm-sub">Listado completo por turno. Confirmá los pagos recibidos.</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem" id="adm-ab-grid"></div>
+    </div>
+    <div id="adm-torneos" style="display:none">
+      <div class="adm-title">Torneos</div>
+      <div class="adm-sub">Creá torneos y gestioná inscripciones de parejas.</div>
+      <div id="adm-torneos-content"></div>
     </div>
     <div id="adm-partidos" style="display:none">
       <div class="adm-title">Partidos organizados</div>
@@ -1121,7 +1268,7 @@ function selPago(ctx,tipo){
 function abrirAdmin(){document.getElementById('modal-login').classList.add('show');}
 function checkPass(){if(document.getElementById('pass').value===PASS){document.getElementById('pass-err').style.display='none';document.getElementById('pass').value='';cerrarModal('modal-login');S.loggedIn=true;document.getElementById('admin-panel').classList.add('show');renderAdmDias();renderAdmGrid(S.diaAdm);renderReviews();}else{document.getElementById('pass-err').style.display='block';}}
 function logout(){S.loggedIn=false;document.getElementById('admin-panel').classList.remove('show');renderReviews();}
-function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='abiertas')renderAdmAbiertas();if(tab==='partidos')setTimeout(renderAdmPartidos,50);}
+function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';document.getElementById('adm-torneos').style.display=tab==='torneos'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='abiertas')renderAdmAbiertas();if(tab==='partidos')setTimeout(renderAdmPartidos,50);if(tab==='torneos')setTimeout(renderAdmTorneos,50);}
 function renderAdmDias(){const c=document.getElementById('adm-dias');c.innerHTML='';DIAS.forEach(d=>{const b=document.createElement('div');b.className='dia-tab'+(d===S.diaAdm?' active':'')+(d==='sabado'||d==='domingo'?' we':'');b.textContent=DIAS_L[d];b.onclick=()=>{S.diaAdm=d;renderAdmDias();renderAdmGrid(d);};c.appendChild(b);});}
 function renderAdmGrid(d){const g=document.getElementById('adm-grid');g.innerHTML='';horas(d).forEach(h=>{const st=slotSt(d,h);const res=S.reservas.find(x=>x.dia===d&&x.hora===h&&x.estado!=='cancelada');const div=document.createElement('div');div.className='slot adm-'+st;const lbl=st==='libre'?'Disponible':st==='pendiente'?'⏳ '+(res?.nombre||''):(res?.nombre||'Ocupado');div.innerHTML=`<div class="slot-hora">${h}</div><div class="slot-lbl">${lbl}</div>`;div.onclick=()=>abrirAdmSlot(d,h,st,res);g.appendChild(div);});}
 function abrirAdmSlot(d,h,st,res){
@@ -1625,9 +1772,283 @@ async function partGoStep(n){if(n===3){const isMp=PART.form.metodo==="mp";docume
 
 function partEnviarComp(){const s=PART.slots.find(x=>x.id===PART.selectedSlotId)||{};const metodoTxt=PART.form.metodo==="mp"?"Mercado Pago":"transferencia (alias: Agusgrafmp)";const msg=encodeURIComponent(`Hola Agus! Te mando el comprobante para el partido del ${fmtFechaPartido(s.fecha||"")} ${s.hora||""} hs.\n👤 ${PART.form.nombre}\n📱 ${PART.form.tel}\n🎾 ${s.tipo||PART.form.tipo} · ${PART.form.cat}\n💰 $20.000\n💳 ${metodoTxt}\n\n[Adjunto comprobante]`);window.open("https://wa.me/5491134634000?text="+msg,"_blank");if(document.getElementById("part-3").classList.contains("active"))partGoStep(4);}
 
+
+/* ═══════════════════════════════════════
+   TORNEOS
+   ═══════════════════════════════════════ */
+let TORN={
+  lista:[],
+  selectedId:null,
+  form:{j1nombre:'',j1tel:'',j1cat:'',j2nombre:'',j2tel:'',j2cat:'',metodo:'mp'}
+};
+
+const TORN_TIPO_CLS={Caballeros:'cab',Damas:'dam',Mixto:'mix'};
+const TORN_TIPO_ICO={Caballeros:'♂',Damas:'♀',Mixto:'⚤'};
+
+async function loadTorneos(){
+  const rows=await sbFetch('torneos?select=*&order=fecha.asc&activo=eq.true');
+  const inscs=await sbFetch('torneos_inscriptos?select=*&order=id.asc');
+  TORN.lista=(rows||[]).map(t=>({...t,parejas:(inscs||[]).filter(i=>i.torneo_id===t.id)}));
+  renderTorneos();
+}
+
+async function saveTorneo(t){return await sbFetch('torneos','POST',t);}
+async function saveTorneoInscripto(i){return await sbFetch('torneos_inscriptos','POST',i);}
+async function deleteTorneo(id){await sbFetch('torneos?id=eq.'+id,'DELETE');await sbFetch('torneos_inscriptos?torneo_id=eq.'+id,'DELETE');}
+async function deleteTorneoInscripto(id){await sbFetch('torneos_inscriptos?id=eq.'+id,'DELETE');}
+
+function fmtFechaTorneo(str){
+  if(!str)return{dia:'—',mes:'—',full:'—'};
+  const [y,m,d]=str.split('-');
+  const meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const diasN=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const dt=new Date(+y,+m-1,+d);
+  return{dia:parseInt(d),mes:meses[+m-1],full:diasN[dt.getDay()]+' '+parseInt(d)+' '+meses[+m-1]};
+}
+
+function renderTorneos(){
+  const el=document.getElementById('torneos-lista');
+  if(!el)return;
+  const ahora=new Date();
+  const lista=TORN.lista.filter(t=>{
+    if(!t.activo)return false;
+    if(!t.fecha)return true;
+    return new Date(t.fecha+'T23:59:00')>ahora;
+  });
+  if(!lista.length){
+    el.innerHTML='<div class="empty" style="padding:2.5rem 0;color:var(--gris);text-align:center">No hay torneos programados por ahora.<br><small>Seguí los grupos de WhatsApp para enterarte cuando se publiquen nuevos torneos.</small></div>';
+    return;
+  }
+  el.innerHTML=lista.map(t=>{
+    const f=fmtFechaTorneo(t.fecha);
+    const cupo=t.cupo||16;
+    const ins=t.parejas||[];
+    const libre=cupo-ins.length;
+    const lleno=libre<=0;
+    const pct=Math.round(ins.length/cupo*100);
+    const barCls=pct<50?'bar-verde':pct<80?'bar-amarillo':'bar-rojo';
+    const tipoCls=TORN_TIPO_CLS[t.tipo]||'cab';
+    const tipoIco=TORN_TIPO_ICO[t.tipo]||'';
+    const pillsCls=tipoCls;
+    const parejasPills=ins.map(p=>`<div class="pareja-pill ${pillsCls}">🎾 ${p.j1nombre.split(' ')[0]} & ${p.j2nombre.split(' ')[0]}</div>`).join('');
+    const vaciosPills=Array.from({length:Math.min(libre,4)}).map(()=>'<div class="pins-vacio">+</div>').join('');
+    return`<div class="torneo-card">
+      <div class="torneo-head">
+        <div class="torneo-fecha-badge"><div class="tf-dia">${f.dia}</div><div class="tf-mes">${f.mes}</div></div>
+        <div class="torneo-info">
+          <div class="torneo-nombre">${t.nombre}</div>
+          <div class="torneo-meta-row">
+            <span class="torneo-tag tipo-${tipoCls}">${tipoIco} ${t.tipo||'Abierto'}</span>
+            ${t.categoria?'<span class="torneo-tag cat">'+t.categoria+'</span>':''}
+            ${t.lugar?'<span class="torneo-tag lugar">📍 '+t.lugar+'</span>':''}
+            ${t.hora?'<span class="torneo-tag lugar">🕐 '+t.hora+'</span>':''}
+          </div>
+        </div>
+        <div class="torneo-precio-wrap">
+          <div class="torneo-precio-lbl">Seña</div>
+          <div class="torneo-precio-val">$25.000</div>
+          <div class="torneo-precio-sub">por pareja</div>
+        </div>
+      </div>
+      <div class="torneo-body">
+        ${t.descripcion?`<div class="torneo-desc">${t.descripcion}</div>`:''}
+        <div class="torneo-cupos-row">
+          <span style="font-size:.75rem;color:var(--gris)">${ins.length} parejas anotadas</span>
+          <span style="font-size:.75rem;font-weight:500;color:var(--azul)">${libre} lugar${libre===1?'':'es'} libre${libre===1?'':'s'} de ${cupo}</span>
+        </div>
+        <div class="bar-bg"><div class="bar-fill ${barCls}" style="width:${pct}%"></div></div>
+        <div class="torneo-parejas">${parejasPills}${vaciosPills}</div>
+      </div>
+      <div class="torneo-foot">
+        <div style="font-size:.78rem;color:var(--gris)">Inscripción total: <strong style="color:var(--azul)">$${(t.precio_total||50000).toLocaleString('es-AR')}</strong> por pareja</div>
+        ${lleno
+          ?'<div style="font-size:.84rem;font-weight:500;color:var(--verde)">✓ Cupo completo</div>'
+          :`<button class="pc-btn" style="width:auto;padding:.62rem 1.5rem" onclick="abrirModalTorneo('${t.id}')">Inscribirse →</button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function abrirModalTorneo(id){
+  const t=TORN.lista.find(x=>x.id===id);
+  if(!t)return;
+  TORN.selectedId=id;
+  TORN.form={j1nombre:'',j1tel:'',j1cat:'',j2nombre:'',j2tel:'',j2cat:'',metodo:'mp'};
+  ['torn-j1-nombre','torn-j1-tel','torn-j2-nombre','torn-j2-tel'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  ['torn-j1-cat','torn-j2-cat'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  document.getElementById('torn-titulo').textContent=t.nombre;
+  document.getElementById('torn-err').style.display='none';
+  selPagoT('mp');
+  tornGoStep(1);
+  document.getElementById('modal-torneo').classList.add('show');
+}
+
+function selPagoT(tipo){
+  TORN.form.metodo=tipo;
+  document.getElementById('torn-opt-mp').classList.toggle('selected',tipo==='mp');
+  document.getElementById('torn-opt-transfer').classList.toggle('selected',tipo==='transfer');
+}
+
+function tornStep(n){tornGoStep(n);}
+
+async function tornGoStep(n){
+  if(n===2){
+    const j1n=document.getElementById('torn-j1-nombre').value.trim();
+    const j1t=document.getElementById('torn-j1-tel').value.trim();
+    const j1c=document.getElementById('torn-j1-cat').value;
+    const j2n=document.getElementById('torn-j2-nombre').value.trim();
+    const j2c=document.getElementById('torn-j2-cat').value;
+    const errEl=document.getElementById('torn-err');
+    if(!j1n||!j1t||!j1c||!j2n||!j2c){errEl.textContent='Completá nombre, WhatsApp y categoría de ambos jugadores.';errEl.style.display='block';return;}
+    errEl.style.display='none';
+    TORN.form.j1nombre=j1n;TORN.form.j1tel=j1t;TORN.form.j1cat=j1c;
+    TORN.form.j2nombre=j2n;TORN.form.j2tel=document.getElementById('torn-j2-tel').value.trim();TORN.form.j2cat=j2c;
+    selPagoT('mp');
+  }
+  if(n===3){
+    const isMp=TORN.form.metodo==='mp';
+    document.getElementById('torn-s3-title').textContent=isMp?'Pagá con Mercado Pago':'Transferí el monto';
+    document.getElementById('torn-mp-box').style.display=isMp?'block':'none';
+    document.getElementById('torn-transfer-box').style.display=isMp?'none':'block';
+  }
+  if(n===4){
+    const t=TORN.lista.find(x=>x.id===TORN.selectedId);
+    if(!t)return;
+    const ni={
+      id:'ti'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
+      torneo_id:t.id,
+      j1nombre:TORN.form.j1nombre,j1tel:TORN.form.j1tel,j1cat:TORN.form.j1cat,
+      j2nombre:TORN.form.j2nombre,j2tel:TORN.form.j2tel,j2cat:TORN.form.j2cat,
+      metodo:TORN.form.metodo,estado:'pendiente',
+      fecha:new Date().toLocaleDateString('es-AR')
+    };
+    t.parejas=t.parejas||[];
+    t.parejas.push(ni);
+    await saveTorneoInscripto(ni);
+    renderTorneos();
+    sendEmailNotification('Torneo: '+t.nombre,{dia:fmtFechaTorneo(t.fecha).full,hora:t.hora||'',nombre:TORN.form.j1nombre+' & '+TORN.form.j2nombre,tel:TORN.form.j1tel,precio:25000,metodo:TORN.form.metodo,fecha:ni.fecha});
+    document.getElementById('torn-resumen').innerHTML=`
+      <div class="sr-row"><span class="sr-label">Torneo</span><span class="sr-val">${t.nombre}</span></div>
+      <div class="sr-row"><span class="sr-label">Fecha</span><span class="sr-val">${fmtFechaTorneo(t.fecha).full}</span></div>
+      <div class="sr-row"><span class="sr-label">Pareja</span><span class="sr-val">${TORN.form.j1nombre} & ${TORN.form.j2nombre}</span></div>
+      <div class="sr-row"><span class="sr-label">Seña</span><span class="sr-val" style="color:var(--oro-dark)">$25.000</span></div>
+      <div class="sr-row"><span class="sr-label">Método</span><span class="sr-val">${TORN.form.metodo==='mp'?'Mercado Pago':'Transferencia'}</span></div>`;
+  }
+  document.querySelectorAll('#modal-torneo .step').forEach(x=>x.classList.remove('active'));
+  document.getElementById('torn-'+n).classList.add('active');
+  const pcts={1:'33%',2:'66%',3:'90%',4:'100%'};
+  document.getElementById('prog-torneo').style.width=pcts[n]||'33%';
+}
+
+function tornEnviarComp(){
+  const t=TORN.lista.find(x=>x.id===TORN.selectedId)||{};
+  const metodoTxt=TORN.form.metodo==='mp'?'Mercado Pago':'transferencia (alias: Agusgrafmp)';
+  const msg=encodeURIComponent(`Hola Agus! Te mando el comprobante para el torneo.\n\n🏆 ${t.nombre||''}\n📅 ${fmtFechaTorneo(t.fecha).full}\n🎾 ${TORN.form.j1nombre} (${TORN.form.j1cat}) & ${TORN.form.j2nombre} (${TORN.form.j2cat})\n📱 ${TORN.form.j1tel}\n💰 Seña $25.000\n💳 ${metodoTxt}\n\n[Adjunto comprobante]`);
+  window.open('https://wa.me/5491134634000?text='+msg,'_blank');
+  if(document.getElementById('torn-3').classList.contains('active'))tornGoStep(4);
+}
+
+/* ── ADMIN TORNEOS ── */
+function renderAdmTorneos(){
+  const el=document.getElementById('adm-torneos-content');
+  if(!el)return;
+  const addForm=`<div class="adm-add-form">
+    <div class="adm-add-title">✦ Crear nuevo torneo</div>
+    <div class="adm-add-row" style="flex-wrap:wrap">
+      <input type="text" id="adm-torn-nombre" placeholder="Nombre del torneo">
+      <input type="date" id="adm-torn-fecha" style="color-scheme:dark">
+      <input type="time" id="adm-torn-hora" style="color-scheme:dark">
+      <select id="adm-torn-tipo"><option value="Caballeros">♂ Caballeros</option><option value="Damas">♀ Damas</option><option value="Mixto">⚤ Mixto</option></select>
+      <input type="text" id="adm-torn-cat" placeholder="Categoría (ej: 7ma/8va)">
+      <input type="text" id="adm-torn-lugar" placeholder="Lugar">
+      <input type="number" id="adm-torn-cupo" placeholder="Cupo (parejas)" value="16" style="width:100px">
+      <input type="number" id="adm-torn-precio" placeholder="Precio total" value="50000" style="width:120px">
+      <input type="text" id="adm-torn-desc" placeholder="Descripción (opcional)" style="flex:100%">
+      <button class="adm-add-btn" onclick="adminCrearTorneo()">Crear torneo</button>
+    </div>
+  </div>`;
+
+  const lista=TORN.lista.length===0
+    ?'<div class="empty">No hay torneos creados todavía.</div>'
+    :TORN.lista.map(t=>{
+      const ins=t.parejas||[];
+      const cupo=t.cupo||16;
+      const libre=cupo-ins.length;
+      return`<div class="ab-res-item" style="flex-direction:column;align-items:flex-start;gap:.75rem;margin-bottom:.75rem">
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start;flex-wrap:wrap;gap:.5rem">
+          <div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:500;color:var(--azul)">${t.nombre}</div>
+            <div style="font-size:.75rem;color:var(--gris);margin-top:3px">${fmtFechaTorneo(t.fecha).full}${t.hora?' · '+t.hora:''}${t.tipo?' · '+t.tipo:''} · ${ins.length}/${cupo} parejas · $${(t.precio_total||50000).toLocaleString('es-AR')}</div>
+          </div>
+          <button class="rbtn canc" onclick="adminEliminarTorneo('${t.id}')">Eliminar</button>
+        </div>
+        ${ins.length===0
+          ?'<div style="font-size:.78rem;color:#bbb;font-style:italic">Sin inscripciones todavía.</div>'
+          :`<div style="display:flex;flex-direction:column;gap:.4rem;width:100%">${ins.map(p=>`
+            <div class="ab-res-item" style="padding:.6rem 1rem;margin-bottom:0">
+              <div class="res-info">
+                <div class="res-alumno">🎾 ${p.j1nombre} (${p.j1cat}) & ${p.j2nombre} (${p.j2cat})</div>
+                <div class="res-det">📱 ${p.j1tel}${p.j2tel?' · '+p.j2tel:''} · ${p.metodo==='mp'?'MP':'Transf.'} · ${p.fecha}</div>
+              </div>
+              <span class="res-estado ${p.estado==='pendiente'?'est-pend':'est-conf'}">${p.estado==='pendiente'?'⏳':'✓'}</span>
+              <div class="res-acc">
+                ${p.estado!=='confirmada'?`<button class="rbtn conf" onclick="confirmarTorneoInsc('${t.id}','${p.id}')">✓</button>`:''}
+                <button class="rbtn canc" onclick="cancelarTorneoInsc('${t.id}','${p.id}')">✕</button>
+              </div>
+            </div>`).join('')}</div>`}
+      </div>`;
+    }).join('');
+
+  el.innerHTML=addForm+lista;
+}
+
+async function adminCrearTorneo(){
+  const nombre=document.getElementById('adm-torn-nombre').value.trim();
+  const fecha=document.getElementById('adm-torn-fecha').value;
+  const hora=document.getElementById('adm-torn-hora').value;
+  const tipo=document.getElementById('adm-torn-tipo').value;
+  const categoria=document.getElementById('adm-torn-cat').value.trim();
+  const lugar=document.getElementById('adm-torn-lugar').value.trim();
+  const cupo=parseInt(document.getElementById('adm-torn-cupo').value)||16;
+  const precio_total=parseInt(document.getElementById('adm-torn-precio').value)||50000;
+  const descripcion=document.getElementById('adm-torn-desc').value.trim();
+  if(!nombre||!fecha){toast('Completá nombre y fecha');return;}
+  const nt={id:'t'+Date.now(),nombre,fecha,hora,tipo,categoria,lugar,cupo,precio_total,descripcion,activo:true};
+  await saveTorneo(nt);
+  nt.parejas=[];
+  TORN.lista.push(nt);
+  renderTorneos();
+  renderAdmTorneos();
+  toast('Torneo creado ✓');
+}
+
+async function adminEliminarTorneo(id){
+  if(!confirm('¿Eliminar este torneo y todas sus inscripciones?'))return;
+  await deleteTorneo(id);
+  TORN.lista=TORN.lista.filter(t=>t.id!==id);
+  renderTorneos();
+  renderAdmTorneos();
+  toast('Torneo eliminado');
+}
+
+async function confirmarTorneoInsc(torneoId,insId){
+  await sbFetch('torneos_inscriptos?id=eq.'+insId,'PATCH',{estado:'confirmada'});
+  const t=TORN.lista.find(x=>x.id===torneoId);
+  if(t){const p=t.parejas.find(x=>x.id===insId);if(p)p.estado='confirmada';}
+  renderAdmTorneos();toast('Inscripción confirmada ✓');
+}
+
+async function cancelarTorneoInsc(torneoId,insId){
+  await deleteTorneoInscripto(insId);
+  const t=TORN.lista.find(x=>x.id===torneoId);
+  if(t)t.parejas=t.parejas.filter(x=>x.id!==insId);
+  renderAdmTorneos();renderTorneos();toast('Inscripción cancelada');
+}
+
 async function init(){
   await load();
   await loadPartidos();
+  await loadTorneos();
   checkResetAbiertas();
   renderAlumnoDias();
   renderAlumnoGrid('lunes');
