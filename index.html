@@ -1,13 +1,4 @@
 <!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Punto de Oro Pádel</title>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body><!DOCTYPE html>
 <!-- PUNTO DE ORO v8 -->
 <html lang="es">
 <head>
@@ -348,6 +339,39 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 .toast.show{opacity:1}
 .pass-err{font-size:.78rem;color:var(--rojo);margin-bottom:.65rem;display:none}
 
+/* ── PARTIDOS ORGANIZADOS ── */
+.partidos-sec{background:var(--crema)}
+.partido-card{border:1px solid rgba(0,0,0,.07);border-radius:20px;overflow:hidden;margin-bottom:1.25rem;background:var(--blanco)}
+.partido-head{padding:1.1rem 1.5rem;display:flex;align-items:center;gap:1rem;border-bottom:1px solid rgba(0,0,0,.05);flex-wrap:wrap}
+.partido-badge{border-radius:12px;padding:.6rem 1rem;text-align:center;flex-shrink:0;min-width:72px;font-family:'Cormorant Garamond',serif}
+.partido-badge.cab{background:var(--azul)}
+.partido-badge.dam{background:#7c3a6d}
+.partido-badge.mix{background:linear-gradient(135deg,var(--azul),#7c3a6d)}
+.partido-badge.libre{background:#888}
+.partido-badge .ph{font-size:1rem;color:#fff;font-weight:500;line-height:1.1}
+.partido-badge .pt{font-size:.58rem;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.partido-meta{flex:1;min-width:140px}
+.partido-titulo{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:500;color:var(--azul)}
+.partido-tags{display:flex;gap:.35rem;margin-top:4px;flex-wrap:wrap}
+.ptag{font-size:.67rem;font-weight:500;padding:2px 9px;border-radius:100px;background:var(--oro-light);color:var(--oro-dark);border:1px solid rgba(212,175,55,.25)}
+.ptag.cab{background:#e8f0f8;color:var(--azul);border-color:rgba(13,34,56,.15)}
+.ptag.dam{background:#f8e8f5;color:#7c3a6d;border-color:rgba(124,58,109,.15)}
+.ptag.mix{background:linear-gradient(135deg,#e8f0f8,#f8e8f5);color:var(--azul);border-color:rgba(13,34,56,.1)}
+.partido-cupos{padding:.75rem 1.5rem;border-bottom:1px solid rgba(0,0,0,.05)}
+.partido-inscs{padding:.85rem 1.5rem;display:flex;gap:.5rem;flex-wrap:wrap;min-height:48px;align-items:center;border-bottom:1px solid rgba(0,0,0,.05)}
+.pins-pill{display:inline-flex;align-items:center;gap:4px;background:var(--crema);border:1px solid rgba(0,0,0,.07);border-radius:100px;padding:.22rem .7rem;font-size:.74rem;color:var(--azul)}
+.pins-pill.cab{background:#e8f0f8;border-color:rgba(13,34,56,.12)}
+.pins-pill.dam{background:#f8e8f5;border-color:rgba(124,58,109,.12);color:#7c3a6d}
+.pins-vacio{width:32px;height:32px;border-radius:50%;border:1.5px dashed rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:14px;color:#ccc}
+.partido-foot{padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
+.ptipo-btn{padding:.5rem 1rem;border-radius:100px;border:1.5px solid rgba(0,0,0,.1);background:var(--blanco);font-size:.8rem;font-weight:500;color:var(--azul);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.ptipo-btn.active{background:var(--azul);color:#fff;border-color:var(--azul)}
+.ptipo-btn.dam.active{background:#7c3a6d;border-color:#7c3a6d}
+.ptipo-btn.mix.active{background:linear-gradient(135deg,var(--azul),#7c3a6d);border-color:transparent}
+.pcat-btn{padding:.45rem .9rem;border-radius:100px;border:1.5px solid rgba(0,0,0,.1);background:var(--blanco);font-size:.8rem;font-weight:600;color:var(--azul);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.pcat-btn.active{background:var(--azul);color:#fff;border-color:var(--azul)}
+.pcat-btn:disabled{opacity:.35;cursor:not-allowed}
+
 @media(max-width:640px){
   .nav-links{display:none}
   .cg{grid-template-columns:1fr}
@@ -371,6 +395,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <li><a href="#reservas">Reservar</a></li>
     <li><a href="#abiertas">Abiertas</a></li>
     <li><a href="#abiertas">Comunidad</a></li>
+    <li><a href="#partidos">Partidos</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
   <div class="nav-btns">
@@ -540,6 +565,84 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
   </div>
 
 </section>
+
+
+<!-- PARTIDOS ORGANIZADOS -->
+<section class="partidos-sec" id="partidos">
+  <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>Partidos organizados</span></div>
+  <div class="sec-title">Anotate a un partido</div>
+  <div class="sec-sub">Agus publica turnos disponibles. El primero elige si es caballeros, damas o mixto, y la categoría. Los siguientes solo pueden unirse si coinciden (±1 categoría). Precio: <strong>$20.000 por persona</strong>.</div>
+  <div id="partidos-lista"></div>
+</section>
+
+<!-- MODAL PARTIDO -->
+<div class="modal-bg" id="modal-partido">
+  <div class="modal">
+    <div class="progress-bar"><div class="progress-fill" id="prog-partido" style="width:33%"></div></div>
+    <div class="step active" id="part-1">
+      <div class="step-header">
+        <div class="step-num">Paso 1 de 3 · Tus datos</div>
+        <div class="step-title" id="part-titulo">Anotarme al partido</div>
+      </div>
+      <div style="background:var(--oro-light);border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:.65rem 1rem;font-size:.8rem;color:var(--oro-dark);margin-bottom:.65rem">🎾 <strong>$20.000 por persona</strong> · Abonás al reservar y enviás el comprobante por WhatsApp.</div>
+      <div class="err" id="part-err">Completá todos los campos.</div>
+      <input type="text" id="part-nombre" placeholder="Tu nombre completo">
+      <input type="tel" id="part-tel" placeholder="WhatsApp (ej: 1134567890)">
+      <div id="part-tipo-wrap">
+        <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.5rem">Tipo de partido</div>
+        <div style="display:flex;gap:.5rem;margin-bottom:.75rem">
+          <button class="ptipo-btn active" data-tipo="Caballeros" onclick="selTipo(this)">♂ Caballeros</button>
+          <button class="ptipo-btn" data-tipo="Damas" onclick="selTipo(this)">♀ Damas</button>
+          <button class="ptipo-btn" data-tipo="Mixto" onclick="selTipo(this)">⚤ Mixto</button>
+        </div>
+      </div>
+      <div id="part-genero-wrap" style="display:none">
+        <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.5rem">Tu género</div>
+        <div style="display:flex;gap:.5rem;margin-bottom:.75rem">
+          <button class="ptipo-btn" data-gen="M" onclick="selGenero(this)">♂ Caballero</button>
+          <button class="ptipo-btn" data-gen="F" onclick="selGenero(this)">♀ Dama</button>
+        </div>
+      </div>
+      <div id="part-cat-wrap">
+        <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.5rem" id="part-cat-lbl">Tu categoría</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.75rem" id="part-cats"></div>
+      </div>
+      <div style="font-size:.75rem;color:var(--gris);margin-bottom:.85rem;line-height:1.5" id="part-regla-txt"></div>
+      <div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-partido')">Cancelar</button><button class="mb pri" onclick="partStep2()">Elegir pago →</button></div>
+    </div>
+    <div class="step" id="part-2">
+      <div class="step-header"><div class="step-num">Paso 2 de 3 · Método de pago</div><div class="step-title">¿Cómo querés pagar?</div><div class="step-sub">El lugar se confirma cuando Agus recibe el comprobante.</div></div>
+      <div class="pago-opts">
+        <div class="pago-opt selected" id="part-opt-mp" onclick="selPagoP('mp')"><div class="pago-opt-icon">💳</div><div class="pago-opt-name">Mercado Pago</div><div class="pago-opt-desc">Link directo</div></div>
+        <div class="pago-opt" id="part-opt-transfer" onclick="selPagoP('transfer')"><div class="pago-opt-icon">🏦</div><div class="pago-opt-name">Transferencia</div><div class="pago-opt-desc">Alias / CVU</div></div>
+      </div>
+      <div class="mbtns"><button class="mb sec" onclick="partGoStep(1)">← Atrás</button><button class="mb pri" onclick="partGoStep(3)">Ver instrucciones →</button></div>
+    </div>
+    <div class="step" id="part-3">
+      <div class="step-header"><div class="step-num">Paso 3 de 3 · Realizá el pago</div><div class="step-title" id="part-s3-title">Pagá con Mercado Pago</div></div>
+      <div id="part-mp-box">
+        <div class="pago-box mp"><div class="pago-box-title">Total a pagar</div><div class="pago-box-monto">$20.000<small> ARS</small></div><div class="pago-dato"><span class="pago-dato-label">A nombre de</span><span class="pago-dato-val">Agustín Graf</span></div><a href="https://link.mercadopago.com.ar/agustingraf" target="_blank" class="btn-mp-link">💳 Ir a Mercado Pago ↗</a></div>
+        <div class="aviso-comprobante"><strong>⚠️ Importante</strong>Después de pagar, enviá el comprobante por WhatsApp para confirmar tu lugar.</div>
+        <button class="mb wa" onclick="partEnviarComp()">💬 Enviar comprobante por WhatsApp</button>
+        <button class="mb sec full" onclick="partGoStep(2)">← Cambiar método</button>
+      </div>
+      <div id="part-transfer-box" style="display:none">
+        <div class="pago-box transfer"><div class="pago-box-title">Total a transferir</div><div class="pago-box-monto">$20.000<small> ARS</small></div><div class="pago-dato"><span class="pago-dato-label">Alias</span><span class="pago-dato-val">Agusgrafmp</span><button class="copy-btn" onclick="copiar('Agusgrafmp')">Copiar</button></div><div class="pago-dato"><span class="pago-dato-label">A nombre de</span><span class="pago-dato-val">Agustín Graf</span></div></div>
+        <div class="aviso-comprobante"><strong>⚠️ Importante</strong>Después de transferir, enviá el comprobante por WhatsApp para confirmar tu lugar.</div>
+        <button class="mb wa" onclick="partEnviarComp()">💬 Enviar comprobante por WhatsApp</button>
+        <button class="mb sec full" onclick="partGoStep(2)">← Cambiar método</button>
+      </div>
+    </div>
+    <div class="step" id="part-4">
+      <div class="success-icon">✦</div>
+      <div class="success-title">¡Casi listo!</div>
+      <div class="success-sub">Tu lugar está registrado. Agus confirma cuando recibe el comprobante.</div>
+      <div class="success-resumen" id="part-resumen"></div>
+      <button class="mb wa" onclick="partEnviarComp()">💬 Reenviar comprobante</button>
+      <button class="mb sec full" onclick="cerrarModal('modal-partido')">Cerrar</button>
+    </div>
+  </div>
+</div>
 
 <!-- OPINIONES -->
 <section class="opiniones-sec" id="opiniones">
@@ -713,6 +816,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <button class="atab active" onclick="adminTab('horarios',this)">Horarios</button>
       <button class="atab" onclick="adminTab('clases',this)">Reservas</button>
       <button class="atab" onclick="adminTab('abiertas',this)">Abiertas</button>
+      <button class="atab" onclick="adminTab('partidos',this)">Partidos</button>
     </div>
     <button class="logout" onclick="logout()">Salir ×</button>
   </div>
@@ -731,6 +835,11 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <div id="adm-abiertas" style="display:none">
       <div class="adm-title">Inscriptos abiertas</div>
       <div class="adm-sub">Listado completo por turno. Confirmá los pagos recibidos.</div>
+    <div id="adm-partidos" style="display:none">
+      <div class="adm-title">Partidos organizados</div>
+      <div class="adm-sub">Publicá partidos de caballeros, damas o mixtos. Los jugadores se anotan y pagan solos.</div>
+      <div id="adm-partidos-content"></div>
+    </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem" id="adm-ab-grid"></div>
     </div>
   </div>
@@ -1011,7 +1120,7 @@ function selPago(ctx,tipo){
 function abrirAdmin(){document.getElementById('modal-login').classList.add('show');}
 function checkPass(){if(document.getElementById('pass').value===PASS){document.getElementById('pass-err').style.display='none';document.getElementById('pass').value='';cerrarModal('modal-login');S.loggedIn=true;document.getElementById('admin-panel').classList.add('show');renderAdmDias();renderAdmGrid(S.diaAdm);renderReviews();}else{document.getElementById('pass-err').style.display='block';}}
 function logout(){S.loggedIn=false;document.getElementById('admin-panel').classList.remove('show');renderReviews();}
-function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='abiertas')renderAdmAbiertas();}
+function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='abiertas')renderAdmAbiertas();if(tab==='partidos')renderAdmPartidos();}
 function renderAdmDias(){const c=document.getElementById('adm-dias');c.innerHTML='';DIAS.forEach(d=>{const b=document.createElement('div');b.className='dia-tab'+(d===S.diaAdm?' active':'')+(d==='sabado'||d==='domingo'?' we':'');b.textContent=DIAS_L[d];b.onclick=()=>{S.diaAdm=d;renderAdmDias();renderAdmGrid(d);};c.appendChild(b);});}
 function renderAdmGrid(d){const g=document.getElementById('adm-grid');g.innerHTML='';horas(d).forEach(h=>{const st=slotSt(d,h);const res=S.reservas.find(x=>x.dia===d&&x.hora===h&&x.estado!=='cancelada');const div=document.createElement('div');div.className='slot adm-'+st;const lbl=st==='libre'?'Disponible':st==='pendiente'?'⏳ '+(res?.nombre||''):(res?.nombre||'Ocupado');div.innerHTML=`<div class="slot-hora">${h}</div><div class="slot-lbl">${lbl}</div>`;div.onclick=()=>abrirAdmSlot(d,h,st,res);g.appendChild(div);});}
 function abrirAdmSlot(d,h,st,res){
@@ -1194,8 +1303,387 @@ async function sendEmailNotification(tipo, datos){
   }
 }
 
+
+/* ═══════════════════════════════════════
+   PARTIDOS ORGANIZADOS
+   ═══════════════════════════════════════ */
+const CATS_P=['9ª','8ª','7ª','6ª','5ª','4ª','3ª','2ª','1ª'];
+const TIPO_COLOR_P={Caballeros:'cab',Damas:'dam',Mixto:'mix'};
+const TIPO_ICON_P={Caballeros:'♂',Damas:'♀',Mixto:'⚤'};
+
+let PART={
+  slots:[],
+  selectedSlotId:null,
+  form:{nombre:'',tel:'',tipo:'Caballeros',cat:'',genero:'M'}
+};
+
+/* Supabase helpers para partidos */
+async function loadPartidos(){
+  const rows=await sbFetch('partidos_slots?select=*&order=fecha.asc,hora.asc&activo=eq.true');
+  const inscs=await sbFetch('partidos_inscriptos?select=*&order=id.asc');
+  PART.slots=(rows||[]).map(s=>({
+    ...s,
+    inscriptos:(inscs||[]).filter(i=>i.slot_id===s.id)
+  }));
+  renderPartidos();
+}
+
+async function savePartidoSlot(slot){
+  return await sbFetch('partidos_slots','POST',slot);
+}
+
+async function savePartidoInscripto(ins){
+  return await sbFetch('partidos_inscriptos','POST',ins);
+}
+
+async function deletePartidoSlot(id){
+  await sbFetch('partidos_slots?id=eq.'+id,'DELETE');
+  await sbFetch('partidos_inscriptos?slot_id=eq.'+id,'DELETE');
+}
+
+async function deletePartidoInscripto(id){
+  await sbFetch('partidos_inscriptos?id=eq.'+id,'DELETE');
+}
+
+async function updatePartidoSlot(id,fields){
+  await sbFetch('partidos_slots?id=eq.'+id,'PATCH',fields);
+}
+
+/* Render lista pública */
+function renderPartidos(){
+  const el=document.getElementById('partidos-lista');
+  if(!el)return;
+  const slots=PART.slots.filter(s=>s.activo);
+  if(!slots.length){
+    el.innerHTML='<div class="empty" style="padding:2.5rem 0;color:var(--gris);text-align:center">No hay partidos disponibles por ahora.<br><small>Seguí los grupos de WhatsApp para enterarte cuando se publiquen nuevos turnos.</small></div>';
+    return;
+  }
+  el.innerHTML=slots.map(s=>renderPartidoCard(s)).join('');
+}
+
+function fmtFechaPartido(str){
+  if(!str)return'';
+  const [y,m,d]=str.split('-');
+  const dias=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const dt=new Date(+y,+m-1,+d);
+  return dias[dt.getDay()]+' '+parseInt(d)+' '+meses[+m-1];
+}
+
+function renderPartidoCard(s){
+  const ins=s.inscriptos||[];
+  const cupo=s.cupo||4;
+  const libre=cupo-ins.length;
+  const lleno=libre<=0;
+  const pct=Math.round(ins.length/cupo*100);
+  const barCls=pct<50?'bar-verde':pct<80?'bar-amarillo':'bar-rojo';
+  const tipo=s.tipo;
+  const tipoCls=tipo?TIPO_COLOR_P[tipo]:'libre';
+  const tipoIcon=tipo?TIPO_ICON_P[tipo]:'?';
+  const catLabel=s.cat_base?s.cat_base+' ±1':'—';
+
+  const inscPills=ins.map(i=>{
+    const gc=i.genero==='F'?'dam':'cab';
+    const gi=i.genero==='F'?'♀':'♂';
+    return`<div class="pins-pill ${tipo==='Mixto'?gc:tipoCls}">${gi} ${i.nombre.split(' ')[0]}<small style="opacity:.5;margin-left:2px">${i.cat||''}</small></div>`;
+  }).join('');
+
+  const vacios=Array.from({length:libre}).map(()=>'<div class="pins-vacio">+</div>').join('');
+
+  const tituloTipo=tipo?tipo+' · '+catLabel:'Por definir';
+
+  return`<div class="partido-card">
+    <div class="partido-head">
+      <div class="partido-badge ${tipoCls}">
+        <div class="ph">${tipoIcon}</div>
+        <div class="pt">${tipo||'Abierto'}</div>
+      </div>
+      <div class="partido-meta">
+        <div class="partido-titulo">${fmtFechaPartido(s.fecha)} · ${s.hora} hs</div>
+        <div class="partido-tags">
+          <span class="ptag ${tipoCls}">${tituloTipo}</span>
+          ${s.lugar?'<span class="ptag">📍 '+s.lugar+'</span>':''}
+        </div>
+      </div>
+      <div class="turno-desde"><div class="desde-lbl">Cupos</div><div class="desde-val" style="font-size:1.4rem">${ins.length}/${cupo}</div></div>
+    </div>
+    <div class="partido-cupos">
+      <div class="cupos-header"><span class="cupos-label-txt">${ins.length} inscriptos</span><span class="cupos-num">${libre} lugar${libre===1?'':'es'} libre${libre===1?'':'s'}</span></div>
+      <div class="bar-bg" style="margin-top:.4rem"><div class="bar-fill ${barCls}" style="width:${pct}%"></div></div>
+    </div>
+    <div class="partido-inscs">${inscPills}${vacios}</div>
+    <div class="partido-foot">
+      ${s.notas?'<div style="font-size:.78rem;color:var(--gris);flex:1">📌 '+s.notas+'</div>':'<div></div>'}
+      ${lleno
+        ?'<div style="font-size:.84rem;font-weight:500;color:var(--verde)">✓ Partido completo</div>'
+        :`<button class="pc-btn" style="width:auto;padding:.62rem 1.5rem" onclick="abrirModalPartido('${s.id}')">Anotarme →</button>`
+      }
+    </div>
+  </div>`;
+}
+
+/* Abrir modal */
+function abrirModalPartido(slotId){
+  const s=PART.slots.find(x=>x.id===slotId);
+  if(!s)return;
+  PART.selectedSlotId=slotId;
+  const ins=s.inscriptos||[];
+  const esPrimero=ins.length===0;
+
+  PART.form={nombre:'',tel:'',tipo:s.tipo||'Caballeros',cat:s.cat_base||'',genero:'M'};
+
+  document.getElementById('part-nombre').value='';
+  document.getElementById('part-tel').value='';
+  document.getElementById('part-err').style.display='none';
+  document.getElementById('part-titulo').textContent=fmtFechaPartido(s.fecha)+' · '+s.hora+' hs';
+
+  /* Tipo */
+  const tipoWrap=document.getElementById('part-tipo-wrap');
+  if(esPrimero){
+    tipoWrap.style.display='block';
+    document.querySelectorAll('.ptipo-btn').forEach(b=>{
+      b.classList.toggle('active',b.dataset.tipo===PART.form.tipo);
+    });
+  }else{
+    tipoWrap.style.display='none';
+  }
+
+  /* Género (mixto) */
+  actualizarGeneroWrap();
+
+  /* Categorías */
+  actualizarCatsPartido(s,esPrimero);
+
+  /* Texto de regla */
+  const regla=document.getElementById('part-regla-txt');
+  if(esPrimero){
+    regla.textContent='Vos definís el tipo y la categoría base. Los siguientes podrán anotarse ±1 categoría.';
+  }else{
+    regla.textContent='Tipo: '+s.tipo+' · Categoría base: '+s.cat_base+'. Solo podés anotarte si estás en el rango permitido (±1).';
+  }
+
+  document.querySelectorAll('#modal-partido .step').forEach(x=>x.classList.remove('active'));
+  document.getElementById('part-1').classList.add('active');
+  document.getElementById('prog-partido').style.width='50%';
+  document.getElementById('modal-partido').classList.add('show');
+}
+
+function actualizarGeneroWrap(){
+  const gw=document.getElementById('part-genero-wrap');
+  gw.style.display=PART.form.tipo==='Mixto'?'block':'none';
+}
+
+function actualizarCatsPartido(s,esPrimero){
+  const wrap=document.getElementById('part-cats');
+  const lbl=document.getElementById('part-cat-lbl');
+  const ins=s.inscriptos||[];
+  const baseCat=s.cat_base;
+
+  let catsDisponibles;
+  if(esPrimero||!baseCat){
+    catsDisponibles=CATS_P;
+    lbl.textContent='Tu categoría (define la base del partido)';
+  }else{
+    const idx=CATS_P.indexOf(baseCat);
+    catsDisponibles=CATS_P.filter((_,i)=>Math.abs(i-idx)<=1);
+    lbl.textContent='Tu categoría (permitido: '+catsDisponibles.join(', ')+')';
+  }
+
+  wrap.innerHTML=catsDisponibles.map(c=>{
+    const sel=PART.form.cat===c;
+    return`<button class="pcat-btn${sel?' active':''}" onclick="selCat('${c}',this)">${c}</button>`;
+  }).join('');
+}
+
+function selTipo(btn){
+  document.querySelectorAll('.ptipo-btn[data-tipo]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  PART.form.tipo=btn.dataset.tipo;
+  actualizarGeneroWrap();
+  /* Recalcular cats si es el primero */
+  const s=PART.slots.find(x=>x.id===PART.selectedSlotId);
+  if(s)actualizarCatsPartido(s,s.inscriptos.length===0);
+}
+
+function selGenero(btn){
+  document.querySelectorAll('.ptipo-btn[data-gen]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  PART.form.genero=btn.dataset.gen;
+}
+
+function selCat(cat,btn){
+  document.querySelectorAll('.pcat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  PART.form.cat=cat;
+}
+
+async function partStep2(){
+  const nombre=document.getElementById('part-nombre').value.trim();
+  const tel=document.getElementById('part-tel').value.trim();
+  const errEl=document.getElementById('part-err');
+
+  if(!nombre||!tel){errEl.textContent='Completá nombre y WhatsApp.';errEl.style.display='block';return;}
+  if(!PART.form.cat){errEl.textContent='Elegí tu categoría.';errEl.style.display='block';return;}
+  if(PART.form.tipo==='Mixto'&&!PART.form.genero){errEl.textContent='Indicá tu género.';errEl.style.display='block';return;}
+  errEl.style.display='none';
+
+  const s=PART.slots.find(x=>x.id===PART.selectedSlotId);
+  if(!s)return;
+  const ins=s.inscriptos||[];
+  const esPrimero=ins.length===0;
+
+  /* Validar género en mixto: máx 2 de cada uno */
+  if(PART.form.tipo==='Mixto'||s.tipo==='Mixto'){
+    const cnt=ins.filter(i=>i.genero===PART.form.genero).length;
+    if(cnt>=2){errEl.textContent='Ya hay 2 '+(PART.form.genero==='M'?'caballeros':'damas')+' anotados.';errEl.style.display='block';return;}
+  }
+
+  PART.form.nombre=nombre;PART.form.tel=tel;
+
+  /* Si es el primero, setear tipo y cat_base en el slot */
+  const updSlot={};
+  if(esPrimero){
+    updSlot.tipo=PART.form.tipo;
+    updSlot.cat_base=PART.form.cat;
+    s.tipo=PART.form.tipo;
+    s.cat_base=PART.form.cat;
+    await updatePartidoSlot(s.id,updSlot);
+  }
+
+  const ni={
+    id:Math.floor(Date.now()/1000)+'_'+Math.random().toString(36).slice(2,6),
+    slot_id:s.id,
+    nombre:PART.form.nombre,
+    tel:PART.form.tel,
+    tipo:PART.form.tipo||s.tipo,
+    cat:PART.form.cat,
+    genero:PART.form.genero||'M',
+    fecha:new Date().toLocaleDateString('es-AR')
+  };
+  ins.push(ni);
+  await savePartidoInscripto(ni);
+  renderPartidos();
+
+  /* Resumen */
+  const tipo=s.tipo||PART.form.tipo;
+  document.getElementById('part-resumen').innerHTML=`
+    <div class="sr-row"><span class="sr-label">Fecha</span><span class="sr-val">${fmtFechaPartido(s.fecha)} ${s.hora} hs</span></div>
+    <div class="sr-row"><span class="sr-label">Tipo</span><span class="sr-val">${tipo}</span></div>
+    <div class="sr-row"><span class="sr-label">Categoría</span><span class="sr-val">${PART.form.cat}</span></div>
+    <div class="sr-row"><span class="sr-label">Nombre</span><span class="sr-val">${nombre}</span></div>`;
+
+  document.querySelectorAll('#modal-partido .step').forEach(x=>x.classList.remove('active'));
+  document.getElementById('part-2').classList.add('active');
+  document.getElementById('prog-partido').style.width='100%';
+}
+
+function partWhatsapp(){
+  const s=PART.slots.find(x=>x.id===PART.selectedSlotId)||{};
+  const msg=encodeURIComponent(`Hola Agus! Me anoté al partido del ${fmtFechaPartido(s.fecha||'')} ${s.hora||''} hs.\n👤 ${PART.form.nombre}\n📱 ${PART.form.tel}\n🎾 ${s.tipo||PART.form.tipo} · ${PART.form.cat}`);
+  window.open('https://wa.me/5491134634000?text='+msg,'_blank');
+}
+
+/* ── ADMIN: tab Partidos ── */
+function renderAdmPartidos(){
+  const el=document.getElementById('adm-partidos-content');
+  if(!el)return;
+  const slots=PART.slots;
+
+  const addForm=`<div class="adm-add-form">
+    <div class="adm-add-title">✦ Publicar nuevo partido</div>
+    <div class="adm-add-row">
+      <input type="date" id="adm-part-fecha" style="color-scheme:dark">
+      <input type="time" id="adm-part-hora" style="color-scheme:dark">
+      <input type="text" id="adm-part-lugar" placeholder="Lugar (ej: Boyacá 1766)">
+      <select id="adm-part-cupo">
+        <option value="4">4 cupos</option>
+        <option value="6">6 cupos</option>
+        <option value="8">8 cupos</option>
+      </select>
+      <input type="text" id="adm-part-notas" placeholder="Nota opcional">
+      <button class="adm-add-btn" onclick="adminCrearPartido()">Publicar</button>
+    </div>
+  </div>`;
+
+  const lista=slots.length===0
+    ?'<div class="empty">No hay partidos publicados todavía.</div>'
+    :slots.map(s=>{
+      const ins=s.inscriptos||[];
+      const cupo=s.cupo||4;
+      const libre=cupo-ins.length;
+      const tipo=s.tipo||'Sin definir';
+      const tipoCls=s.tipo?TIPO_COLOR_P[s.tipo]:'libre';
+      return`<div class="ab-res-item" style="flex-direction:column;align-items:flex-start;gap:.75rem">
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:center;flex-wrap:wrap;gap:.5rem">
+          <div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:500;color:var(--azul)">${fmtFechaPartido(s.fecha)} · ${s.hora} hs</div>
+            <div style="font-size:.78rem;color:var(--gris);margin-top:2px">${tipo} · Cat base: ${s.cat_base||'—'} · ${ins.length}/${cupo} inscriptos · ${libre} libre${libre===1?'':'s'}${s.lugar?' · 📍 '+s.lugar:''}</div>
+          </div>
+          <div style="display:flex;gap:.4rem">
+            <button class="rbtn canc" onclick="adminEliminarPartido('${s.id}')">Eliminar</button>
+          </div>
+        </div>
+        ${ins.length===0?'<div style="font-size:.78rem;color:#bbb;font-style:italic">Sin inscriptos todavía.</div>'
+          :`<div style="display:flex;flex-wrap:wrap;gap:.4rem">${ins.map(i=>`
+            <div class="inscripto-pill" style="font-size:.75rem">
+              ${i.genero==='F'?'♀':'♂'} ${i.nombre.split(' ')[0]} <span style="opacity:.5">${i.cat||''}</span>
+              <button class="rev-delete" onclick="adminQuitarInscripto('${s.id}','${i.id}')" title="Quitar">✕</button>
+            </div>`).join('')}</div>`}
+      </div>`;
+    }).join('');
+
+  el.innerHTML=addForm+lista;
+}
+
+async function adminCrearPartido(){
+  const fecha=document.getElementById('adm-part-fecha').value;
+  const hora=document.getElementById('adm-part-hora').value;
+  const lugar=document.getElementById('adm-part-lugar').value.trim();
+  const cupo=parseInt(document.getElementById('adm-part-cupo').value)||4;
+  const notas=document.getElementById('adm-part-notas').value.trim();
+  if(!fecha||!hora){toast('Completá fecha y hora');return;}
+  const ns={id:'p'+Date.now(),fecha,hora,lugar,cupo,notas,tipo:null,cat_base:null,activo:true};
+  const res=await savePartidoSlot(ns);
+  ns.inscriptos=[];
+  PART.slots.push(ns);
+  renderPartidos();
+  renderAdmPartidos();
+  toast('Partido publicado ✓');
+}
+
+async function adminEliminarPartido(id){
+  if(!confirm('¿Eliminar este partido y todos sus inscriptos?'))return;
+  await deletePartidoSlot(id);
+  PART.slots=PART.slots.filter(s=>s.id!==id);
+  renderPartidos();
+  renderAdmPartidos();
+  toast('Partido eliminado');
+}
+
+async function adminQuitarInscripto(slotId,insId){
+  await deletePartidoInscripto(insId);
+  const s=PART.slots.find(x=>x.id===slotId);
+  if(s){
+    s.inscriptos=s.inscriptos.filter(i=>i.id!==insId);
+    if(s.inscriptos.length===0){s.tipo=null;s.cat_base=null;await updatePartidoSlot(slotId,{tipo:null,cat_base:null});}
+  }
+  renderPartidos();
+  renderAdmPartidos();
+  toast('Inscripto quitado');
+}
+
+
+function selPagoP(tipo){PART.form.metodo=tipo;document.getElementById("part-opt-mp").classList.toggle("selected",tipo==="mp");document.getElementById("part-opt-transfer").classList.toggle("selected",tipo==="transfer");}
+
+async function partStep2(){const nombre=document.getElementById("part-nombre").value.trim();const tel=document.getElementById("part-tel").value.trim();const errEl=document.getElementById("part-err");if(!nombre||!tel){errEl.textContent="Completá nombre y WhatsApp.";errEl.style.display="block";return;}if(!PART.form.cat){errEl.textContent="Elegí tu categoría.";errEl.style.display="block";return;}if(PART.form.tipo==="Mixto"&&!PART.form.genero){errEl.textContent="Indicá tu género.";errEl.style.display="block";return;}const s=PART.slots.find(x=>x.id===PART.selectedSlotId);if(!s)return;const ins=s.inscriptos||[];if(PART.form.tipo==="Mixto"||s.tipo==="Mixto"){const cnt=ins.filter(i=>i.genero===PART.form.genero).length;if(cnt>=2){errEl.textContent="Ya hay 2 "+(PART.form.genero==="M"?"caballeros":"damas")+" anotados.";errEl.style.display="block";return;}}errEl.style.display="none";PART.form.nombre=nombre;PART.form.tel=tel;selPagoP("mp");partGoStep(2);}
+
+async function partGoStep(n){if(n===3){const isMp=PART.form.metodo==="mp";document.getElementById("part-s3-title").textContent=isMp?"Pagá con Mercado Pago":"Transferí el monto";document.getElementById("part-mp-box").style.display=isMp?"block":"none";document.getElementById("part-transfer-box").style.display=isMp?"none":"block";}if(n===4){const s=PART.slots.find(x=>x.id===PART.selectedSlotId);if(!s)return;const ins=s.inscriptos||[];const esPrimero=ins.length===0;if(esPrimero){s.tipo=PART.form.tipo;s.cat_base=PART.form.cat;await updatePartidoSlot(s.id,{tipo:PART.form.tipo,cat_base:PART.form.cat});}const ni={id:Math.floor(Date.now()/1000)+"_"+Math.random().toString(36).slice(2,6),slot_id:s.id,nombre:PART.form.nombre,tel:PART.form.tel,tipo:PART.form.tipo||s.tipo,cat:PART.form.cat,genero:PART.form.genero||"M",metodo:PART.form.metodo||"mp",estado:"pendiente",fecha:new Date().toLocaleDateString("es-AR")};ins.push(ni);await savePartidoInscripto(ni);renderPartidos();sendEmailNotification("Partido "+(s.tipo||PART.form.tipo),{dia:fmtFechaPartido(s.fecha),hora:s.hora+" hs",nombre:PART.form.nombre,tel:PART.form.tel,precio:20000,metodo:PART.form.metodo,fecha:ni.fecha});document.getElementById("part-resumen").innerHTML=`<div class="sr-row"><span class="sr-label">Fecha</span><span class="sr-val">${fmtFechaPartido(s.fecha)} ${s.hora} hs</span></div><div class="sr-row"><span class="sr-label">Tipo</span><span class="sr-val">${s.tipo||PART.form.tipo}</span></div><div class="sr-row"><span class="sr-label">Categoría</span><span class="sr-val">${PART.form.cat}</span></div><div class="sr-row"><span class="sr-label">Total</span><span class="sr-val" style="color:var(--oro-dark)">$20.000</span></div><div class="sr-row"><span class="sr-label">Método</span><span class="sr-val">${PART.form.metodo==="mp"?"Mercado Pago":"Transferencia"}</span></div>`;}document.querySelectorAll("#modal-partido .step").forEach(x=>x.classList.remove("active"));document.getElementById("part-"+n).classList.add("active");const pcts={1:"33%",2:"66%",3:"90%",4:"100%"};document.getElementById("prog-partido").style.width=pcts[n]||"33%";}
+
+function partEnviarComp(){const s=PART.slots.find(x=>x.id===PART.selectedSlotId)||{};const metodoTxt=PART.form.metodo==="mp"?"Mercado Pago":"transferencia (alias: Agusgrafmp)";const msg=encodeURIComponent(`Hola Agus! Te mando el comprobante para el partido del ${fmtFechaPartido(s.fecha||"")} ${s.hora||""} hs.\n👤 ${PART.form.nombre}\n📱 ${PART.form.tel}\n🎾 ${s.tipo||PART.form.tipo} · ${PART.form.cat}\n💰 $20.000\n💳 ${metodoTxt}\n\n[Adjunto comprobante]`);window.open("https://wa.me/5491134634000?text="+msg,"_blank");if(document.getElementById("part-3").classList.contains("active"))partGoStep(4);}
+
 async function init(){
   await load();
+  await loadPartidos();
   checkResetAbiertas();
   renderAlumnoDias();
   renderAlumnoGrid('lunes');
@@ -1206,6 +1694,4 @@ async function init(){
 init();
 </script>
 </body>
-</html>
-
 </html>
