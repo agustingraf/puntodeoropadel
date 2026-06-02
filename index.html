@@ -1354,7 +1354,14 @@ async function updatePartidoSlot(id,fields){
 function renderPartidos(){
   const el=document.getElementById('partidos-lista');
   if(!el)return;
-  const slots=PART.slots.filter(s=>s.activo);
+  const ahora=new Date();
+  const slots=PART.slots.filter(s=>{
+    if(!s.activo)return false;
+    if(!s.fecha||!s.hora)return true;
+    const [h,m]=s.hora.split(':');
+    const fechaSlot=new Date(s.fecha+'T'+s.hora+':00');
+    return fechaSlot>ahora;
+  });
   if(!slots.length){
     el.innerHTML='<div class="empty" style="padding:2.5rem 0;color:var(--gris);text-align:center">No hay partidos disponibles por ahora.<br><small>Seguí los grupos de WhatsApp para enterarte cuando se publiquen nuevos turnos.</small></div>';
     return;
