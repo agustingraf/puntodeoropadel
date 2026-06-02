@@ -1986,13 +1986,23 @@ function renderAdmTorneos(){
           </div>
           <button class="rbtn canc" onclick="adminEliminarTorneo('${t.id}')">Eliminar</button>
         </div>
+        <div style="background:var(--blanco);border:1.5px dashed rgba(212,175,55,.3);border-radius:12px;padding:.85rem 1rem;margin-bottom:.75rem">
+          <div style="font-size:.7rem;color:var(--oro-dark);text-transform:uppercase;letter-spacing:1.5px;font-weight:500;margin-bottom:.65rem">✦ Anotar pareja manualmente</div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end">
+            <input type="text" id="adm-torn-j1n-${t.id}" placeholder="Jugador 1 nombre" style="flex:1;min-width:120px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.5rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
+            <input type="text" id="adm-torn-j1c-${t.id}" placeholder="Cat (ej: 7ma)" style="width:90px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.5rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
+            <input type="text" id="adm-torn-j2n-${t.id}" placeholder="Jugador 2 nombre" style="flex:1;min-width:120px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.5rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
+            <input type="text" id="adm-torn-j2c-${t.id}" placeholder="Cat (ej: 8va)" style="width:90px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.5rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
+            <button class="adm-add-btn" onclick="adminAnotarPareja('${t.id}')">Anotar</button>
+          </div>
+        </div>
         ${ins.length===0
           ?'<div style="font-size:.78rem;color:#bbb;font-style:italic">Sin inscripciones todavía.</div>'
           :`<div style="display:flex;flex-direction:column;gap:.4rem;width:100%">${ins.map(p=>`
             <div class="ab-res-item" style="padding:.6rem 1rem;margin-bottom:0">
               <div class="res-info">
                 <div class="res-alumno">🎾 ${p.j1nombre} (${p.j1cat}) & ${p.j2nombre} (${p.j2cat})</div>
-                <div class="res-det">📱 ${p.j1tel}${p.j2tel?' · '+p.j2tel:''} · ${p.metodo==='mp'?'MP':'Transf.'} · ${p.fecha}</div>
+                <div class="res-det">${p.j1tel?'📱 '+p.j1tel:''} · ${p.es_admin?'Admin':''+p.metodo} · ${p.fecha}</div>
               </div>
               <span class="res-estado ${p.estado==='pendiente'?'est-pend':'est-conf'}">${p.estado==='pendiente'?'⏳':'✓'}</span>
               <div class="res-acc">
@@ -2004,6 +2014,32 @@ function renderAdmTorneos(){
     }).join('');
 
   el.innerHTML=addForm+lista;
+}
+
+async function adminAnotarPareja(torneoId){
+  const j1n=document.getElementById('adm-torn-j1n-'+torneoId)?.value.trim();
+  const j1c=document.getElementById('adm-torn-j1c-'+torneoId)?.value.trim();
+  const j2n=document.getElementById('adm-torn-j2n-'+torneoId)?.value.trim();
+  const j2c=document.getElementById('adm-torn-j2c-'+torneoId)?.value.trim();
+  if(!j1n||!j2n){toast('Ingresá al menos los nombres de ambos jugadores');return;}
+  const t=TORN.lista.find(x=>x.id===torneoId);
+  if(!t)return;
+  const cupo=t.cupo||16;
+  if((t.parejas||[]).length>=cupo){toast('Cupo completo');return;}
+  const ni={
+    id:'ti'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
+    torneo_id:torneoId,
+    j1nombre:j1n,j1tel:'',j1cat:j1c||'—',
+    j2nombre:j2n,j2tel:'',j2cat:j2c||'—',
+    metodo:'admin',es_admin:true,estado:'confirmada',
+    fecha:new Date().toLocaleDateString('es-AR')
+  };
+  t.parejas=t.parejas||[];
+  t.parejas.push(ni);
+  await saveTorneoInscripto(ni);
+  renderTorneos();
+  renderAdmTorneos();
+  toast(j1n+' & '+j2n+' anotados ✓');
 }
 
 async function adminCrearTorneo(){
