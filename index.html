@@ -403,6 +403,22 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 .pareja-pill.mix{background:linear-gradient(135deg,#e8f0f8,#f8e8f5);border-color:rgba(13,34,56,.08)}
 .torneo-foot{padding:.85rem 1.75rem;background:var(--crema);border-top:1px solid rgba(0,0,0,.04);display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
 
+
+/* ── BUSCO PAREJA ── */
+.bp-card{border:1px solid rgba(0,0,0,.07);border-radius:14px;padding:1rem 1.25rem;background:var(--blanco);display:flex;align-items:center;gap:.85rem;flex-wrap:wrap;margin-bottom:.5rem;transition:all .2s}
+.bp-card:hover{border-color:rgba(212,175,55,.3);box-shadow:0 4px 16px rgba(212,175,55,.08)}
+.bp-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0;color:#fff}
+.bp-avatar.rev{background:var(--azul)}
+.bp-avatar.drv{background:#7c3a6d}
+.bp-info{flex:1;min-width:120px}
+.bp-nombre{font-size:.88rem;font-weight:600;color:var(--azul)}
+.bp-det{font-size:.72rem;color:var(--gris);margin-top:2px}
+.bp-tag{display:inline-block;font-size:.62rem;font-weight:600;padding:2px 8px;border-radius:100px;letter-spacing:.3px;margin-right:4px}
+.bp-tag.rev{background:#e8f0f8;color:var(--azul)}
+.bp-tag.drv{background:#f8e8f5;color:#7c3a6d}
+.bp-tag.cat{background:var(--oro-light);color:var(--oro-dark)}
+.bp-wa{display:inline-flex;align-items:center;gap:5px;background:#25D366;color:#fff;border:none;border-radius:100px;padding:.4rem .9rem;font-size:.75rem;font-weight:500;cursor:pointer;text-decoration:none;font-family:'DM Sans',sans-serif}
+
 @media(max-width:640px){
   .nav-links{display:none}
   .cg{grid-template-columns:1fr}
@@ -428,6 +444,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <li><a href="#comunidad">Comunidad</a></li>
     <li><a href="#partidos">Partidos</a></li>
     <li><a href="#torneos">Torneos</a></li>
+    <li><a href="#busco-pareja">Busco pareja</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
   <div class="nav-btns">
@@ -583,6 +600,8 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
   <div class="sec-title">Anotate a un partido</div>
   <div class="sec-sub">Agus publica turnos disponibles. El primero elige si es caballeros, damas o mixto, y la categoría. Los siguientes solo pueden unirse si coinciden (±1 categoría). Precio: <strong>$20.000 por persona</strong>.</div>
   <div id="partidos-lista"></div>
+
+
 </section>
 
 <!-- MODAL PARTIDO -->
@@ -763,6 +782,16 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 </div>
 
 
+
+<!-- BUSCO PAREJA -->
+<section style="background:var(--crema);padding:4rem 2rem" id="busco-pareja">
+  <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>Torneos</span></div>
+  <div class="sec-title">¿Buscás pareja?</div>
+  <div class="sec-sub">Anotate indicando si jugás de <strong>Revés</strong> o <strong>Drive</strong> y tu categoría. Otros jugadores van a poder contactarte por WhatsApp.</div>
+  <button class="btn-oro" style="margin-bottom:1.75rem;font-size:.83rem" onclick="abrirModalBP()">+ Anotarme como disponible</button>
+  <div id="bp-lista"></div>
+</section>
+
 <!-- COMUNIDAD -->
 <section style="background:var(--azul);padding:4rem 2rem" id="comunidad">
   <div style="max-width:700px;margin:0 auto;position:relative">
@@ -789,6 +818,38 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     </div>
   </div>
 </section>
+
+
+<!-- MODAL BUSCO PAREJA -->
+<div class="modal-bg" id="modal-bp">
+  <div class="modal">
+    <div style="padding:2rem">
+      <div class="step-header">
+        <div class="step-num">Busco pareja · Torneo</div>
+        <div class="step-title">Anotarme como disponible</div>
+        <div class="step-sub">Tu WhatsApp va a quedar visible para que te contacten.</div>
+      </div>
+      <div class="err" id="bp-err">Completá todos los campos.</div>
+      <input type="text" id="bp-nombre" placeholder="Tu nombre completo">
+      <input type="tel" id="bp-tel" placeholder="WhatsApp (ej: 1134567890)">
+      <select id="bp-cat">
+        <option value="">Categoría...</option>
+        <option>9ª</option><option>8ª</option><option>7ª</option><option>6ª</option>
+        <option>5ª</option><option>4ª</option><option>3ª</option><option>2ª</option><option>1ª</option>
+      </select>
+      <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin:.4rem 0 .5rem">Jugás de</div>
+      <div style="display:flex;gap:.5rem;margin-bottom:.85rem">
+        <button class="ptipo-btn active" id="bp-pos-rev" onclick="selPosBP('Revés',this)">🎾 Revés</button>
+        <button class="ptipo-btn" id="bp-pos-drv" onclick="selPosBP('Drive',this)">🏓 Drive</button>
+        <button class="ptipo-btn" id="bp-pos-amb" onclick="selPosBP('Ambos',this)">↔ Ambos</button>
+      </div>
+      <div class="mbtns">
+        <button class="mb sec" onclick="cerrarModal('modal-bp')">Cancelar</button>
+        <button class="mb pri" onclick="confirmarBP()">Publicar →</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- OPINIONES -->
 <section class="opiniones-sec" id="opiniones">
@@ -988,6 +1049,21 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <div class="adm-title">Torneos</div>
       <div class="adm-sub">Creá torneos y gestioná inscripciones de parejas.</div>
       <div id="adm-torneos-content"></div>
+      <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(0,0,0,.07)">
+        <div class="adm-title" style="font-size:1.2rem">Busco pareja</div>
+        <div class="adm-sub">Jugadores disponibles para armar pareja.</div>
+        <div class="adm-add-form" style="margin-bottom:1rem">
+          <div class="adm-add-title">✦ Agregar manualmente</div>
+          <div class="adm-add-row">
+            <input type="text" id="adm-bp-nombre" placeholder="Nombre">
+            <input type="tel" id="adm-bp-tel" placeholder="WhatsApp">
+            <select id="adm-bp-cat"><option value="9ª">9ª</option><option value="8ª">8ª</option><option value="7ª">7ª</option><option value="6ª">6ª</option><option value="5ª">5ª</option><option value="4ª">4ª</option><option value="3ª">3ª</option><option value="2ª">2ª</option><option value="1ª">1ª</option></select>
+            <select id="adm-bp-pos"><option value="Revés">🎾 Revés</option><option value="Drive">🏓 Drive</option><option value="Ambos">↔ Ambos</option></select>
+            <button class="adm-add-btn" onclick="adminAnotarBP()">Agregar</button>
+          </div>
+        </div>
+        <div id="adm-bp-content"></div>
+      </div>
     </div>
     <div id="adm-partidos" style="display:none">
       <div class="adm-title">Partidos organizados</div>
@@ -1272,7 +1348,7 @@ function selPago(ctx,tipo){
 function abrirAdmin(){document.getElementById('modal-login').classList.add('show');}
 function checkPass(){if(document.getElementById('pass').value===PASS){document.getElementById('pass-err').style.display='none';document.getElementById('pass').value='';cerrarModal('modal-login');S.loggedIn=true;document.getElementById('admin-panel').classList.add('show');renderAdmDias();renderAdmGrid(S.diaAdm);renderReviews();}else{document.getElementById('pass-err').style.display='block';}}
 function logout(){S.loggedIn=false;document.getElementById('admin-panel').classList.remove('show');renderReviews();}
-function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';document.getElementById('adm-torneos').style.display=tab==='torneos'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='abiertas')renderAdmAbiertas();if(tab==='partidos')setTimeout(renderAdmPartidos,50);if(tab==='torneos')setTimeout(renderAdmTorneos,50);}
+function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';document.getElementById('adm-torneos').style.display=tab==='torneos'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='abiertas')renderAdmAbiertas();if(tab==='partidos')setTimeout(renderAdmPartidos,50);if(tab==='torneos'){setTimeout(renderAdmTorneos,50);setTimeout(renderAdmBP,50);}}
 function renderAdmDias(){const c=document.getElementById('adm-dias');c.innerHTML='';DIAS.forEach(d=>{const b=document.createElement('div');b.className='dia-tab'+(d===S.diaAdm?' active':'')+(d==='sabado'||d==='domingo'?' we':'');b.textContent=DIAS_L[d];b.onclick=()=>{S.diaAdm=d;renderAdmDias();renderAdmGrid(d);};c.appendChild(b);});}
 function renderAdmGrid(d){const g=document.getElementById('adm-grid');g.innerHTML='';horas(d).forEach(h=>{const st=slotSt(d,h);const res=S.reservas.find(x=>x.dia===d&&x.hora===h&&x.estado!=='cancelada');const div=document.createElement('div');div.className='slot adm-'+st;const lbl=st==='libre'?'Disponible':st==='pendiente'?'⏳ '+(res?.nombre||''):(res?.nombre||'Ocupado');div.innerHTML=`<div class="slot-hora">${h}</div><div class="slot-lbl">${lbl}</div>`;div.onclick=()=>abrirAdmSlot(d,h,st,res);g.appendChild(div);});}
 function abrirAdmSlot(d,h,st,res){
@@ -2085,10 +2161,119 @@ async function cancelarTorneoInsc(torneoId,insId){
   renderAdmTorneos();renderTorneos();toast('Inscripción cancelada');
 }
 
+
+/* ═══════════════════════════════════════
+   BUSCO PAREJA
+   ═══════════════════════════════════════ */
+let BP={lista:[],posicion:'Revés'};
+
+async function loadBP(){
+  const rows=await sbFetch('busco_pareja?select=*&order=id.desc&activo=eq.true');
+  BP.lista=rows||[];
+  renderBP();
+}
+
+async function saveBP(row){return await sbFetch('busco_pareja','POST',row);}
+async function deleteBP(id){await sbFetch('busco_pareja?id=eq.'+id,'DELETE');}
+
+function renderBP(){
+  const el=document.getElementById('bp-lista');
+  if(!el)return;
+  if(!BP.lista.length){
+    el.innerHTML='<div style="font-size:.85rem;color:#bbb;font-style:italic;padding:.75rem 0">Nadie anotado todavía. ¡Sé el primero!</div>';
+    return;
+  }
+  el.innerHTML=BP.lista.map(p=>{
+    const cls=p.posicion==='Drive'?'drv':'rev';
+    const ini=p.nombre.split(' ').map(x=>x[0]).join('').toUpperCase().slice(0,2);
+    return`<div class="bp-card">
+      <div class="bp-avatar ${cls}">${ini}</div>
+      <div class="bp-info">
+        <div class="bp-nombre">${p.nombre}</div>
+        <div class="bp-det">
+          <span class="bp-tag ${cls}">${p.posicion==='Drive'?'🏓':'🎾'} ${p.posicion}</span>
+          <span class="bp-tag cat">${p.categoria}</span>
+        </div>
+      </div>
+      <a href="https://wa.me/54${p.tel}?text=${encodeURIComponent('Hola '+p.nombre.split(' ')[0]+'! Vi que buscás pareja para torneo. Juego de '+( p.posicion==='Drive'?'Revés':'Drive')+', ¿coordinamos?')}" target="_blank" class="bp-wa">💬 Contactar</a>
+    </div>`;
+  }).join('');
+}
+
+function abrirModalBP(){
+  BP.posicion='Revés';
+  document.getElementById('bp-nombre').value='';
+  document.getElementById('bp-tel').value='';
+  document.getElementById('bp-cat').value='';
+  document.getElementById('bp-err').style.display='none';
+  document.querySelectorAll('#modal-bp .ptipo-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('bp-pos-rev').classList.add('active');
+  document.getElementById('modal-bp').classList.add('show');
+}
+
+function selPosBP(pos,btn){
+  BP.posicion=pos;
+  document.querySelectorAll('#modal-bp .ptipo-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function confirmarBP(){
+  const nombre=document.getElementById('bp-nombre').value.trim();
+  const tel=document.getElementById('bp-tel').value.trim().replace(/\D/g,'');
+  const cat=document.getElementById('bp-cat').value;
+  const errEl=document.getElementById('bp-err');
+  if(!nombre||!tel||!cat){errEl.textContent='Completá nombre, WhatsApp y categoría.';errEl.style.display='block';return;}
+  errEl.style.display='none';
+  const ni={id:'bp'+Date.now(),nombre,tel,categoria:cat,posicion:BP.posicion,activo:true,fecha:new Date().toLocaleDateString('es-AR')};
+  BP.lista.unshift(ni);
+  await saveBP(ni);
+  renderBP();
+  cerrarModal('modal-bp');
+  toast('¡Publicado! Otros jugadores van a poder contactarte 🎾');
+}
+
+/* Admin: gestionar busco pareja */
+function renderAdmBP(){
+  const el=document.getElementById('adm-bp-content');
+  if(!el)return;
+  if(!BP.lista.length){el.innerHTML='<div class="empty">No hay jugadores buscando pareja.</div>';return;}
+  el.innerHTML=BP.lista.map(p=>{
+    const cls=p.posicion==='Drive'?'drv':'rev';
+    return`<div class="ab-res-item">
+      <div class="res-info">
+        <div class="res-alumno">${p.nombre} <span class="bp-tag ${cls}" style="font-size:.65rem">${p.posicion}</span> <span class="bp-tag cat" style="font-size:.65rem">${p.categoria}</span></div>
+        <div class="res-det">📱 ${p.tel} · ${p.fecha}</div>
+      </div>
+      <button class="rbtn canc" onclick="adminEliminarBP('${p.id}')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+async function adminAnotarBP(){
+  const nombre=document.getElementById('adm-bp-nombre').value.trim();
+  const tel=document.getElementById('adm-bp-tel').value.trim();
+  const cat=document.getElementById('adm-bp-cat').value;
+  const pos=document.getElementById('adm-bp-pos').value;
+  if(!nombre){toast('Ingresá el nombre');return;}
+  const ni={id:'bp'+Date.now(),nombre,tel,categoria:cat,posicion:pos,activo:true,fecha:new Date().toLocaleDateString('es-AR')};
+  BP.lista.unshift(ni);
+  await saveBP(ni);
+  renderBP();renderAdmBP();
+  toast(nombre+' agregado ✓');
+}
+
+async function adminEliminarBP(id){
+  await deleteBP(id);
+  BP.lista=BP.lista.filter(x=>x.id!==id);
+  renderBP();renderAdmBP();
+  toast('Eliminado');
+}
+
 async function init(){
   await load();
   await loadPartidos();
   await loadTorneos();
+  await loadBP();
   checkResetAbiertas();
   renderAlumnoDias();
   renderAlumnoGrid('lunes');
