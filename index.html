@@ -21,14 +21,15 @@ html{scroll-behavior:smooth}
 body{font-family:'DM Sans',sans-serif;background:var(--crema);color:var(--azul);overflow-x:hidden}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,34,56,0.97);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:0.8rem 2rem}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,34,56,0.97);backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;padding:0.7rem 1.25rem;gap:1rem}
 .logo-nav{display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none}
 .logo-icon{width:34px;height:34px;border-radius:8px;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logo-txt{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:500;color:#fff;letter-spacing:0.5px}
 .logo-txt span{color:var(--oro)}
-.nav-links{display:flex;gap:1.75rem;list-style:none}
-.nav-links a{font-size:0.8rem;color:rgba(255,255,255,0.6);text-decoration:none;transition:color .2s}
-.nav-links a:hover{color:var(--oro)}
+.nav-links{display:flex;gap:.2rem;list-style:none;align-items:center;flex-wrap:nowrap}
+.nav-links a{font-size:.82rem;color:rgba(255,255,255,0.6);text-decoration:none;transition:all .2s;padding:.36rem .75rem;border-radius:100px;border:1px solid transparent;font-weight:500;letter-spacing:.1px;white-space:nowrap}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.1)}
+.nav-links a.active{color:var(--oro);border-color:rgba(212,175,55,.3);background:rgba(212,175,55,.08)}
 .nav-btns{display:flex;gap:.5rem;align-items:center}
 .nav-cta{background:var(--oro);color:var(--azul);padding:.44rem 1.2rem;border-radius:100px;font-size:.8rem;font-weight:500;text-decoration:none;transition:all .2s}
 .nav-cta:hover{background:var(--oro-dark)}
@@ -405,7 +406,8 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 
 
 /* ── BUSCO PAREJA ── */
-.bp-card{border:1px solid rgba(0,0,0,.07);border-radius:14px;padding:1rem 1.25rem;background:var(--blanco);display:flex;align-items:center;gap:.85rem;flex-wrap:wrap;margin-bottom:.5rem;transition:all .2s}
+.busco-pareja-sec{background:var(--crema);padding:5rem 2rem}
+.bp-card{border:1px solid rgba(0,0,0,.07);border-radius:16px;padding:1.1rem 1.4rem;background:var(--blanco);display:flex;align-items:center;gap:1rem;flex-wrap:nowrap;margin-bottom:.65rem;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.04)}
 .bp-card:hover{border-color:rgba(212,175,55,.3);box-shadow:0 4px 16px rgba(212,175,55,.08)}
 .bp-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0;color:#fff}
 .bp-avatar.rev{background:var(--azul)}
@@ -439,12 +441,12 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
   </a>
   <ul class="nav-links">
     <li><a href="#precios">Precios</a></li>
-    <li><a href="#reservas">Reservar</a></li>
+    <li><a href="#reservas">Clases</a></li>
     <li><a href="#abiertas">Abiertas</a></li>
-    <li><a href="#comunidad">Comunidad</a></li>
     <li><a href="#partidos">Partidos</a></li>
     <li><a href="#torneos">Torneos</a></li>
     <li><a href="#busco-pareja">Busco pareja</a></li>
+    <li><a href="#comunidad">Comunidad</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
   <div class="nav-btns">
@@ -784,12 +786,14 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 
 
 <!-- BUSCO PAREJA -->
-<section style="background:var(--crema);padding:4rem 2rem" id="busco-pareja">
-  <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>Torneos</span></div>
-  <div class="sec-title">¿Buscás pareja?</div>
-  <div class="sec-sub">Anotate indicando si jugás de <strong>Revés</strong> o <strong>Drive</strong> y tu categoría. Otros jugadores van a poder contactarte por WhatsApp.</div>
-  <button class="btn-oro" style="margin-bottom:1.75rem;font-size:.83rem" onclick="abrirModalBP()">+ Anotarme como disponible</button>
-  <div id="bp-lista"></div>
+<section class="busco-pareja-sec" id="busco-pareja">
+  <div style="max-width:700px;margin:0 auto">
+    <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>Torneos · Buscá compañero/a</span></div>
+    <div class="sec-title">Busco pareja</div>
+    <div class="sec-sub">¿Querés jugar un torneo pero no tenés pareja? Anotate con tu posición y categoría. Los demás jugadores van a poder contactarte por WhatsApp directo.</div>
+    <button class="btn-oro" style="margin-bottom:2rem" onclick="abrirModalBP()">+ Publicar mi disponibilidad</button>
+    <div id="bp-lista"></div>
+  </div>
 </section>
 
 <!-- COMUNIDAD -->
@@ -1394,6 +1398,22 @@ function actualizarHorasMover(){const d=document.getElementById('mv-dia').value;
 function ejecutarMover(){const r=S.reservas.find(x=>x.id===S.pendMover);if(!r){cerrarModal('modal-mover');return;}const nd=document.getElementById('mv-dia').value,nh=document.getElementById('mv-hora').value;if(slotSt(nd,nh)!=='libre'){toast('Ese turno no está libre');return;}r.dia=nd;r.hora=nh;r.estado='pendiente';save();cerrarModal('modal-mover');renderAdmGrid(S.diaAdm);renderAlumnoGrid(S.diaA);renderAdmReservas();toast('Movido a '+DIAS_L[nd]+' '+nh+' hs');}
 
 function cerrarModal(id){document.getElementById(id).classList.remove('show');}
+
+/* Nav active link on scroll */
+(function(){
+  const sections=['inicio','precios','reservas','abiertas','partidos','torneos','busco-pareja','comunidad','opiniones','contacto'];
+  const links=document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll',()=>{
+    let current='inicio';
+    sections.forEach(id=>{
+      const el=document.getElementById(id);
+      if(el&&el.getBoundingClientRect().top<=80)current=id;
+    });
+    links.forEach(a=>{
+      a.classList.toggle('active',a.getAttribute('href')==='#'+current);
+    });
+  },{passive:true});
+})();
 function copiar(txt){navigator.clipboard.writeText(txt).then(()=>toast('Copiado ✓')).catch(()=>toast('Alias: '+txt));}
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
 
