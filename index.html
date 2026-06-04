@@ -421,6 +421,42 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 .bp-tag.cat{background:var(--oro-light);color:var(--oro-dark)}
 .bp-wa{display:inline-flex;align-items:center;gap:5px;background:#25D366;color:#fff;border:none;border-radius:100px;padding:.4rem .9rem;font-size:.75rem;font-weight:500;cursor:pointer;text-decoration:none;font-family:'DM Sans',sans-serif}
 
+
+/* ── FIXTURE TORNEO ── */
+.fixture-sec{background:var(--azul);padding:5rem 2rem}
+.fixture-tab{padding:.42rem 1.1rem;border-radius:100px;border:1px solid rgba(255,255,255,.15);background:transparent;font-size:.8rem;font-weight:500;cursor:pointer;transition:all .2s;color:rgba(255,255,255,.5);font-family:'DM Sans',sans-serif;margin-right:.4rem;margin-bottom:.4rem}
+.fixture-tab.active{background:var(--oro);color:var(--azul);border-color:var(--oro)}
+.grupos-fixture{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.grupo-fixture{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;overflow:hidden}
+.grupo-fixture-header{background:rgba(212,175,55,.12);border-bottom:1px solid rgba(212,175,55,.18);padding:.65rem 1rem;display:flex;align-items:center;gap:.5rem}
+.grupo-letra{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:500;color:var(--oro);line-height:1}
+.grupo-fixture-body{padding:.5rem}
+.fixture-pareja{padding:.5rem .75rem;border-radius:9px;font-size:.8rem;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;background:rgba(255,255,255,.04);cursor:grab;user-select:none}
+.fixture-pareja:hover{background:rgba(255,255,255,.09)}
+.fixture-pareja.bye{background:rgba(212,175,55,.1);color:var(--oro)}
+.fixture-pareja-num{font-size:.65rem;color:rgba(255,255,255,.3);min-width:16px}
+.fixture-pareja-num.bye{color:var(--oro)}
+.llave-wrap{overflow-x:auto;padding-bottom:.5rem}
+.llave-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--oro);margin-bottom:1rem;font-weight:500}
+.llave-grid{display:flex;gap:10px;align-items:stretch}
+.llave-ronda{display:flex;flex-direction:column;min-width:152px}
+.llave-ronda-titulo{font-size:.65rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;text-align:center;margin-bottom:3px;padding:0 4px}
+.llave-ronda-info{font-size:.68rem;color:rgba(255,255,255,.2);font-style:italic;text-align:center;margin-bottom:6px;padding:0 4px}
+.llave-ronda-partidos{display:flex;flex-direction:column;flex:1;gap:6px;justify-content:space-around}
+.llave-partido{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.llave-partido.final{border-color:rgba(212,175,55,.35)}
+.llave-equipo{padding:.48rem .7rem;font-size:.77rem;color:rgba(255,255,255,.6);border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:.4rem;min-width:0}
+.llave-equipo:last-child{border-bottom:none}
+.llave-equipo.ganador{color:#fff;font-weight:600;background:rgba(212,175,55,.12)}
+.llave-equipo.tbd{color:rgba(255,255,255,.2);font-style:italic}
+.llave-equipo.byep{color:var(--oro);background:rgba(212,175,55,.07)}
+.llave-equipo-seed{font-size:.65rem;color:rgba(255,255,255,.3);background:rgba(255,255,255,.07);border-radius:3px;padding:1px 4px;min-width:24px;text-align:center;flex-shrink:0}
+.llave-equipo-seed.gold{color:var(--oro);background:rgba(212,175,55,.15)}
+.llave-equipo-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.llave-equipo-score{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;min-width:18px;text-align:center;flex-shrink:0}
+.llave-connector{display:flex;flex-direction:column;justify-content:space-around;padding:0 2px;min-width:12px;opacity:.3}
+.llave-connector-line{width:100%;height:1px;background:rgba(255,255,255,.5)}
+
 @media(max-width:640px){
   .nav-links{display:none}
   .cg{grid-template-columns:1fr}
@@ -445,6 +481,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <li><a href="#abiertas">Abiertas</a></li>
     <li><a href="#partidos">Partidos</a></li>
     <li><a href="#torneos">Torneos</a></li>
+    <li><a href="#fixture">Fixture</a></li>
     <li><a href="#busco-pareja">Busco pareja</a></li>
     <li><a href="#comunidad">Comunidad</a></li>
     <li><a href="#contacto">Contacto</a></li>
@@ -785,6 +822,18 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 
 
 
+
+<!-- FIXTURE -->
+<section class="fixture-sec" id="fixture" style="display:none">
+  <div class="sec-eyebrow" style="margin-bottom:.7rem"><div class="sec-eyebrow-line" style="background:var(--oro)"></div><span style="color:var(--oro)">Competencia</span></div>
+  <div class="sec-title" style="color:#fff">Fixture del torneo</div>
+  <div class="sec-sub" style="color:rgba(255,255,255,.4);margin-bottom:1.25rem" id="fixture-subtitulo">Grupos y llave de playoffs</div>
+  <div style="margin-bottom:1.25rem" id="fixture-tabs"></div>
+  <div style="font-size:.7rem;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.75rem">Fase de grupos</div>
+  <div class="grupos-fixture" id="fixture-grupos"></div>
+  <div class="llave-wrap" id="fixture-llave"></div>
+</section>
+
 <!-- BUSCO PAREJA -->
 <section class="busco-pareja-sec" id="busco-pareja">
   <div style="max-width:700px;margin:0 auto">
@@ -1029,6 +1078,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <button class="atab" onclick="adminTab('abiertas',this)">Abiertas</button>
       <button class="atab" onclick="adminTab('partidos',this)">Partidos</button>
       <button class="atab" onclick="adminTab('torneos',this)">Torneos</button>
+      <button class="atab" onclick="adminTab('fixture',this)">Fixture</button>
     </div>
     <button class="logout" onclick="logout()">Salir ×</button>
   </div>
@@ -1068,6 +1118,11 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
         </div>
         <div id="adm-bp-content"></div>
       </div>
+    </div>
+    <div id="adm-fixture" style="display:none">
+      <div class="adm-title">Fixture de torneos</div>
+      <div class="adm-sub">Arrastrá las parejas a los grupos, cargá resultados y publicá el fixture.</div>
+      <div id="adm-fixture-content"></div>
     </div>
     <div id="adm-partidos" style="display:none">
       <div class="adm-title">Partidos organizados</div>
@@ -1352,7 +1407,7 @@ function selPago(ctx,tipo){
 function abrirAdmin(){document.getElementById('modal-login').classList.add('show');}
 function checkPass(){if(document.getElementById('pass').value===PASS){document.getElementById('pass-err').style.display='none';document.getElementById('pass').value='';cerrarModal('modal-login');S.loggedIn=true;document.getElementById('admin-panel').classList.add('show');renderAdmDias();renderAdmGrid(S.diaAdm);renderReviews();}else{document.getElementById('pass-err').style.display='block';}}
 function logout(){S.loggedIn=false;document.getElementById('admin-panel').classList.remove('show');renderReviews();}
-function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';document.getElementById('adm-torneos').style.display=tab==='torneos'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='abiertas')renderAdmAbiertas();if(tab==='partidos')setTimeout(renderAdmPartidos,50);if(tab==='torneos'){setTimeout(renderAdmTorneos,50);setTimeout(renderAdmBP,50);}}
+function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';document.getElementById('adm-fixture').style.display=tab==='fixture'?'block':'none';document.getElementById('adm-torneos').style.display=tab==='torneos'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='abiertas')renderAdmAbiertas();if(tab==='partidos')setTimeout(renderAdmPartidos,50);if(tab==='fixture')setTimeout(renderAdmFixture,50);if(tab==='torneos'){setTimeout(renderAdmTorneos,50);setTimeout(renderAdmBP,50);}}
 function renderAdmDias(){const c=document.getElementById('adm-dias');c.innerHTML='';DIAS.forEach(d=>{const b=document.createElement('div');b.className='dia-tab'+(d===S.diaAdm?' active':'')+(d==='sabado'||d==='domingo'?' we':'');b.textContent=DIAS_L[d];b.onclick=()=>{S.diaAdm=d;renderAdmDias();renderAdmGrid(d);};c.appendChild(b);});}
 function renderAdmGrid(d){const g=document.getElementById('adm-grid');g.innerHTML='';horas(d).forEach(h=>{const st=slotSt(d,h);const res=S.reservas.find(x=>x.dia===d&&x.hora===h&&x.estado!=='cancelada');const div=document.createElement('div');div.className='slot adm-'+st;const lbl=st==='libre'?'Disponible':st==='pendiente'?'⏳ '+(res?.nombre||''):(res?.nombre||'Ocupado');div.innerHTML=`<div class="slot-hora">${h}</div><div class="slot-lbl">${lbl}</div>`;div.onclick=()=>abrirAdmSlot(d,h,st,res);g.appendChild(div);});}
 function abrirAdmSlot(d,h,st,res){
@@ -2289,11 +2344,254 @@ async function adminEliminarBP(id){
   toast('Eliminado');
 }
 
+
+/* ═══════════════════════════════════════
+   FIXTURE DE TORNEOS
+   ═══════════════════════════════════════ */
+let FIX={torneoId:null,grupos:{A:[],B:[],C:[],D:[]},llave:[]};
+
+async function loadFixtures(){
+  try{
+    const rows=await sbFetch('torneos_fixture?select=*&publicado=eq.true');
+    if(!rows||!rows.length){document.getElementById('fixture').style.display='none';return;}
+    rows.forEach(f=>{const t=TORN.lista.find(x=>x.id===f.torneo_id);if(t)t.fixture=f;});
+    renderFixtureSec();
+  }catch(e){document.getElementById('fixture').style.display='none';}
+}
+
+function renderFixtureSec(){
+  const conFix=TORN.lista.filter(t=>t.fixture&&t.fixture.publicado);
+  const sec=document.getElementById('fixture');
+  if(!conFix.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  const tabs=document.getElementById('fixture-tabs');
+  if(conFix.length>1){
+    tabs.innerHTML=conFix.map((t,i)=>`<button class="fixture-tab${i===0?' active':''}" onclick="mostrarFixtureTorneo('${t.id}',this)">${t.nombre}</button>`).join('');
+  }else{tabs.innerHTML='';}
+  mostrarFixtureTorneo(conFix[0].id,null);
+}
+
+function mostrarFixtureTorneo(torneoId,btn){
+  if(btn){document.querySelectorAll('.fixture-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+  const t=TORN.lista.find(x=>x.id===torneoId);
+  if(!t||!t.fixture)return;
+  document.getElementById('fixture-subtitulo').textContent=t.nombre+(t.fecha?' · '+fmtFechaTorneo(t.fecha).full:'');
+  const f=t.fixture;
+  const grupos=f.grupos||{A:[],B:[],C:[],D:[]};
+  document.getElementById('fixture-grupos').innerHTML=['A','B','C','D'].map(g=>{
+    const parejas=grupos[g]||[];
+    return`<div class="grupo-fixture">
+      <div class="grupo-fixture-header"><span class="grupo-letra">${g}</span><span style="font-size:.7rem;color:rgba(255,255,255,.4)">${parejas.length} pareja${parejas.length!==1?'s':''}</span></div>
+      <div class="grupo-fixture-body">
+        ${parejas.length===0?'<div style="font-size:.75rem;color:rgba(255,255,255,.2);padding:.5rem;font-style:italic">Sin parejas</div>':
+          parejas.map((p,i)=>`<div class="fixture-pareja${i===0?' bye':''}">
+            <span class="fixture-pareja-num${i===0?' bye':''}">${['1°','2°','3°'][i]||i+1+'°'}</span>
+            <span>🎾 ${p}</span>
+            ${i===0?'<span style="font-size:.65rem;background:rgba(212,175,55,.2);border-radius:4px;padding:1px 5px;margin-left:auto">BYE</span>':''}
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  const llave=f.llave||[];
+  const llaveEl=document.getElementById('fixture-llave');
+  if(!llave.length){llaveEl.innerHTML='';return;}
+  llaveEl.innerHTML='<div class="llave-title">🏆 Llave de playoffs</div><div class="llave-grid">'+
+    llave.map((ronda,ri)=>`
+      <div class="llave-ronda">
+        <div class="llave-ronda-titulo">${ronda.nombre}</div>
+        ${ronda.info?`<div class="llave-ronda-info">${ronda.info}</div>`:''}
+        <div class="llave-ronda-partidos">
+          ${ronda.partidos.map(p=>{
+            const tbd1=!p.eq1||p.eq1.startsWith('G.');
+            const tbd2=!p.eq2||p.eq2.startsWith('G.');
+            const bye1=p.seed1&&p.seed1.includes('BYE');
+            const bye2=p.seed2&&p.seed2.includes('BYE');
+            const w1=p.ganador===0,w2=p.ganador===1;
+            const s1=p.score1!=null?p.score1:'';
+            const s2=p.score2!=null?p.score2:'';
+            return`<div class="llave-partido${ronda.nombre==='Final'?' final':''}">
+              <div class="llave-equipo ${w1?'ganador':tbd1?'tbd':bye1?'byep':''}">
+                <span class="llave-equipo-seed${bye1?' gold':''}">${p.seed1||''}</span>
+                <span class="llave-equipo-name">${p.eq1||'Por definir'}</span>
+                ${!tbd1&&s1!==''?`<span class="llave-equipo-score" style="color:${w1?'var(--oro)':'rgba(255,255,255,.3)'}">${s1}</span>`:''}
+              </div>
+              <div class="llave-equipo ${w2?'ganador':tbd2?'tbd':bye2?'byep':''}">
+                <span class="llave-equipo-seed${bye2?' gold':''}">${p.seed2||''}</span>
+                <span class="llave-equipo-name">${p.eq2||'Por definir'}</span>
+                ${!tbd2&&s2!==''?`<span class="llave-equipo-score" style="color:${w2?'var(--oro)':'rgba(255,255,255,.3)'}">${s2}</span>`:''}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+      ${ri<llave.length-1?'<div class="llave-connector"><div class="llave-connector-line"></div></div>':''}`
+    ).join('')+'</div>';
+}
+
+function generarLlave(){
+  const g=Object.fromEntries(['A','B','C','D'].map(k=>[k,FIX.grupos[k]||[]]));
+  const p=(grp,pos,lbl)=>g[grp][pos]||lbl;
+  return[
+    {nombre:'Octavos de final',info:'2° y 3° de cada grupo',partidos:[
+      {eq1:p('A',1,'2°A'),seed1:'2°A',eq2:p('D',2,'3°D'),seed2:'3°D',ganador:-1,score1:null,score2:null},
+      {eq1:p('B',1,'2°B'),seed1:'2°B',eq2:p('C',2,'3°C'),seed2:'3°C',ganador:-1,score1:null,score2:null},
+      {eq1:p('C',1,'2°C'),seed1:'2°C',eq2:p('B',2,'3°B'),seed2:'3°B',ganador:-1,score1:null,score2:null},
+      {eq1:p('D',1,'2°D'),seed1:'2°D',eq2:p('A',2,'3°A'),seed2:'3°A',ganador:-1,score1:null,score2:null},
+    ]},
+    {nombre:'Cuartos de final',info:'1° directo + G. octavos',partidos:[
+      {eq1:p('A',0,'1°A'),seed1:'1°A (BYE)',eq2:'G.Oct.1',seed2:'Oct.1',ganador:-1,score1:null,score2:null},
+      {eq1:p('B',0,'1°B'),seed1:'1°B (BYE)',eq2:'G.Oct.2',seed2:'Oct.2',ganador:-1,score1:null,score2:null},
+      {eq1:p('C',0,'1°C'),seed1:'1°C (BYE)',eq2:'G.Oct.3',seed2:'Oct.3',ganador:-1,score1:null,score2:null},
+      {eq1:p('D',0,'1°D'),seed1:'1°D (BYE)',eq2:'G.Oct.4',seed2:'Oct.4',ganador:-1,score1:null,score2:null},
+    ]},
+    {nombre:'Semifinales',partidos:[
+      {eq1:'G.Ctos.1',seed1:'C1',eq2:'G.Ctos.4',seed2:'C4',ganador:-1,score1:null,score2:null},
+      {eq1:'G.Ctos.2',seed1:'C2',eq2:'G.Ctos.3',seed2:'C3',ganador:-1,score1:null,score2:null},
+    ]},
+    {nombre:'Final',partidos:[
+      {eq1:'G.Semi.1',seed1:'SF1',eq2:'G.Semi.2',seed2:'SF2',ganador:-1,score1:null,score2:null},
+    ]},
+  ];
+}
+
+/* ── Admin fixture ── */
+function renderAdmFixture(){
+  const el=document.getElementById('adm-fixture-content');
+  if(!el)return;
+  if(!TORN.lista.length){el.innerHTML='<div class="empty">Creá un torneo primero desde el tab Torneos.</div>';return;}
+  el.innerHTML=`<div style="margin-bottom:1rem">
+    <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.5rem">Seleccioná el torneo</div>
+    <select id="fix-torn-sel" onchange="selFixtureTorneo(this.value)" style="border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.6rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none;width:100%;max-width:360px">
+      <option value="">— Elegí un torneo —</option>
+      ${TORN.lista.map(t=>`<option value="${t.id}">${t.nombre} · ${fmtFechaTorneo(t.fecha).full}</option>`).join('')}
+    </select>
+  </div><div id="fix-editor"></div>`;
+  if(FIX.torneoId){document.getElementById('fix-torn-sel').value=FIX.torneoId;selFixtureTorneo(FIX.torneoId);}
+}
+
+function selFixtureTorneo(id){
+  FIX.torneoId=id;
+  if(!id){document.getElementById('fix-editor').innerHTML='';return;}
+  const t=TORN.lista.find(x=>x.id===id);
+  if(!t)return;
+  const ex=t.fixture?.grupos||{A:[],B:[],C:[],D:[]};
+  FIX.grupos={A:[...(ex.A||[])],B:[...(ex.B||[])],C:[...(ex.C||[])],D:[...(ex.D||[])]};
+  FIX.llave=t.fixture?.llave||[];
+  renderFixtureEditor(t);
+}
+
+function renderFixtureEditor(t){
+  const el=document.getElementById('fix-editor');
+  if(!el)return;
+  const parejas=(t.parejas||[]).map(p=>p.j1nombre.split(' ')[0]+' & '+p.j2nombre.split(' ')[0]);
+  const asig=new Set([...FIX.grupos.A,...FIX.grupos.B,...FIX.grupos.C,...FIX.grupos.D]);
+  const sinAsig=parejas.filter(p=>!asig.has(p));
+  el.innerHTML=`
+    <div style="font-size:.7rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.5rem">Sin asignar</div>
+    <div id="fix-sin" style="display:flex;flex-wrap:wrap;gap:.35rem;min-height:36px;padding:.5rem;background:rgba(0,0,0,.03);border:1.5px dashed rgba(0,0,0,.12);border-radius:10px;margin-bottom:1rem">
+      ${sinAsig.map(p=>fichaFix(p,'sin')).join('')}
+      ${sinAsig.length===0?'<span style="font-size:.78rem;color:#bbb;font-style:italic">Todas asignadas ✓</span>':''}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem">
+      ${['A','B','C','D'].map(g=>`
+        <div>
+          <div style="font-size:.7rem;color:var(--oro-dark);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:.4rem">Grupo ${g}</div>
+          <div id="fix-g-${g}" data-g="${g}" style="min-height:56px;padding:.5rem;background:rgba(212,175,55,.04);border:1.5px dashed rgba(212,175,55,.25);border-radius:10px;display:flex;flex-wrap:wrap;gap:.35rem;align-content:flex-start">
+            ${(FIX.grupos[g]||[]).map(p=>fichaFix(p,g)).join('')}
+          </div>
+        </div>`).join('')}
+    </div>
+    ${FIX.llave.length>0?`<div style="border-top:1px solid rgba(0,0,0,.07);padding-top:1rem;margin-bottom:.75rem"><div style="font-size:.7rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.75rem">📊 Cargar resultados</div><div id="fix-resultados">${buildResultadosHTML()}</div></div>`:''}
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      <button class="mb pri" onclick="publicarFixture()" style="flex:1">📋 Publicar fixture</button>
+      ${t.fixture&&t.fixture.publicado?`<button class="mb dan" onclick="despublicarFixture()" style="flex:none;padding:.7rem 1rem">Despublicar</button>`:''}
+    </div>`;
+  setTimeout(()=>{
+    initDrop(document.getElementById('fix-sin'),'sin');
+    ['A','B','C','D'].forEach(g=>initDrop(document.getElementById('fix-g-'+g),g));
+  },30);
+}
+
+function fichaFix(nombre,grupo){
+  const safe=nombre.replace(/'/g,"\'").replace(/"/g,'&quot;');
+  return`<div draggable="true" style="display:inline-flex;align-items:center;gap:4px;background:var(--azul);color:var(--oro);border:1px solid rgba(212,175,55,.3);border-radius:100px;padding:.22rem .8rem;font-size:.75rem;font-weight:500;cursor:grab;user-select:none"
+    ondragstart="event.dataTransfer.setData('p','${safe}');event.dataTransfer.setData('f','${grupo}')">🎾 ${nombre}</div>`;
+}
+
+function initDrop(el,grupo){
+  if(!el)return;
+  el.ondragover=e=>{e.preventDefault();el.style.borderColor=grupo==='sin'?'var(--azul)':'var(--oro)';};
+  el.ondragleave=()=>{el.style.borderColor=grupo==='sin'?'rgba(0,0,0,.12)':'rgba(212,175,55,.25)';};
+  el.ondrop=e=>{
+    e.preventDefault();
+    el.style.borderColor=grupo==='sin'?'rgba(0,0,0,.12)':'rgba(212,175,55,.25)';
+    const pareja=e.dataTransfer.getData('p');
+    const from=e.dataTransfer.getData('f');
+    if(from===grupo)return;
+    if(from!=='sin')FIX.grupos[from]=(FIX.grupos[from]||[]).filter(x=>x!==pareja);
+    if(grupo!=='sin'&&!(FIX.grupos[grupo]||[]).includes(pareja)){FIX.grupos[grupo]=FIX.grupos[grupo]||[];FIX.grupos[grupo].push(pareja);}
+    const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixtureEditor(t);
+  };
+}
+
+function buildResultadosHTML(){
+  return FIX.llave.map((ronda,ri)=>`
+    <div style="margin-bottom:.85rem">
+      <div style="font-size:.68rem;color:var(--oro-dark);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:.4rem">${ronda.nombre}</div>
+      ${ronda.partidos.map((p,pi)=>{
+        const tbd=(!p.eq1||p.eq1.startsWith('G.'))&&(!p.eq2||p.eq2.startsWith('G.'));
+        if(tbd)return`<div style="font-size:.75rem;color:#bbb;padding:.25rem 0;font-style:italic">${p.eq1||'?'} vs ${p.eq2||'?'} · Por definir</div>`;
+        return`<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;flex-wrap:wrap">
+          <span style="font-size:.78rem;color:var(--azul);flex:1;min-width:80px">${p.eq1}</span>
+          <input type="number" min="0" max="99" value="${p.score1??''}" placeholder="—" onchange="guardarScore(${ri},${pi},0,this.value)"
+            style="width:40px;text-align:center;border:1px solid rgba(0,0,0,.15);border-radius:7px;padding:4px;font-size:.9rem;font-family:'Cormorant Garamond',serif;outline:none">
+          <span style="font-size:.75rem;color:#bbb">vs</span>
+          <input type="number" min="0" max="99" value="${p.score2??''}" placeholder="—" onchange="guardarScore(${ri},${pi},1,this.value)"
+            style="width:40px;text-align:center;border:1px solid rgba(0,0,0,.15);border-radius:7px;padding:4px;font-size:.9rem;font-family:'Cormorant Garamond',serif;outline:none">
+          <span style="font-size:.78rem;color:var(--azul);flex:1;min-width:80px;text-align:right">${p.eq2}</span>
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+}
+
+async function guardarScore(ri,pi,eq,valor){
+  const t=TORN.lista.find(x=>x.id===FIX.torneoId);
+  if(!t||!t.fixture)return;
+  const p=t.fixture.llave[ri].partidos[pi];
+  if(eq===0)p.score1=parseInt(valor)||0;else p.score2=parseInt(valor)||0;
+  if(p.score1!=null&&p.score2!=null)p.ganador=p.score1>p.score2?0:p.score2>p.score1?1:-1;
+  FIX.llave=t.fixture.llave;
+  await sbFetch('torneos_fixture?torneo_id=eq.'+FIX.torneoId,'PATCH',{llave:t.fixture.llave});
+  renderFixtureSec();
+  toast('Resultado guardado ✓');
+}
+
+async function publicarFixture(){
+  const t=TORN.lista.find(x=>x.id===FIX.torneoId);
+  if(!t){toast('Elegí un torneo');return;}
+  const llave=generarLlave();
+  const data={id:'fix_'+FIX.torneoId,torneo_id:FIX.torneoId,grupos:FIX.grupos,llave,publicado:true};
+  await sbFetch('torneos_fixture?torneo_id=eq.'+FIX.torneoId,'DELETE');
+  await sbFetch('torneos_fixture','POST',data);
+  t.fixture=data;FIX.llave=llave;
+  renderFixtureSec();renderFixtureEditor(t);
+  toast('Fixture publicado ✓');
+}
+
+async function despublicarFixture(){
+  const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(!t)return;
+  await sbFetch('torneos_fixture?torneo_id=eq.'+FIX.torneoId,'DELETE');
+  t.fixture=null;FIX.llave=[];
+  renderFixtureSec();renderFixtureEditor(t);
+  toast('Fixture despublicado');
+}
+
 async function init(){
   await load();
   await loadPartidos();
   await loadTorneos();
   await loadBP();
+  await loadFixtures();
   checkResetAbiertas();
   renderAlumnoDias();
   renderAlumnoGrid('lunes');
