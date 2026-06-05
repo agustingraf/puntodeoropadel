@@ -422,7 +422,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 .bp-wa{display:inline-flex;align-items:center;gap:5px;background:#25D366;color:#fff;border:none;border-radius:100px;padding:.4rem .9rem;font-size:.75rem;font-weight:500;cursor:pointer;text-decoration:none;font-family:'DM Sans',sans-serif}
 
 
-/* ── FIXTURE TORNEO ── */
+/* ── FIXTURE ── */
 .fixture-sec{background:var(--azul);padding:5rem 2rem}
 .fixture-tab{padding:.42rem 1.1rem;border-radius:100px;border:1px solid rgba(255,255,255,.15);background:transparent;font-size:.8rem;font-weight:500;cursor:pointer;transition:all .2s;color:rgba(255,255,255,.5);font-family:'DM Sans',sans-serif;margin-right:.4rem;margin-bottom:.4rem}
 .fixture-tab.active{background:var(--oro);color:var(--azul);border-color:var(--oro)}
@@ -434,12 +434,8 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 .grupo-tabla th{padding:.35rem .6rem;color:rgba(255,255,255,.3);font-weight:600;font-size:.62rem;text-transform:uppercase;letter-spacing:.5px;text-align:center;border-bottom:1px solid rgba(255,255,255,.08)}
 .grupo-tabla th:first-child{text-align:left}
 .grupo-tabla td{padding:.42rem .6rem;color:rgba(255,255,255,.7);border-bottom:1px solid rgba(255,255,255,.05);text-align:center}
-.grupo-tabla td:first-child{text-align:left;font-weight:500}
+.grupo-tabla td:first-child{text-align:left}
 .grupo-tabla tr:last-child td{border-bottom:none}
-.grupo-tabla tr.pos-1 td{color:#fff}
-.grupo-tabla tr.pos-1 td:first-child::before{content:'🥇 ';font-size:.7rem}
-.grupo-tabla tr.pos-2 td:first-child::before{content:'🥈 ';font-size:.7rem}
-.grupo-tabla tr.pos-3 td:first-child::before{content:'🥉 ';font-size:.7rem}
 .grupo-partidos{padding:.5rem .75rem;border-top:1px solid rgba(255,255,255,.06)}
 .gp-row{display:flex;align-items:center;gap:.4rem;padding:.3rem 0;font-size:.75rem;color:rgba(255,255,255,.6)}
 .gp-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -465,6 +461,15 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 .llave-equipo-score{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;min-width:18px;text-align:center;flex-shrink:0}
 .llave-connector{display:flex;flex-direction:column;justify-content:space-around;padding:0 2px;min-width:12px;opacity:.3}
 .llave-connector-line{width:100%;height:1px;background:rgba(255,255,255,.5)}
+/* Admin fix */
+.fix-chip{display:inline-flex;align-items:center;gap:4px;background:var(--azul);color:var(--oro);border:1px solid rgba(212,175,55,.35);border-radius:100px;padding:.22rem .8rem;font-size:.75rem;font-weight:500;cursor:grab;user-select:none;margin:.2rem}
+.fix-chip:hover{background:#1a3a5c}
+.fix-chip.dragging{opacity:.35}
+.fix-drop{min-height:48px;border-radius:10px;border:1.5px dashed rgba(0,0,0,.15);padding:.4rem;transition:all .18s;display:flex;flex-wrap:wrap;align-content:flex-start;gap:.2rem}
+.fix-drop.grp{border-color:rgba(212,175,55,.3);background:rgba(212,175,55,.03)}
+.fix-drop.drag-over{border-color:var(--oro)!important;background:rgba(212,175,55,.08)!important}
+.fix-drop.llave-slot{min-height:32px;background:rgba(13,34,56,.04)}
+.fix-drop.llave-slot.drag-over{border-color:var(--azul);background:rgba(13,34,56,.1)}
 
 @media(max-width:640px){
   .nav-links{display:none}
@@ -831,7 +836,6 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 
 
 
-
 <!-- FIXTURE -->
 <section class="fixture-sec" id="fixture" style="display:none">
   <div class="sec-eyebrow" style="margin-bottom:.7rem"><div class="sec-eyebrow-line" style="background:var(--oro)"></div><span style="color:var(--oro)">Competencia</span></div>
@@ -1130,7 +1134,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     </div>
     <div id="adm-fixture" style="display:none">
       <div class="adm-title">Fixture</div>
-      <div class="adm-sub">Armá grupos, cargá resultados y publicá la llave.</div>
+      <div class="adm-sub">Arrastrá parejas a grupos, cargá resultados y armá la llave.</div>
       <div id="adm-fixture-content"></div>
     </div>
     <div id="adm-partidos" style="display:none">
@@ -2355,10 +2359,14 @@ async function adminEliminarBP(id){
 
 
 /* ═══════════════════════════════════════
-   FIXTURE — grupos con tabla + llave manual
+   FIXTURE COMPLETO
    ═══════════════════════════════════════ */
-let FIX={torneoId:null,grupos:{A:[],B:[],C:[],D:[]},resultadosGrupo:{},llave:[]};
-// resultadosGrupo[g][i][j] = {s1,s2} resultado de pareja i vs pareja j en grupo g
+let FIX={
+  torneoId:null,
+  grupos:{A:[],B:[],C:[],D:[]},   // [nombrePareja, ...]
+  resultadosGrupo:{},              // {A:{0:{1:{s1,s2},...},...},...}
+  llave:[]                         // [{nombre, partidos:[{eq1,eq2,seed1,seed2,score1,score2,ganador}]}]
+};
 
 /* ── Supabase ── */
 async function loadFixtures(){
@@ -2369,23 +2377,20 @@ async function loadFixtures(){
   }catch(e){document.getElementById('fixture').style.display='none';}
 }
 
-/* ── LÓGICA DE TABLA ── */
-function calcTablaGrupo(parejas, resultados){
-  // resultados[i][j] = {s1,s2} → pareja i anotó s1, pareja j anotó s2
-  const stats=parejas.map((_,i)=>({idx:i,v:0,d:0,gf:0,gc:0}));
+/* ── Cálculo tabla de grupo ── */
+function calcTabla(parejas,res){
+  const s=parejas.map((_,i)=>({idx:i,v:0,d:0,gf:0,gc:0}));
   for(let i=0;i<parejas.length;i++){
     for(let j=i+1;j<parejas.length;j++){
-      const r=resultados?.[i]?.[j];
+      const r=res?.[i]?.[j];
       if(!r||r.s1==null||r.s2==null)continue;
-      const s1=parseInt(r.s1),s2=parseInt(r.s2);
-      if(isNaN(s1)||isNaN(s2))continue;
-      stats[i].gf+=s1;stats[i].gc+=s2;
-      stats[j].gf+=s2;stats[j].gc+=s1;
-      if(s1>s2){stats[i].v++;stats[j].d++;}
-      else if(s2>s1){stats[j].v++;stats[i].d++;}
+      const a=parseInt(r.s1),b=parseInt(r.s2);
+      if(isNaN(a)||isNaN(b))continue;
+      s[i].gf+=a;s[i].gc+=b;s[j].gf+=b;s[j].gc+=a;
+      if(a>b){s[i].v++;s[j].d++;}else if(b>a){s[j].v++;s[i].d++;}
     }
   }
-  return stats.sort((a,b)=>b.v-a.v||(b.gf-b.gc)-(a.gf-a.gc)||(b.gf-a.gf));
+  return s.sort((a,b)=>b.v-a.v||(b.gf-b.gc)-(a.gf-a.gc));
 }
 
 /* ── Vista pública ── */
@@ -2410,39 +2415,29 @@ function mostrarFix(tid,btn){
   document.getElementById('fixture-grupos').innerHTML=['A','B','C','D'].map(g=>{
     const ps=grupos[g]||[];
     if(!ps.length)return`<div class="grupo-fixture"><div class="grupo-fixture-header"><span class="grupo-letra">${g}</span><span style="font-size:.7rem;color:rgba(255,255,255,.4)">Sin parejas</span></div></div>`;
-    const tabla=calcTablaGrupo(ps,res[g]||{});
-
-    // Tabla de posiciones
+    const tabla=calcTabla(ps,res[g]||{});
+    const medals=['🥇','🥈','🥉'];
     const tablaHTML=`<table class="grupo-tabla">
       <thead><tr><th>Pareja</th><th>V</th><th>D</th><th>Dif</th></tr></thead>
-      <tbody>${tabla.map((s,pos)=>`<tr class="pos-${pos+1}">
-        <td>${ps[s.idx]}</td>
-        <td style="color:${s.v>0?'#4ade80':'rgba(255,255,255,.4)'}">${s.v}</td>
-        <td style="color:${s.d>0?'rgba(255,100,100,.7)':'rgba(255,255,255,.4)'}">${s.d}</td>
-        <td style="color:${s.gf-s.gc>0?'var(--oro)':s.gf-s.gc<0?'rgba(255,100,100,.7)':'rgba(255,255,255,.4)'}">${s.gf-s.gc>0?'+':''}${s.gf-s.gc}</td>
-      </tr>`).join('')}</tbody>
-    </table>`;
-
-    // Partidos del grupo
+      <tbody>${tabla.map((s,pos)=>`<tr>
+        <td style="color:${pos===0?'#fff':'rgba(255,255,255,.7)'};font-weight:${pos===0?600:400}">${medals[pos]||''} ${ps[s.idx]}</td>
+        <td style="color:${s.v>0?'#4ade80':'rgba(255,255,255,.35)'}">${s.v}</td>
+        <td style="color:${s.d>0?'rgba(255,100,100,.7)':'rgba(255,255,255,.35)'}">${s.d}</td>
+        <td style="color:${s.gf-s.gc>0?'var(--oro)':s.gf-s.gc<0?'rgba(255,100,100,.7)':'rgba(255,255,255,.35)'}">${s.gf-s.gc>0?'+':''}${s.gf-s.gc}</td>
+      </tr>`).join('')}</tbody></table>`;
     const partidos=[];
-    for(let i=0;i<ps.length;i++){
-      for(let j=i+1;j<ps.length;j++){
-        const r=res[g]?.[i]?.[j];
-        const s1=r?.s1!=null?r.s1:'—';
-        const s2=r?.s2!=null?r.s2:'—';
-        const jugado=r?.s1!=null;
-        const w1=jugado&&parseInt(r.s1)>parseInt(r.s2);
-        const w2=jugado&&parseInt(r.s2)>parseInt(r.s1);
-        partidos.push(`<div class="gp-row">
-          <span class="gp-name" style="color:${w1?'#fff':'rgba(255,255,255,.6)'};font-weight:${w1?'600':'400'}">${ps[i]}</span>
-          <span class="gp-score${w1?' win':jugado?' loss':''}">${s1}</span>
-          <span style="font-size:.65rem;color:rgba(255,255,255,.2)">vs</span>
-          <span class="gp-score${w2?' win':jugado?' loss':''}">${s2}</span>
-          <span class="gp-name" style="text-align:right;color:${w2?'#fff':'rgba(255,255,255,.6)'};font-weight:${w2?'600':'400'}">${ps[j]}</span>
-        </div>`);
-      }
-    }
-
+    for(let i=0;i<ps.length;i++){for(let j=i+1;j<ps.length;j++){
+      const r=res[g]?.[i]?.[j];
+      const s1=r?.s1!=null?r.s1:'—',s2=r?.s2!=null?r.s2:'—';
+      const w1=r&&parseInt(r.s1)>parseInt(r.s2),w2=r&&parseInt(r.s2)>parseInt(r.s1);
+      partidos.push(`<div class="gp-row">
+        <span class="gp-name" style="font-weight:${w1?600:400};color:${w1?'#fff':'rgba(255,255,255,.6)'}">${ps[i]}</span>
+        <span class="gp-score${w1?' win':r?' loss':''}">${s1}</span>
+        <span style="font-size:.62rem;color:rgba(255,255,255,.2)">vs</span>
+        <span class="gp-score${w2?' win':r?' loss':''}">${s2}</span>
+        <span class="gp-name" style="text-align:right;font-weight:${w2?600:400};color:${w2?'#fff':'rgba(255,255,255,.6)'}">${ps[j]}</span>
+      </div>`);
+    }}
     return`<div class="grupo-fixture">
       <div class="grupo-fixture-header"><span class="grupo-letra">${g}</span><span style="font-size:.7rem;color:rgba(255,255,255,.4)">${ps.length} parejas</span></div>
       <div style="padding:.5rem">${tablaHTML}</div>
@@ -2450,22 +2445,19 @@ function mostrarFix(tid,btn){
     </div>`;
   }).join('');
 
-  // Llave playoffs
   const llave=f.llave||[];
-  const el=document.getElementById('fixture-llave');
-  if(!llave.length){el.innerHTML='';return;}
-  el.innerHTML='<div class="llave-title">🏆 Llave de playoffs</div><div class="llave-grid">'+
+  const llEl=document.getElementById('fixture-llave');
+  if(!llave.length){llEl.innerHTML='';return;}
+  llEl.innerHTML='<div class="llave-title">🏆 Llave de playoffs</div><div class="llave-grid">'+
     llave.map((ronda,ri)=>`
       <div class="llave-ronda">
         <div class="llave-ronda-titulo">${ronda.nombre}</div>
         ${ronda.info?`<div class="llave-ronda-info">${ronda.info}</div>`:''}
         <div class="llave-ronda-partidos">
           ${ronda.partidos.map(p=>{
-            const tbd1=!p.eq1||p.eq1.trim()==='';
-            const tbd2=!p.eq2||p.eq2.trim()==='';
+            const tbd1=!p.eq1||!p.eq1.trim(),tbd2=!p.eq2||!p.eq2.trim();
             const w1=p.ganador===0,w2=p.ganador===1;
-            const s1=p.score1!=null&&p.score1!==''?p.score1:'';
-            const s2=p.score2!=null&&p.score2!==''?p.score2:'';
+            const s1=p.score1!=null&&p.score1!==''?p.score1:'',s2=p.score2!=null&&p.score2!==''?p.score2:'';
             return`<div class="llave-partido${ronda.nombre==='Final'?' final':''}">
               <div class="llave-equipo ${w1?'ganador':tbd1?'tbd':''}">
                 ${p.seed1?`<span class="llave-equipo-seed${p.seed1.includes('BYE')?' gold':''}">${p.seed1}</span>`:''}
@@ -2485,7 +2477,7 @@ function mostrarFix(tid,btn){
     ).join('')+'</div>';
 }
 
-/* ═══════════ ADMIN FIXTURE ═══════════ */
+/* ═══════════ ADMIN ═══════════ */
 function renderAdmFixture(){
   const el=document.getElementById('adm-fixture-content');if(!el)return;
   if(!TORN.lista.length){el.innerHTML='<div class="empty">Creá un torneo primero.</div>';return;}
@@ -2510,190 +2502,262 @@ function selFix(id){
   renderFixEd(t);
 }
 
+function getParejasTorneo(t){
+  return (t.parejas||[]).map(p=>p.j1nombre.split(' ')[0]+' & '+p.j2nombre.split(' ')[0]);
+}
+
+function getParejasAsignadas(){
+  return new Set([...FIX.grupos.A,...FIX.grupos.B,...FIX.grupos.C,...FIX.grupos.D]);
+}
+
 function renderFixEd(t){
   const el=document.getElementById('fix-ed');if(!el)return;
   const pub=t.fixture&&t.fixture.publicado;
+  const todasParejas=getParejasTorneo(t);
+  const asignadas=getParejasAsignadas();
+  const sinAsignar=todasParejas.filter(p=>!asignadas.has(p));
 
-  // ── Grupos ──
-  const gruposHTML=['A','B','C','D'].map(g=>`
-    <div style="margin-bottom:.85rem">
-      <div style="font-size:.7rem;color:var(--oro-dark);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:.4rem">Grupo ${g}</div>
-      <div id="fix-grp-${g}" style="background:rgba(212,175,55,.04);border:1.5px dashed rgba(212,175,55,.25);border-radius:10px;padding:.5rem;min-height:44px">
-        ${(FIX.grupos[g]||[]).map((p,i)=>fichaGrp(p,g,i)).join('')}
-      </div>
-      <div style="display:flex;gap:.4rem;margin-top:.4rem">
-        <input type="text" placeholder="Nombre pareja" id="fix-inp-${g}"
-          style="flex:1;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.45rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
-        <button onclick="addParGrp('${g}')" class="adm-add-btn" style="padding:.45rem .9rem;font-size:.78rem">+ Agregar</button>
-      </div>
-    </div>`).join('');
+  // Ganadores disponibles de la llave (para arrastrar a siguiente ronda)
+  const ganadoresLlave=[];
+  FIX.llave.forEach((ronda,ri)=>{
+    ronda.partidos.forEach((p,pi)=>{
+      if(p.ganador===0&&p.eq1)ganadoresLlave.push({nombre:p.eq1,de:`Ronda ${ri+1} P${pi+1}`});
+      if(p.ganador===1&&p.eq2)ganadoresLlave.push({nombre:p.eq2,de:`Ronda ${ri+1} P${pi+1}`});
+    });
+  });
 
-  // ── Resultados de grupos ──
-  const resGruposHTML=['A','B','C','D'].map(g=>{
-    const ps=FIX.grupos[g]||[];
-    if(ps.length<2)return`<div style="font-size:.78rem;color:#bbb;margin-bottom:.75rem">Grupo ${g}: agregá parejas primero.</div>`;
-    const partidos=[];
-    for(let i=0;i<ps.length;i++){
-      for(let j=i+1;j<ps.length;j++){
+  el.innerHTML=`
+  <!-- POOL DE PAREJAS -->
+  <div style="margin-bottom:1.25rem">
+    <div style="font-size:.7rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.5rem">Parejas inscriptas — arrastrá a un grupo</div>
+    <div id="fix-pool" class="fix-drop" style="background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.12);min-height:44px">
+      ${sinAsignar.map(p=>chip(p,'pool')).join('')}
+      ${sinAsignar.length===0?'<span style="font-size:.78rem;color:#bbb;font-style:italic;padding:.3rem">Todas asignadas ✓</span>':''}
+    </div>
+  </div>
+
+  <!-- GRUPOS -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem">
+    ${['A','B','C','D'].map(g=>`
+      <div>
+        <div style="font-size:.7rem;color:var(--oro-dark);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:.4rem">Grupo ${g}</div>
+        <div id="fix-grp-${g}" class="fix-drop grp">
+          ${(FIX.grupos[g]||[]).map((p,i)=>chipGrp(p,g,i)).join('')}
+        </div>
+      </div>`).join('')}
+  </div>
+
+  <!-- RESULTADOS GRUPOS -->
+  <div style="border-top:1px solid rgba(0,0,0,.08);padding-top:1.1rem;margin-bottom:1.1rem">
+    <div style="font-size:.7rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.75rem">Resultados fase de grupos</div>
+    ${['A','B','C','D'].map(g=>{
+      const ps=FIX.grupos[g]||[];
+      if(ps.length<2)return`<div style="font-size:.78rem;color:#bbb;margin-bottom:.5rem">Grupo ${g}: sin parejas suficientes.</div>`;
+      const partidos=[];
+      for(let i=0;i<ps.length;i++){for(let j=i+1;j<ps.length;j++){
         const r=FIX.resultadosGrupo[g]?.[i]?.[j]||{};
-        const tabla=calcTablaGrupo(ps,FIX.resultadosGrupo[g]||{});
-        partidos.push(`<div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.4rem;flex-wrap:wrap">
+        partidos.push(`<div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.38rem;flex-wrap:wrap">
           <span style="font-size:.78rem;color:var(--azul);flex:1;min-width:80px;font-weight:500">${ps[i]}</span>
           <input type="number" min="0" max="99" value="${r.s1!=null?r.s1:''}" placeholder="—"
-            onchange="setResGrupo('${g}',${i},${j},0,this.value)"
+            onchange="setRG('${g}',${i},${j},0,this.value)"
             style="width:38px;text-align:center;border:1px solid rgba(0,0,0,.12);border-radius:7px;padding:.3rem;font-size:.9rem;font-family:'Cormorant Garamond',serif;outline:none">
-          <span style="font-size:.72rem;color:#bbb">vs</span>
+          <span style="font-size:.7rem;color:#bbb">vs</span>
           <input type="number" min="0" max="99" value="${r.s2!=null?r.s2:''}" placeholder="—"
-            onchange="setResGrupo('${g}',${i},${j},1,this.value)"
+            onchange="setRG('${g}',${i},${j},1,this.value)"
             style="width:38px;text-align:center;border:1px solid rgba(0,0,0,.12);border-radius:7px;padding:.3rem;font-size:.9rem;font-family:'Cormorant Garamond',serif;outline:none">
           <span style="font-size:.78rem;color:var(--azul);flex:1;min-width:80px;text-align:right;font-weight:500">${ps[j]}</span>
         </div>`);
-      }
-    }
-    // Mini tabla
-    const tabla=calcTablaGrupo(ps,FIX.resultadosGrupo[g]||{});
-    const tablaMin=`<div style="font-size:.68rem;color:var(--gris);margin-bottom:.3rem;margin-top:.5rem">Clasificación actual:</div>
-      ${tabla.map((s,pos)=>`<div style="font-size:.75rem;color:var(--azul);padding:.2rem 0;display:flex;gap:.5rem">
-        <span>${pos===0?'🥇':pos===1?'🥈':'🥉'}</span>
-        <span style="flex:1;font-weight:${pos===0?'600':'400'}">${ps[s.idx]}</span>
-        <span style="color:var(--gris)">${s.v}V ${s.d}D Dif:${s.gf-s.gc>0?'+':''}${s.gf-s.gc}</span>
-      </div>`).join('')}`;
-    return`<div style="margin-bottom:1rem;padding:1rem;background:var(--blanco);border:1px solid rgba(0,0,0,.07);border-radius:12px">
-      <div style="font-size:.7rem;color:var(--oro-dark);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:.65rem">Grupo ${g} · Resultados</div>
-      ${partidos.join('')}${tablaMin}
-    </div>`;
-  }).join('');
+      }}
+      const tabla=calcTabla(ps,FIX.resultadosGrupo[g]||{});
+      const medals=['🥇','🥈','🥉'];
+      return`<div style="margin-bottom:.85rem;padding:.85rem 1rem;background:var(--blanco);border:1px solid rgba(0,0,0,.07);border-radius:12px">
+        <div style="font-size:.68rem;color:var(--oro-dark);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:.6rem">Grupo ${g}</div>
+        ${partidos.join('')}
+        <div style="margin-top:.6rem;padding-top:.5rem;border-top:1px solid rgba(0,0,0,.06)">
+          ${tabla.map((s,pos)=>`<div style="font-size:.75rem;color:var(--azul);display:flex;gap:.5rem;padding:.18rem 0">
+            <span>${medals[pos]||pos+1+'°'}</span>
+            <span style="flex:1;font-weight:${pos===0?600:400}">${ps[s.idx]}</span>
+            <span style="color:var(--gris)">${s.v}V ${s.d}D Dif:${s.gf-s.gc>0?'+':''}${s.gf-s.gc}</span>
+          </div>`).join('')}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>
 
-  // ── Llave ──
-  const llaveHTML=buildLlaveEditorHTML();
+  <!-- LLAVE -->
+  <div style="border-top:1px solid rgba(0,0,0,.08);padding-top:1.1rem;margin-bottom:1.1rem">
+    <div style="font-size:.7rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.75rem">🏆 Llave de playoffs</div>
+    
+    ${ganadoresLlave.length>0?`<div style="margin-bottom:.85rem">
+      <div style="font-size:.68rem;color:var(--gris);margin-bottom:.4rem">Ganadores disponibles — arrastrá al partido siguiente</div>
+      <div id="fix-ganadores" class="fix-drop" style="background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.12)">
+        ${ganadoresLlave.map(g=>chipGanador(g.nombre,g.de)).join('')}
+      </div>
+    </div>`:''}
 
-  el.innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem">${gruposHTML}</div>
-    <div style="border-top:1px solid rgba(0,0,0,.08);padding-top:1.25rem;margin-bottom:1rem">
-      <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.85rem">Resultados fase de grupos</div>
-      <div>${resGruposHTML}</div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem">
+      <button onclick="addRondaP('Octavos de final',4)" class="rbtn mov">+ Octavos (4)</button>
+      <button onclick="addRondaP('Cuartos de final',4)" class="rbtn mov">+ Cuartos (4)</button>
+      <button onclick="addRondaP('Semifinales',2)" class="rbtn mov">+ Semis (2)</button>
+      <button onclick="addRondaP('Final',1)" class="rbtn mov">+ Final</button>
+      <button onclick="addRondaP('Nueva ronda',1)" class="rbtn mov">+ Ronda</button>
     </div>
-    <div style="border-top:1px solid rgba(0,0,0,.08);padding-top:1.25rem;margin-bottom:1.25rem">
-      <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.85rem">🏆 Llave de playoffs</div>
-      <div id="fix-llave-ed">${llaveHTML}</div>
-    </div>
-    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-      <button class="mb pri" onclick="guardarYPublicar()" style="flex:1">📋 Guardar y publicar</button>
-      ${pub?`<button class="mb dan" onclick="despublicar()" style="flex:none;padding:.7rem 1rem">Despublicar</button>`:''}
-      <button class="mb sec" onclick="selFix(FIX.torneoId)" style="flex:none;padding:.7rem 1rem">↺ Actualizar</button>
-    </div>`;
+    <div id="fix-llave-ed">${buildLlaveEd()}</div>
+  </div>
 
-  // Drop zones
-  setTimeout(()=>{
-    ['A','B','C','D'].forEach(g=>{
-      const z=document.getElementById('fix-grp-'+g);if(!z)return;
-      z.ondragover=e=>{e.preventDefault();z.style.borderColor='var(--oro)';};
-      z.ondragleave=()=>z.style.borderColor='rgba(212,175,55,.25)';
-      z.ondrop=e=>{
-        e.preventDefault();z.style.borderColor='rgba(212,175,55,.25)';
-        const p=e.dataTransfer.getData('par'),from=e.dataTransfer.getData('grp');
-        if(from===g)return;
-        if(from)FIX.grupos[from]=(FIX.grupos[from]||[]).filter(x=>x!==p);
-        if(!(FIX.grupos[g]||[]).includes(p)){FIX.grupos[g]=FIX.grupos[g]||[];FIX.grupos[g].push(p);}
-        const t2=TORN.lista.find(x=>x.id===FIX.torneoId);if(t2)renderFixEd(t2);
-      };
-    });
-  },40);
+  <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+    <button class="mb pri" onclick="guardarYPublicar()" style="flex:1">📋 Guardar y publicar</button>
+    ${pub?`<button class="mb dan" onclick="despublicar()" style="flex:none;padding:.7rem 1rem">Despublicar</button>`:''}
+    <button class="mb sec" onclick="selFix(FIX.torneoId)" style="flex:none;padding:.7rem 1rem">↺ Refrescar</button>
+  </div>`;
+
+  setTimeout(()=>initDrops(t),40);
 }
 
-function fichaGrp(nombre,grp,idx){
+function chip(nombre,origen){
   const safe=nombre.replace(/'/g,"\\'");
-  return`<div draggable="true" style="display:flex;align-items:center;gap:6px;padding:.38rem .6rem;border-radius:7px;font-size:.79rem;background:rgba(13,34,56,.06);color:var(--azul);margin-bottom:.25rem;cursor:grab"
-    ondragstart="event.dataTransfer.setData('par','${safe}');event.dataTransfer.setData('grp','${grp}')">
-    <span style="flex:1">🎾 ${nombre}</span>
-    <button onclick="quitarDelGrp('${grp}',${idx})" style="background:none;border:none;color:#bbb;cursor:pointer;font-size:12px">✕</button>
+  return`<div class="fix-chip" draggable="true"
+    ondragstart="event.dataTransfer.setData('par','${safe}');event.dataTransfer.setData('origen','${origen}')">🎾 ${nombre}</div>`;
+}
+function chipGrp(nombre,grp,idx){
+  const safe=nombre.replace(/'/g,"\\'");
+  const pos=['1°','2°','3°'][idx]||idx+1+'°';
+  return`<div class="fix-chip" draggable="true" style="font-size:.72rem"
+    ondragstart="event.dataTransfer.setData('par','${safe}');event.dataTransfer.setData('origen','grp_${grp}')">
+    <span style="opacity:.5;font-size:.65rem">${pos}</span> ${nombre}
+    <button onclick="quitarGrp('${grp}',${idx})" style="background:none;border:none;color:rgba(212,175,55,.4);cursor:pointer;font-size:11px;padding:0 0 0 3px">✕</button>
   </div>`;
 }
-
-function addParGrp(g){
-  const inp=document.getElementById('fix-inp-'+g);
-  const v=inp.value.trim();if(!v)return;
-  FIX.grupos[g]=FIX.grupos[g]||[];
-  if(!FIX.grupos[g].includes(v))FIX.grupos[g].push(v);
-  inp.value='';
-  const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);
+function chipGanador(nombre,de){
+  const safe=nombre.replace(/'/g,"\\'");
+  return`<div class="fix-chip" draggable="true" style="background:#2d8a4e;border-color:rgba(45,138,78,.5);color:#fff"
+    ondragstart="event.dataTransfer.setData('par','${safe}');event.dataTransfer.setData('origen','ganador')">🏆 ${nombre}</div>`;
 }
 
-function quitarDelGrp(g,idx){
+function initDrops(t){
+  // Pool (recibe devueltos)
+  const pool=document.getElementById('fix-pool');
+  if(pool){
+    pool.ondragover=e=>{e.preventDefault();pool.classList.add('drag-over');};
+    pool.ondragleave=()=>pool.classList.remove('drag-over');
+    pool.ondrop=e=>{
+      e.preventDefault();pool.classList.remove('drag-over');
+      const p=e.dataTransfer.getData('par'),or=e.dataTransfer.getData('origen');
+      if(or&&or.startsWith('grp_')){
+        const g=or.split('_')[1];
+        FIX.grupos[g]=(FIX.grupos[g]||[]).filter(x=>x!==p);
+        renderFixEd(t);
+      }
+    };
+  }
+  // Grupos
+  ['A','B','C','D'].forEach(g=>{
+    const z=document.getElementById('fix-grp-'+g);if(!z)return;
+    z.ondragover=e=>{e.preventDefault();z.classList.add('drag-over');};
+    z.ondragleave=()=>z.classList.remove('drag-over');
+    z.ondrop=e=>{
+      e.preventDefault();z.classList.remove('drag-over');
+      const p=e.dataTransfer.getData('par'),or=e.dataTransfer.getData('origen');
+      // Quitar del origen
+      if(or==='grp_'+g)return;
+      if(or&&or.startsWith('grp_')){const og=or.split('_')[1];FIX.grupos[og]=(FIX.grupos[og]||[]).filter(x=>x!==p);}
+      // Agregar al grupo
+      if(!(FIX.grupos[g]||[]).includes(p)){FIX.grupos[g]=FIX.grupos[g]||[];FIX.grupos[g].push(p);}
+      renderFixEd(t);
+    };
+  });
+  // Slots de llave
+  document.querySelectorAll('.fix-llave-slot').forEach(slot=>{
+    slot.ondragover=e=>{e.preventDefault();slot.classList.add('drag-over');};
+    slot.ondragleave=()=>slot.classList.remove('drag-over');
+    slot.ondrop=e=>{
+      e.preventDefault();slot.classList.remove('drag-over');
+      const p=e.dataTransfer.getData('par');
+      const ri=parseInt(slot.dataset.ri),pi=parseInt(slot.dataset.pi),eq=parseInt(slot.dataset.eq);
+      if(isNaN(ri)||isNaN(pi)||isNaN(eq))return;
+      if(eq===0)FIX.llave[ri].partidos[pi].eq1=p;
+      else FIX.llave[ri].partidos[pi].eq2=p;
+      renderFixEd(t);
+    };
+  });
+}
+
+function quitarGrp(g,idx){
   FIX.grupos[g].splice(idx,1);
   const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);
 }
 
-function setResGrupo(g,i,j,eq,valor){
+function setRG(g,i,j,eq,val){
   FIX.resultadosGrupo[g]=FIX.resultadosGrupo[g]||{};
   FIX.resultadosGrupo[g][i]=FIX.resultadosGrupo[g][i]||{};
   FIX.resultadosGrupo[g][i][j]=FIX.resultadosGrupo[g][i][j]||{};
-  const v=valor===''?null:parseInt(valor);
+  const v=val===''?null:parseInt(val);
   if(eq===0)FIX.resultadosGrupo[g][i][j].s1=v;
   else FIX.resultadosGrupo[g][i][j].s2=v;
-  // No re-render para no perder foco, solo actualizar vista pública si está publicado
 }
 
-/* ── Llave editor ── */
-function buildLlaveEditorHTML(){
-  const presets=`<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem">
-    <button onclick="addRondaPreset('Octavos de final',4)" class="rbtn mov">+ Octavos (4 partidos)</button>
-    <button onclick="addRondaPreset('Cuartos de final',4)" class="rbtn mov">+ Cuartos (4)</button>
-    <button onclick="addRondaPreset('Semifinales',2)" class="rbtn mov">+ Semis (2)</button>
-    <button onclick="addRondaPreset('Final',1)" class="rbtn mov">+ Final</button>
-    <button onclick="addRonda()" class="rbtn mov">+ Ronda vacía</button>
-  </div>`;
-  if(!FIX.llave.length)return presets;
-  return presets+FIX.llave.map((ronda,ri)=>`
+function buildLlaveEd(){
+  if(!FIX.llave.length)return'<div style="font-size:.82rem;color:#bbb;font-style:italic">Agregá rondas con los botones de arriba.</div>';
+  return FIX.llave.map((ronda,ri)=>`
     <div style="background:var(--blanco);border:1px solid rgba(0,0,0,.07);border-radius:12px;padding:1rem 1.1rem;margin-bottom:.75rem">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;flex-wrap:wrap;gap:.5rem">
         <input type="text" value="${ronda.nombre}" onchange="FIX.llave[${ri}].nombre=this.value"
-          style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:500;color:var(--azul);border:none;border-bottom:1px solid rgba(0,0,0,.1);outline:none;background:transparent;padding:.1rem 0;flex:1;min-width:120px">
+          style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:500;color:var(--azul);border:none;border-bottom:1px solid rgba(0,0,0,.1);outline:none;background:transparent;flex:1;min-width:120px;padding:.1rem 0">
         <div style="display:flex;gap:.35rem">
-          <button onclick="addPartido(${ri})" class="rbtn mov" style="font-size:.7rem">+ Partido</button>
-          <button onclick="quitarRonda(${ri})" class="rbtn canc" style="font-size:.7rem">✕ Ronda</button>
+          <button onclick="addPart(${ri})" class="rbtn mov" style="font-size:.7rem">+ Partido</button>
+          <button onclick="delRonda(${ri})" class="rbtn canc" style="font-size:.7rem">✕ Ronda</button>
         </div>
       </div>
-      ${ronda.partidos.map((p,pi)=>partidoEditorHTML(ri,pi,p)).join('')}
+      ${ronda.partidos.map((p,pi)=>partidoEd(ri,pi,p)).join('')}
     </div>`).join('');
 }
 
-function partidoEditorHTML(ri,pi,p){
+function partidoEd(ri,pi,p){
   const w1=p.ganador===0,w2=p.ganador===1;
-  return`<div style="display:flex;align-items:center;gap:.35rem;margin-bottom:.45rem;flex-wrap:wrap;padding:.35rem .4rem;border-radius:8px;background:${w1||w2?'rgba(212,175,55,.05)':'rgba(0,0,0,.02)'}">
+  const slot=(eq)=>`<div class="fix-llave-slot fix-drop llave-slot" data-ri="${ri}" data-pi="${pi}" data-eq="${eq}"
+    style="min-height:28px;padding:.2rem .4rem;display:inline-flex;align-items:center;gap:4px;border-radius:7px;flex:1;min-width:85px;font-size:.78rem;color:${eq===0?(w1?'var(--oro-dark)':'var(--azul)'):(w2?'var(--oro-dark)':'var(--azul)')};font-weight:${(eq===0&&w1)||(eq===1&&w2)?600:400}">
+    ${eq===0?(p.eq1||'<span style="color:#bbb;font-style:italic;font-size:.73rem">Arrastrar pareja</span>'):
+              (p.eq2||'<span style="color:#bbb;font-style:italic;font-size:.73rem">Arrastrar pareja</span>')}
+    ${(eq===0&&p.eq1)||(eq===1&&p.eq2)?`<button onclick="clearSlot(${ri},${pi},${eq})" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:11px;margin-left:auto">✕</button>`:''}
+  </div>`;
+
+  return`<div style="display:flex;align-items:center;gap:.35rem;margin-bottom:.45rem;flex-wrap:wrap;padding:.35rem .4rem;border-radius:8px;background:${w1||w2?'rgba(212,175,55,.04)':'rgba(0,0,0,.02)'}">
     <input type="text" value="${p.seed1||''}" placeholder="Seed" onchange="FIX.llave[${ri}].partidos[${pi}].seed1=this.value"
-      style="width:48px;border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:.28rem .4rem;font-size:.68rem;font-family:'DM Sans',sans-serif;outline:none;text-align:center;color:${w1?'var(--oro-dark)':'var(--azul)'}">
-    <input type="text" value="${p.eq1||''}" placeholder="Pareja 1" onchange="FIX.llave[${ri}].partidos[${pi}].eq1=this.value"
-      style="flex:1;min-width:85px;border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:.28rem .5rem;font-size:.8rem;font-family:'DM Sans',sans-serif;outline:none;color:var(--azul);font-weight:${w1?'600':'400'}">
+      style="width:46px;border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:.28rem .35rem;font-size:.68rem;font-family:'DM Sans',sans-serif;outline:none;text-align:center;color:${w1?'var(--oro-dark)':'var(--azul)'}">
+    ${slot(0)}
     <input type="number" value="${p.score1!=null&&p.score1!==''?p.score1:''}" placeholder="—" min="0" max="99"
-      onchange="setScoreLlave(${ri},${pi},0,this.value)"
+      onchange="setScL(${ri},${pi},0,this.value)"
       style="width:34px;text-align:center;border:1px solid ${w1?'rgba(212,175,55,.5)':'rgba(0,0,0,.1)'};border-radius:6px;padding:.28rem .2rem;font-size:.9rem;font-family:'Cormorant Garamond',serif;outline:none;background:${w1?'rgba(212,175,55,.08)':''}">
     <span style="font-size:.65rem;color:#bbb">vs</span>
     <input type="number" value="${p.score2!=null&&p.score2!==''?p.score2:''}" placeholder="—" min="0" max="99"
-      onchange="setScoreLlave(${ri},${pi},1,this.value)"
+      onchange="setScL(${ri},${pi},1,this.value)"
       style="width:34px;text-align:center;border:1px solid ${w2?'rgba(212,175,55,.5)':'rgba(0,0,0,.1)'};border-radius:6px;padding:.28rem .2rem;font-size:.9rem;font-family:'Cormorant Garamond',serif;outline:none;background:${w2?'rgba(212,175,55,.08)':''}">
-    <input type="text" value="${p.eq2||''}" placeholder="Pareja 2" onchange="FIX.llave[${ri}].partidos[${pi}].eq2=this.value"
-      style="flex:1;min-width:85px;border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:.28rem .5rem;font-size:.8rem;font-family:'DM Sans',sans-serif;outline:none;color:var(--azul);font-weight:${w2?'600':'400'}">
+    ${slot(1)}
     <input type="text" value="${p.seed2||''}" placeholder="Seed" onchange="FIX.llave[${ri}].partidos[${pi}].seed2=this.value"
-      style="width:48px;border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:.28rem .4rem;font-size:.68rem;font-family:'DM Sans',sans-serif;outline:none;text-align:center;color:${w2?'var(--oro-dark)':'var(--azul)'}">
-    <button onclick="quitarPartido(${ri},${pi})" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:13px;padding:0 2px">✕</button>
+      style="width:46px;border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:.28rem .35rem;font-size:.68rem;font-family:'DM Sans',sans-serif;outline:none;text-align:center;color:${w2?'var(--oro-dark)':'var(--azul)'}">
+    <button onclick="delPart(${ri},${pi})" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:13px;padding:0 2px">✕</button>
   </div>`;
 }
 
-function setScoreLlave(ri,pi,eq,valor){
+function clearSlot(ri,pi,eq){
+  if(eq===0)FIX.llave[ri].partidos[pi].eq1='';
+  else FIX.llave[ri].partidos[pi].eq2='';
+  const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);
+}
+
+function setScL(ri,pi,eq,val){
   const p=FIX.llave[ri].partidos[pi];
-  const v=valor===''?null:parseInt(valor);
+  const v=val===''?null:parseInt(val);
   if(eq===0)p.score1=v;else p.score2=v;
   if(p.score1!=null&&p.score2!=null)p.ganador=p.score1>p.score2?0:p.score2>p.score1?1:-1;
   else p.ganador=-1;
   const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);
 }
 
-function addRonda(){FIX.llave.push({nombre:'Nueva ronda',partidos:[]});const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);}
-function addRondaPreset(nombre,n){FIX.llave.push({nombre,partidos:Array.from({length:n},()=>({eq1:'',eq2:'',seed1:'',seed2:'',score1:null,score2:null,ganador:-1}))});const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);}
-function addPartido(ri){FIX.llave[ri].partidos.push({eq1:'',eq2:'',seed1:'',seed2:'',score1:null,score2:null,ganador:-1});const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);}
-function quitarRonda(ri){FIX.llave.splice(ri,1);const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);}
-function quitarPartido(ri,pi){FIX.llave[ri].partidos.splice(pi,1);const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);}
+function addRondaP(nombre,n){FIX.llave.push({nombre,partidos:Array.from({length:n},()=>({eq1:'',eq2:'',seed1:'',seed2:'',score1:null,score2:null,ganador:-1}))});const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);}
+function addPart(ri){FIX.llave[ri].partidos.push({eq1:'',eq2:'',seed1:'',seed2:'',score1:null,score2:null,ganador:-1});const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);}
+function delRonda(ri){FIX.llave.splice(ri,1);const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);}
+function delPart(ri,pi){FIX.llave[ri].partidos.splice(pi,1);const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);}
 
 async function guardarYPublicar(){
   const t=TORN.lista.find(x=>x.id===FIX.torneoId);
@@ -2702,7 +2766,7 @@ async function guardarYPublicar(){
   await sbFetch('torneos_fixture?torneo_id=eq.'+FIX.torneoId,'DELETE');
   const res=await sbFetch('torneos_fixture','POST',data);
   if(res){t.fixture=data;renderFixtureSec();toast('Guardado y publicado ✓');}
-  else toast('Error al guardar');
+  else toast('Error al guardar — revisá la consola');
 }
 
 async function despublicar(){
