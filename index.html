@@ -2417,13 +2417,16 @@ function mostrarFix(tid,btn){
     if(!ps.length)return`<div class="grupo-fixture"><div class="grupo-fixture-header"><span class="grupo-letra">${g}</span><span style="font-size:.7rem;color:rgba(255,255,255,.4)">Sin parejas</span></div></div>`;
     const tabla=calcTabla(ps,res[g]||{});
     const medals=['🥇','🥈','🥉'];
+    // Solo mostrar resultados si hay al menos un partido cargado en el grupo
+    const hayResultados=Object.keys(res[g]||{}).some(i=>Object.keys(res[g][i]||{}).some(j=>{const r=res[g][i][j];return r&&(r.s1!=null||r.s2!=null);}));
     const tablaHTML=`<table class="grupo-tabla">
-      <thead><tr><th>Pareja</th><th>V</th><th>D</th><th>Dif</th></tr></thead>
-      <tbody>${tabla.map((s,pos)=>`<tr>
-        <td style="color:${pos===0?'#fff':'rgba(255,255,255,.7)'};font-weight:${pos===0?600:400}">${medals[pos]||''} ${ps[s.idx]}</td>
+      <thead><tr><th>Pareja</th>${hayResultados?'<th>V</th><th>D</th><th>Dif</th>':''}</tr></thead>
+      <tbody>${(hayResultados?tabla:tabla.map((s,i)=>({...s,_origIdx:i}))).map((s,pos)=>`<tr>
+        <td style="color:rgba(255,255,255,.8);font-weight:400">${hayResultados?(medals[pos]||''):''}${hayResultados?' ':''} ${ps[s.idx]}</td>
+        ${hayResultados?`
         <td style="color:${s.v>0?'#4ade80':'rgba(255,255,255,.35)'}">${s.v}</td>
         <td style="color:${s.d>0?'rgba(255,100,100,.7)':'rgba(255,255,255,.35)'}">${s.d}</td>
-        <td style="color:${s.gf-s.gc>0?'var(--oro)':s.gf-s.gc<0?'rgba(255,100,100,.7)':'rgba(255,255,255,.35)'}">${s.gf-s.gc>0?'+':''}${s.gf-s.gc}</td>
+        <td style="color:${s.gf-s.gc>0?'var(--oro)':s.gf-s.gc<0?'rgba(255,100,100,.7)':'rgba(255,255,255,.35)'}">${s.gf-s.gc>0?'+':''}${s.gf-s.gc}</td>`:''}
       </tr>`).join('')}</tbody></table>`;
     const partidos=[];
     for(let i=0;i<ps.length;i++){for(let j=i+1;j<ps.length;j++){
