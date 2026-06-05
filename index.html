@@ -2607,6 +2607,7 @@ function renderFixEd(t){
 
   <div style="display:flex;gap:.5rem;flex-wrap:wrap">
     <button class="mb pri" onclick="guardarYPublicar()" style="flex:1">📋 Guardar y publicar</button>
+    <button class="mb sec" onclick="regenerarLlave()" style="flex:none;padding:.7rem 1rem">🔄 Regenerar llave</button>
     ${pub?`<button class="mb dan" onclick="despublicar()" style="flex:none;padding:.7rem 1rem">Despublicar</button>`:''}
     <button class="mb sec" onclick="selFix(FIX.torneoId)" style="flex:none;padding:.7rem 1rem">↺ Refrescar</button>
   </div>`;
@@ -2759,14 +2760,73 @@ function addPart(ri){FIX.llave[ri].partidos.push({eq1:'',eq2:'',seed1:'',seed2:'
 function delRonda(ri){FIX.llave.splice(ri,1);const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);}
 function delPart(ri,pi){FIX.llave[ri].partidos.splice(pi,1);const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);}
 
+function generarLlaveAutomatica(){
+  // Obtener clasificados de cada grupo ordenados por tabla
+  const clases={};
+  ['A','B','C','D'].forEach(g=>{
+    const ps=FIX.grupos[g]||[];
+    const tabla=calcTabla(ps,FIX.resultadosGrupo[g]||{});
+    // tabla[0] = 1°, tabla[1] = 2°, tabla[2] = 3°
+    clases[g]=tabla.map(s=>ps[s.idx]);
+  });
+  const pos=(g,n)=>clases[g]?.[n]||`${n===0?'1°':n===1?'2°':'3°'}${g}`;
+
+  // Octavos: 2°A vs 3°B | 2°B vs 3°C | 2°C vs 3°D | 2°D vs 3°A
+  const octavos=[
+    {eq1:pos('A',1),seed1:'2°A',eq2:pos('B',2),seed2:'3°B',score1:null,score2:null,ganador:-1},
+    {eq1:pos('B',1),seed1:'2°B',eq2:pos('C',2),seed2:'3°C',score1:null,score2:null,ganador:-1},
+    {eq1:pos('C',1),seed1:'2°C',eq2:pos('D',2),seed2:'3°D',score1:null,score2:null,ganador:-1},
+    {eq1:pos('D',1),seed1:'2°D',eq2:pos('A',2),seed2:'3°A',score1:null,score2:null,ganador:-1},
+  ];
+
+  // Cuartos: 1°X (BYE) vs ganador del octavo cruzado
+  // 1°A vs G(2°C vs 3°D) = oct[2]
+  // 1°B vs G(2°D vs 3°A) = oct[3]
+  // 1°C vs G(2°A vs 3°B) = oct[0]
+  // 1°D vs G(2°B vs 3°C) = oct[1]
+  const cuartos=[
+    {eq1:pos('A',0),seed1:'1°A',eq2:'G. Oct. 3',seed2:'Oct.3',score1:null,score2:null,ganador:-1},
+    {eq1:pos('B',0),seed1:'1°B',eq2:'G. Oct. 4',seed2:'Oct.4',score1:null,score2:null,ganador:-1},
+    {eq1:pos('C',0),seed1:'1°C',eq2:'G. Oct. 1',seed2:'Oct.1',score1:null,score2:null,ganador:-1},
+    {eq1:pos('D',0),seed1:'1°D',eq2:'G. Oct. 2',seed2:'Oct.2',score1:null,score2:null,ganador:-1},
+  ];
+
+  const semis=[
+    {eq1:'G. Ctos. 1',seed1:'C1',eq2:'G. Ctos. 4',seed2:'C4',score1:null,score2:null,ganador:-1},
+    {eq1:'G. Ctos. 2',seed1:'C2',eq2:'G. Ctos. 3',seed2:'C3',score1:null,score2:null,ganador:-1},
+  ];
+
+  const final=[
+    {eq1:'G. Semi 1',seed1:'SF1',eq2:'G. Semi 2',seed2:'SF2',score1:null,score2:null,ganador:-1},
+  ];
+
+  return[
+    {nombre:'Octavos de final',info:'2° y 3° de cada grupo',partidos:octavos},
+    {nombre:'Cuartos de final',info:'1° directo + G. octavos',partidos:cuartos},
+    {nombre:'Semifinales',partidos:semis},
+    {nombre:'Final',partidos:final},
+  ];
+}
+
 async function guardarYPublicar(){
   const t=TORN.lista.find(x=>x.id===FIX.torneoId);
   if(!t){toast('Elegí un torneo');return;}
+  // Si la llave está vacía o el usuario quiere regenerar, la generamos automáticamente
+  if(!FIX.llave.length){
+    FIX.llave=generarLlaveAutomatica();
+    toast('Llave generada automáticamente desde los grupos 🏆');
+  }
   const data={id:'fix_'+FIX.torneoId,torneo_id:FIX.torneoId,grupos:FIX.grupos,resultadosGrupo:FIX.resultadosGrupo,llave:FIX.llave,publicado:true};
   await sbFetch('torneos_fixture?torneo_id=eq.'+FIX.torneoId,'DELETE');
   const res=await sbFetch('torneos_fixture','POST',data);
-  if(res){t.fixture=data;renderFixtureSec();toast('Guardado y publicado ✓');}
+  if(res){t.fixture=data;renderFixtureSec();renderFixEd(t);toast('Guardado y publicado ✓');}
   else toast('Error al guardar — revisá la consola');
+}
+
+async function regenerarLlave(){
+  FIX.llave=generarLlaveAutomatica();
+  const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(t)renderFixEd(t);
+  toast('Llave regenerada desde los grupos ✓');
 }
 
 async function despublicar(){
