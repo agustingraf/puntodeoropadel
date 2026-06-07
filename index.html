@@ -471,6 +471,28 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 .fix-drop.llave-slot{min-height:32px;background:rgba(13,34,56,.04)}
 .fix-drop.llave-slot.drag-over{border-color:var(--azul);background:rgba(13,34,56,.1)}
 
+
+/* ── MUNDIAL ARGENTINA ── */
+.mundial-ribbon{position:fixed;top:0;left:0;right:0;z-index:99;height:3px;background:linear-gradient(90deg,#74acdf 0%,#74acdf 33%,#fff 33%,#fff 66%,#74acdf 66%,#74acdf 100%);opacity:.85}
+.confetti-wrap{position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden}
+.confetti-piece{position:absolute;top:-20px;width:8px;height:12px;opacity:0;animation:confettiFall linear infinite}
+@keyframes confettiFall{
+  0%{transform:translateY(0) rotate(0deg) translateX(0) scaleX(1);opacity:1}
+  15%{transform:translateY(15vh) rotate(120deg) translateX(18px) scaleX(-1);opacity:.95}
+  30%{transform:translateY(30vh) rotate(200deg) translateX(-12px) scaleX(1);opacity:.9}
+  45%{transform:translateY(45vh) rotate(300deg) translateX(20px) scaleX(-1);opacity:.85}
+  60%{transform:translateY(60vh) rotate(400deg) translateX(-16px) scaleX(1);opacity:.7}
+  75%{transform:translateY(75vh) rotate(480deg) translateX(14px) scaleX(-1);opacity:.5}
+  90%{transform:translateY(92vh) rotate(560deg) translateX(-10px) scaleX(1);opacity:.25}
+  100%{transform:translateY(110vh) rotate(630deg) translateX(8px) scaleX(-1);opacity:0}
+}
+.argentina-flag{position:fixed;right:1.25rem;bottom:5.5rem;z-index:98;display:flex;flex-direction:column;gap:2px;opacity:.55;transition:opacity .2s;cursor:pointer}
+.argentina-flag:hover{opacity:.9}
+.arg-stripe{width:44px;height:8px;border-radius:2px}
+.arg-stripe.celeste{background:#74acdf}
+.arg-stripe.blanco{background:#fff;position:relative;display:flex;align-items:center;justify-content:center}
+.arg-sol{width:10px;height:10px;background:radial-gradient(circle,#f6b40e 40%,transparent 70%);border-radius:50%;box-shadow:0 0 4px #f6b40e}
+
 @media(max-width:640px){
   .nav-links{display:none}
   .cg{grid-template-columns:1fr}
@@ -480,6 +502,16 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 </style>
 </head>
 <body>
+
+<!-- MUNDIAL ARGENTINA 🇦🇷 -->
+<div class="mundial-ribbon"></div>
+
+<div class="argentina-flag" title="¡Vamos Argentina!" onclick="toggleConfetti()">
+  <div class="arg-stripe celeste"></div>
+  <div class="arg-stripe blanco"><div class="arg-sol"></div></div>
+  <div class="arg-stripe celeste"></div>
+</div>
+
 
 <!-- NAV -->
 <nav>
@@ -511,6 +543,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
   <div class="hero-bg-img"></div>
   <div class="hero-overlay"></div>
   <div class="hero-orb"></div>
+  <div class="confetti-wrap" id="confetti-wrap"></div>
   <div class="hero-content">
     <div class="hero-nombre">Agustín Graf</div>
     <div class="hero-eyebrow"><div class="hero-eyebrow-line"></div><span>Entrenador de Pádel · Buenos Aires</span></div>
@@ -2871,6 +2904,102 @@ async function init(){
   initStars();
 }
 init();
+
+/* ── MUNDIAL ARGENTINA 🇦🇷 ── */
+(function(){
+  const wrap=document.getElementById('confetti-wrap');
+  if(!wrap)return;
+  // Colores papel picado: celeste, blanco, dorado, celeste oscuro
+  const colors=['#74acdf','#74acdf','#74acdf','#ffffff','#ffffff','#D4AF37','#5b9fd4','#aed6f1','#ffffff','#74acdf'];
+  let active=true;
+  let interval=null;
+
+  function createPapel(){
+    const el=document.createElement('div');
+    // Forma de papelito rectangular
+    const w=Math.random()*8+4;
+    const h=Math.random()*14+6;
+    el.style.cssText=`
+      position:absolute;
+      top:-20px;
+      left:${Math.random()*105-2}vw;
+      width:${w}px;
+      height:${h}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      opacity:${0.7+Math.random()*0.3};
+      border-radius:${Math.random()>0.5?'50%':'1px'};
+      animation:confettiFall ${2.5+Math.random()*4}s linear forwards;
+      animation-delay:${Math.random()*0.5}s;
+      transform-origin:center center;
+    `;
+    wrap.appendChild(el);
+    const dur=(2.5+Math.random()*4+0.5)*1000;
+    setTimeout(()=>el.remove(), dur);
+  }
+
+  function burst(){
+    // Rafaga de 15-25 papelitos a la vez
+    const n=15+Math.floor(Math.random()*10);
+    for(let i=0;i<n;i++) setTimeout(createPiece2, i*30);
+  }
+
+  function createPiece2(){
+    const el=document.createElement('canvas');
+    const w=Math.random()*10+4;
+    const h=Math.random()*16+6;
+    el.width=w;el.height=h;
+    el.style.cssText=`
+      position:absolute;
+      top:-20px;
+      left:${Math.random()*105}vw;
+      width:${w}px;
+      height:${h}px;
+      opacity:${0.75+Math.random()*0.25};
+      animation:confettiFall ${2+Math.random()*4.5}s linear forwards;
+      animation-delay:${Math.random()*0.3}s;
+    `;
+    const ctx=el.getContext('2d');
+    const color=colors[Math.floor(Math.random()*colors.length)];
+    ctx.fillStyle=color;
+    if(Math.random()>0.4){
+      // Rectángulo (papel)
+      ctx.fillRect(0,0,w,h);
+    } else {
+      // Círculo (confeti redondo)
+      ctx.beginPath();
+      ctx.arc(w/2,h/2,Math.min(w,h)/2,0,Math.PI*2);
+      ctx.fill();
+    }
+    wrap.appendChild(el);
+    const dur=(2+Math.random()*4.5+0.3)*1000;
+    setTimeout(()=>el.remove(), dur+500);
+  }
+
+  function startRain(){
+    // Lluvia continua: cada 80ms suelta un papelito
+    interval=setInterval(()=>{
+      for(let i=0;i<3;i++) createPiece2();
+    }, 80);
+  }
+
+  function stopRain(){
+    if(interval){clearInterval(interval);interval=null;}
+    // Limpiar los que quedan en pantalla
+    setTimeout(()=>{wrap.innerHTML='';}, 5000);
+  }
+
+  window.toggleConfetti=function(){
+    active=!active;
+    if(active) startRain();
+    else stopRain();
+    const flag=document.querySelector('.argentina-flag');
+    if(flag)flag.style.opacity=active?'.6':'.25';
+  };
+
+  // Arranca solo
+  startRain();
+})();
+
 </script>
 </body>
 </html>
