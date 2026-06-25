@@ -629,6 +629,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
   <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>Próximas fechas</span></div>
   <div class="sec-title">Canchas abiertas</div>
   <div class="sec-sub">Anotate en la próxima cancha abierta. Cupo limitado, pago al inscribirse.</div>
+
   <div id="abiertas-lista"></div>
 </section>
 
@@ -1016,11 +1017,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
   <div class="modal">
     <div class="progress-bar"><div class="progress-fill" id="prog-ab" style="width:50%"></div></div>
     <div class="step active" id="ab-1">
-      <div class="step-header">
-        <div class="step-num">Paso 1 de 2 · Tus datos</div>
-        <div class="step-title" id="ab-titulo">Anotarme</div>
-        <div class="step-sub" id="ab-sub"></div>
-      </div>
+      <div class="step-header"><div class="step-num">Paso 1 de 2 · Tus datos</div><div class="step-title" id="ab-titulo">Anotarme</div><div class="step-sub" id="ab-sub"></div></div>
       <div style="background:var(--oro-light);border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:.65rem 1rem;font-size:.8rem;color:var(--oro-dark);margin-bottom:.65rem" id="ab-precio-info"></div>
       <div class="err" id="ab-err">Completá nombre y WhatsApp.</div>
       <input type="text" id="ab-nombre" placeholder="Tu nombre completo">
@@ -1049,7 +1046,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <div class="step" id="ab-3">
       <div class="success-icon">✦</div>
       <div class="success-title">¡Casi listo!</div>
-      <div class="success-sub">Tu lugar está registrado. Agus confirma cuando recibe el comprobante.</div>
+      <div class="success-sub">Tu lugar está registrado. Agus confirma tu inscripción cuando recibe el comprobante.</div>
       <div class="success-resumen" id="ab-resumen"></div>
       <button class="mb wa" onclick="enviarCompAbierta()">💬 Reenviar comprobante</button>
       <button class="mb sec full" onclick="cerrarModal('modal-abierta')">Cerrar</button>
@@ -1100,7 +1097,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     </div>
     <div id="adm-abiertas" style="display:none">
       <div class="adm-title">Canchas abiertas</div>
-      <div class="adm-sub">Creá canchas abiertas con fecha, hora, cupo, precio y categorías.</div>
+      <div class="adm-sub">Creá canchas abiertas con fecha, horario, cupo, precio y categorías.</div>
       <div id="adm-ab-content"></div>
     </div>
     <div id="adm-torneos" style="display:none">
@@ -1348,24 +1345,18 @@ function enviarCompClase(){
 }
 
 /* ═══════════════════════════════════════
-   CANCHAS ABIERTAS — NUEVO SISTEMA
+   CANCHAS ABIERTAS — SISTEMA DINÁMICO
    ═══════════════════════════════════════ */
-let CA={
-  lista:[],          // canchas abiertas publicadas
-  selectedId:null,   // id de la cancha que se está abriendo
-  form:{nombre:'',tel:'',metodo:'mp'}
-};
+let CA={lista:[],selectedId:null,form:{nombre:'',tel:'',metodo:'mp'}};
 
 async function loadAbiertas(){
   const canchas=await sbFetch('canchas_abiertas?select=*&order=fecha.asc,hora.asc&activo=eq.true');
   const inscs=await sbFetch('canchas_inscriptos?select=*&order=id.asc');
   const ahora=new Date();
-  CA.lista=(canchas||[])
-    .filter(c=>{
-      if(!c.fecha||!c.hora)return true;
-      return new Date(c.fecha+'T'+c.hora+':00')>ahora;
-    })
-    .map(c=>({...c,inscriptos:(inscs||[]).filter(i=>i.cancha_id===c.id)}));
+  CA.lista=(canchas||[]).filter(c=>{
+    if(!c.fecha||!c.hora)return true;
+    return new Date(c.fecha+'T'+c.hora+':00')>ahora;
+  }).map(c=>({...c,inscriptos:(inscs||[]).filter(i=>i.cancha_id===c.id)}));
   renderAbiertas();
 }
 
@@ -1379,12 +1370,8 @@ function fmtFechaAb(str){
 }
 
 function renderAbiertas(){
-  const el=document.getElementById('abiertas-lista');
-  if(!el)return;
-  if(!CA.lista.length){
-    el.innerHTML='<div class="empty" style="padding:2.5rem 0;color:var(--gris);text-align:center">No hay canchas abiertas programadas.<br><small>Seguí los grupos de WhatsApp para enterarte de las próximas fechas.</small></div>';
-    return;
-  }
+  const el=document.getElementById('abiertas-lista');if(!el)return;
+  if(!CA.lista.length){el.innerHTML='<div class="empty" style="padding:2.5rem 0;color:var(--gris);text-align:center">No hay canchas abiertas programadas.<br><small>Seguí los grupos de WhatsApp para enterarte de las próximas fechas.</small></div>';return;}
   el.innerHTML=CA.lista.map(c=>{
     const f=fmtFechaAb(c.fecha);
     const ins=c.inscriptos||[];
@@ -1394,13 +1381,14 @@ function renderAbiertas(){
     const pct=Math.round(ins.length/cupo*100);
     const barCls=pct<50?'bar-verde':pct<80?'bar-amarillo':'bar-rojo';
     const cats=(c.categorias||'').split(',').map(x=>x.trim()).filter(Boolean);
+    const horario=c.hora+(c.hora_fin?' – '+c.hora_fin:'');
     const pills=ins.map(i=>`<div class="inscripto-pill"><span class="pill-icon">🎾</span>${i.nombre.split(' ')[0]}</div>`).join('');
     const vacios=Array.from({length:Math.min(libre,4)}).map(()=>'<div class="pins-vacio">+</div>').join('');
     return`<div class="turno-card">
       <div class="turno-head">
         <div class="turno-badge" style="background:var(--azul);min-width:72px">
           <div class="rng" style="font-size:.9rem">${f.diaSem}<br>${f.dia} ${f.mes}</div>
-          <div class="etq">${c.hora} hs</div>
+          <div class="etq">${horario} hs</div>
         </div>
         <div class="turno-meta">
           <div class="turno-titulo">${c.nombre||'Cancha abierta'}</div>
@@ -1418,51 +1406,42 @@ function renderAbiertas(){
       </div>
       <div class="turno-foot" style="justify-content:space-between">
         <div class="tf-item">📍 <strong>Av. Boyacá 1766</strong></div>
-        ${lleno
-          ?'<div style="font-size:.84rem;font-weight:500;color:var(--verde)">✓ Cupo completo</div>'
-          :`<button class="pc-btn" style="width:auto;padding:.62rem 1.5rem" onclick="abrirModalCA('${c.id}')">Anotarme →</button>`}
+        ${lleno?'<div style="font-size:.84rem;font-weight:500;color:var(--verde)">✓ Cupo completo</div>':`<button class="pc-btn" style="width:auto;padding:.62rem 1.5rem" onclick="abrirModalCA('${c.id}')">Anotarme →</button>`}
       </div>
     </div>`;
   }).join('');
 }
 
 function toggleListaCA(id,btn){
-  const el=document.getElementById('lista-ca-'+id);
-  if(!el)return;
-  const show=el.style.display==='none';
-  el.style.display=show?'block':'none';
+  const el=document.getElementById('lista-ca-'+id);if(!el)return;
+  const show=el.style.display==='none';el.style.display=show?'block':'none';
   btn.textContent=show?'Ocultar lista':'Ver lista';
 }
 
 function abrirModalCA(id){
   const c=CA.lista.find(x=>x.id===id);if(!c)return;
   const ins=c.inscriptos||[];
-  const cupo=c.cupo||16;
-  if(ins.length>=cupo){toast('No quedan cupos');return;}
-  CA.selectedId=id;
-  CA.form={nombre:'',tel:'',metodo:'mp'};
+  if(ins.length>=(c.cupo||16)){toast('No quedan cupos');return;}
+  CA.selectedId=id;CA.form={nombre:'',tel:'',metodo:'mp'};
   const f=fmtFechaAb(c.fecha);
+  const horario=c.hora+(c.hora_fin?' – '+c.hora_fin:'');
   document.getElementById('ab-titulo').textContent=c.nombre||'Cancha abierta';
-  document.getElementById('ab-sub').textContent=f.full+' · '+c.hora+' hs';
+  document.getElementById('ab-sub').textContent=f.full+' · '+horario+' hs';
   document.getElementById('ab-precio-info').textContent='🎾 $'+parseInt(c.precio||20000).toLocaleString('es-AR')+' por persona · Enviá el comprobante para confirmar tu lugar.';
   const fmt='$'+parseInt(c.precio||20000).toLocaleString('es-AR');
   document.getElementById('ab-monto-mp').innerHTML=fmt+'<small> ARS</small>';
   document.getElementById('ab-monto-tr').innerHTML=fmt+'<small> ARS</small>';
-  document.getElementById('ab-nombre').value='';
-  document.getElementById('ab-tel').value='';
+  document.getElementById('ab-nombre').value='';document.getElementById('ab-tel').value='';
   document.getElementById('ab-err').style.display='none';
-  selPago('ab','mp');
-  abStep(1);
+  selPago('ab','mp');abStep(1);
   document.getElementById('modal-abierta').classList.add('show');
 }
 
 async function abStep(n){
   if(n===2){
-    const nombre=document.getElementById('ab-nombre').value.trim();
-    const tel=document.getElementById('ab-tel').value.trim();
+    const nombre=document.getElementById('ab-nombre').value.trim(),tel=document.getElementById('ab-tel').value.trim();
     if(!nombre||!tel){document.getElementById('ab-err').style.display='block';return;}
-    document.getElementById('ab-err').style.display='none';
-    CA.form.nombre=nombre;CA.form.tel=tel;
+    document.getElementById('ab-err').style.display='none';CA.form.nombre=nombre;CA.form.tel=tel;
     const isMp=CA.form.metodo==='mp';
     document.getElementById('ab-s2-title').textContent=isMp?'Pagá con Mercado Pago':'Transferí el monto';
     document.getElementById('ab-mp').style.display=isMp?'block':'none';
@@ -1471,21 +1450,16 @@ async function abStep(n){
   if(n===3){
     const c=CA.lista.find(x=>x.id===CA.selectedId);if(!c)return;
     const f=fmtFechaAb(c.fecha);
-    const ni={
-      id:'ca'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
-      cancha_id:c.id,nombre:CA.form.nombre,tel:CA.form.tel,
-      metodo:CA.form.metodo,estado:'pendiente',
-      fecha:new Date().toLocaleDateString('es-AR')
-    };
-    c.inscriptos=c.inscriptos||[];
-    c.inscriptos.push(ni);
+    const horario=c.hora+(c.hora_fin?' – '+c.hora_fin:'');
+    const ni={id:'ca'+Date.now()+'_'+Math.random().toString(36).slice(2,5),cancha_id:c.id,nombre:CA.form.nombre,tel:CA.form.tel,metodo:CA.form.metodo,estado:'pendiente',fecha:new Date().toLocaleDateString('es-AR')};
+    c.inscriptos=c.inscriptos||[];c.inscriptos.push(ni);
     await sbFetch('canchas_inscriptos','POST',ni);
     renderAbiertas();
-    sendEmailNotification('Cancha abierta · '+c.nombre,{dia:f.full,hora:c.hora+' hs',nombre:CA.form.nombre,tel:CA.form.tel,precio:c.precio||20000,metodo:CA.form.metodo,fecha:ni.fecha});
+    sendEmailNotification('Cancha abierta · '+c.nombre,{dia:f.full,hora:horario+' hs',nombre:CA.form.nombre,tel:CA.form.tel,precio:c.precio||20000,metodo:CA.form.metodo,fecha:ni.fecha});
     const fmt='$'+parseInt(c.precio||20000).toLocaleString('es-AR');
     document.getElementById('ab-resumen').innerHTML=`
       <div class="sr-row"><span class="sr-label">Fecha</span><span class="sr-val">${f.full}</span></div>
-      <div class="sr-row"><span class="sr-label">Hora</span><span class="sr-val">${c.hora} hs</span></div>
+      <div class="sr-row"><span class="sr-label">Horario</span><span class="sr-val">${horario} hs</span></div>
       <div class="sr-row"><span class="sr-label">Total</span><span class="sr-val" style="color:var(--oro-dark)">${fmt}</span></div>
       <div class="sr-row"><span class="sr-label">Método</span><span class="sr-val">${CA.form.metodo==='mp'?'Mercado Pago':'Transferencia'}</span></div>`;
   }
@@ -1497,10 +1471,11 @@ async function abStep(n){
 function enviarCompAbierta(){
   const c=CA.lista.find(x=>x.id===CA.selectedId)||{};
   const f=fmtFechaAb(c.fecha);
+  const horario=c.hora+(c.hora_fin?' – '+c.hora_fin:'');
   const metodoTxt=CA.form.metodo==='mp'?'Mercado Pago':'transferencia (alias: Agusgrafmp)';
   const msg=encodeURIComponent(`Hola Agus! Te mando el comprobante para la cancha abierta.
 
-📅 ${f.full} · ${c.hora} hs
+📅 ${f.full} · ${horario} hs
 💰 $${parseInt(c.precio||20000).toLocaleString('es-AR')}
 💳 ${metodoTxt}
 👤 ${CA.form.nombre}
@@ -1513,65 +1488,52 @@ function enviarCompAbierta(){
 /* ── ADMIN ABIERTAS ── */
 function renderAdmAbiertas(){
   const el=document.getElementById('adm-ab-content');if(!el)return;
-
   const addForm=`<div class="adm-add-form">
     <div class="adm-add-title">✦ Publicar cancha abierta</div>
     <div class="adm-add-row" style="flex-wrap:wrap">
       <input type="text" id="adm-ca-nombre" placeholder="Nombre (ej: Cancha abierta · Sábado)" style="flex:100%">
       <input type="date" id="adm-ca-fecha" style="color-scheme:dark">
-      <input type="time" id="adm-ca-hora" style="color-scheme:dark">
+      <input type="time" id="adm-ca-hora" placeholder="Inicio" style="color-scheme:dark">
+      <input type="time" id="adm-ca-hora-fin" placeholder="Fin" style="color-scheme:dark">
       <input type="number" id="adm-ca-cupo" placeholder="Cupo" value="16" style="width:80px">
       <input type="number" id="adm-ca-precio" placeholder="Precio" value="20000" style="width:110px">
       <input type="text" id="adm-ca-cats" placeholder="Categorías (ej: 7ma, 8va, 9na)" style="flex:1;min-width:180px">
       <button class="adm-add-btn" onclick="adminCrearCA()">Publicar</button>
     </div>
   </div>`;
-
-  // Load all including inactive for admin
-  const lista=CA.lista.length===0
-    ?'<div class="empty">No hay canchas abiertas creadas todavía.</div>'
-    :CA.lista.map(c=>{
-      const ins=c.inscriptos||[];
-      const cupo=c.cupo||16;
-      const libre=cupo-ins.length;
-      const f=fmtFechaAb(c.fecha);
-      return`<div class="ab-res-item" style="flex-direction:column;align-items:flex-start;gap:.75rem;margin-bottom:.75rem">
-        <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start;flex-wrap:wrap;gap:.5rem">
-          <div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:500;color:var(--azul)">${c.nombre||'Cancha abierta'}</div>
-            <div style="font-size:.75rem;color:var(--gris);margin-top:3px">${f.full} · ${c.hora} hs · ${ins.length}/${cupo} inscriptos · $${parseInt(c.precio||20000).toLocaleString('es-AR')} · ${c.categorias||'—'}</div>
-          </div>
-          <div style="display:flex;gap:.35rem">
-            <button class="rbtn canc" onclick="adminEliminarCA('${c.id}')">Eliminar</button>
-          </div>
+  const lista=CA.lista.length===0?'<div class="empty">No hay canchas abiertas creadas todavía.</div>':CA.lista.map(c=>{
+    const ins=c.inscriptos||[];const cupo=c.cupo||16;const libre=cupo-ins.length;const f=fmtFechaAb(c.fecha);
+    const horario=c.hora+(c.hora_fin?' – '+c.hora_fin:'');
+    return`<div class="ab-res-item" style="flex-direction:column;align-items:flex-start;gap:.75rem;margin-bottom:.75rem">
+      <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start;flex-wrap:wrap;gap:.5rem">
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:500;color:var(--azul)">${c.nombre||'Cancha abierta'}</div>
+          <div style="font-size:.75rem;color:var(--gris);margin-top:3px">${f.full} · ${horario} hs · ${ins.length}/${cupo} inscriptos · $${parseInt(c.precio||20000).toLocaleString('es-AR')} · ${c.categorias||'—'}</div>
         </div>
-        <!-- Anotar manualmente -->
-        <div style="background:var(--blanco);border:1.5px dashed rgba(212,175,55,.3);border-radius:12px;padding:.75rem 1rem;width:100%">
-          <div style="font-size:.7rem;color:var(--oro-dark);text-transform:uppercase;letter-spacing:1.5px;font-weight:500;margin-bottom:.5rem">✦ Anotar manualmente</div>
-          <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end">
-            <input type="text" id="adm-ca-man-n-${c.id}" placeholder="Nombre" style="flex:1;min-width:130px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.45rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
-            <input type="tel" id="adm-ca-man-t-${c.id}" placeholder="WhatsApp" style="width:140px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.45rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
-            <button class="adm-add-btn" onclick="adminAnotarCA('${c.id}')" style="font-size:.78rem;padding:.45rem .9rem">Anotar</button>
-          </div>
+        <button class="rbtn canc" onclick="adminEliminarCA('${c.id}')">Eliminar</button>
+      </div>
+      <div style="background:var(--blanco);border:1.5px dashed rgba(212,175,55,.3);border-radius:12px;padding:.75rem 1rem;width:100%">
+        <div style="font-size:.7rem;color:var(--oro-dark);text-transform:uppercase;letter-spacing:1.5px;font-weight:500;margin-bottom:.5rem">✦ Anotar manualmente</div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end">
+          <input type="text" id="adm-ca-man-n-${c.id}" placeholder="Nombre" style="flex:1;min-width:130px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.45rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
+          <input type="tel" id="adm-ca-man-t-${c.id}" placeholder="WhatsApp" style="width:140px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.45rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
+          <button class="adm-add-btn" onclick="adminAnotarCA('${c.id}')" style="font-size:.78rem;padding:.45rem .9rem">Anotar</button>
         </div>
-        <!-- Lista inscriptos -->
-        ${ins.length===0
-          ?'<div style="font-size:.78rem;color:#bbb;font-style:italic">Sin inscriptos todavía.</div>'
-          :`<div style="display:flex;flex-direction:column;gap:.35rem;width:100%">${ins.map(i=>`
-            <div class="ab-res-item" style="padding:.55rem 1rem;margin-bottom:0">
-              <div class="res-info">
-                <div class="res-alumno">${i.nombre}${i.es_admin?' <span style="font-size:.65rem;background:var(--azul);color:var(--oro);padding:1px 7px;border-radius:100px;margin-left:4px">Admin</span>':''}</div>
-                <div class="res-det">${i.tel?'📱 '+i.tel+' · ':''}${i.es_admin?'Admin':i.metodo==='mp'?'MP':'Transf.'} · ${i.fecha}</div>
-              </div>
-              <span class="res-estado ${i.estado==='pendiente'?'est-pend':'est-conf'}">${i.estado==='pendiente'?'⏳':'✓'}</span>
-              <div class="res-acc">
-                ${i.estado!=='confirmada'?`<button class="rbtn conf" onclick="confirmarCA('${c.id}','${i.id}')">✓</button>`:''}
-                <button class="rbtn canc" onclick="cancelarCA('${c.id}','${i.id}')">✕</button>
-              </div>
-            </div>`).join('')}</div>`}
-      </div>`;
-    }).join('');
-
+      </div>
+      ${ins.length===0?'<div style="font-size:.78rem;color:#bbb;font-style:italic">Sin inscriptos todavía.</div>':`<div style="display:flex;flex-direction:column;gap:.35rem;width:100%">${ins.map(i=>`
+        <div class="ab-res-item" style="padding:.55rem 1rem;margin-bottom:0">
+          <div class="res-info">
+            <div class="res-alumno">${i.nombre}${i.es_admin?' <span style="font-size:.65rem;background:var(--azul);color:var(--oro);padding:1px 7px;border-radius:100px;margin-left:4px">Admin</span>':''}</div>
+            <div class="res-det">${i.tel?'📱 '+i.tel+' · ':''}${i.es_admin?'Admin':i.metodo==='mp'?'MP':'Transf.'} · ${i.fecha}</div>
+          </div>
+          <span class="res-estado ${i.estado==='pendiente'?'est-pend':'est-conf'}">${i.estado==='pendiente'?'⏳':'✓'}</span>
+          <div class="res-acc">
+            ${i.estado!=='confirmada'?`<button class="rbtn conf" onclick="confirmarCA('${c.id}','${i.id}')">✓</button>`:''}
+            <button class="rbtn canc" onclick="cancelarCA('${c.id}','${i.id}')">✕</button>
+          </div>
+        </div>`).join('')}</div>`}
+    </div>`;
+  }).join('');
   el.innerHTML=addForm+lista;
 }
 
@@ -1579,14 +1541,14 @@ async function adminCrearCA(){
   const nombre=document.getElementById('adm-ca-nombre').value.trim();
   const fecha=document.getElementById('adm-ca-fecha').value;
   const hora=document.getElementById('adm-ca-hora').value;
+  const hora_fin=document.getElementById('adm-ca-hora-fin').value;
   const cupo=parseInt(document.getElementById('adm-ca-cupo').value)||16;
   const precio=parseInt(document.getElementById('adm-ca-precio').value)||20000;
   const categorias=document.getElementById('adm-ca-cats').value.trim();
-  if(!fecha||!hora){toast('Completá fecha y hora');return;}
-  const nc={id:'ca'+Date.now(),nombre:nombre||'Cancha abierta',fecha,hora,cupo,precio,categorias,activo:true};
+  if(!fecha||!hora){toast('Completá fecha y hora de inicio');return;}
+  const nc={id:'ca'+Date.now(),nombre:nombre||'Cancha abierta',fecha,hora,hora_fin,cupo,precio,categorias,activo:true};
   await sbFetch('canchas_abiertas','POST',nc);
-  nc.inscriptos=[];
-  CA.lista.push(nc);
+  nc.inscriptos=[];CA.lista.push(nc);
   renderAbiertas();renderAdmAbiertas();
   toast('Cancha abierta publicada ✓');
 }
@@ -1596,8 +1558,7 @@ async function adminEliminarCA(id){
   await sbFetch('canchas_abiertas?id=eq.'+id,'DELETE');
   await sbFetch('canchas_inscriptos?cancha_id=eq.'+id,'DELETE');
   CA.lista=CA.lista.filter(c=>c.id!==id);
-  renderAbiertas();renderAdmAbiertas();
-  toast('Eliminada');
+  renderAbiertas();renderAdmAbiertas();toast('Eliminada');
 }
 
 async function adminAnotarCA(id){
@@ -1607,16 +1568,15 @@ async function adminAnotarCA(id){
   const c=CA.lista.find(x=>x.id===id);if(!c)return;
   if((c.inscriptos||[]).length>=(c.cupo||16)){toast('Cupo completo');return;}
   const ni={id:'ca'+Date.now()+'_'+Math.random().toString(36).slice(2,5),cancha_id:id,nombre:n,tel:t||'',metodo:'admin',es_admin:true,estado:'confirmada',fecha:new Date().toLocaleDateString('es-AR')};
-  c.inscriptos=c.inscriptos||[];
-  c.inscriptos.push(ni);
+  c.inscriptos=c.inscriptos||[];c.inscriptos.push(ni);
   await sbFetch('canchas_inscriptos','POST',ni);
-  renderAbiertas();renderAdmAbiertas();
-  toast(n+' anotado/a ✓');
+  renderAbiertas();renderAdmAbiertas();toast(n+' anotado/a ✓');
 }
 
 async function confirmarCA(cid,iid){
   const c=CA.lista.find(x=>x.id===cid);if(!c)return;
-  const i=c.inscriptos.find(x=>x.id===iid);if(i){i.estado='confirmada';await sbFetch('canchas_inscriptos?id=eq.'+iid,'PATCH',{estado:'confirmada'});}
+  const i=c.inscriptos.find(x=>x.id===iid);
+  if(i){i.estado='confirmada';await sbFetch('canchas_inscriptos?id=eq.'+iid,'PATCH',{estado:'confirmada'});}
   renderAdmAbiertas();toast('Confirmado ✓');
 }
 
@@ -1627,7 +1587,8 @@ async function cancelarCA(cid,iid){
   renderAbiertas();renderAdmAbiertas();toast('Cancelado');
 }
 
-/* PAGO SELECTOR *//* PAGO SELECTOR */
+
+/* PAGO SELECTOR */
 function selPago(ctx,tipo){
   if(ctx==='cls'){CLS.metodo=tipo;document.getElementById('cls-opt-mp').classList.toggle('selected',tipo==='mp');document.getElementById('cls-opt-transfer').classList.toggle('selected',tipo==='transfer');}
   else{AB.metodo=tipo;document.getElementById('ab-opt-mp').classList.toggle('selected',tipo==='mp');document.getElementById('ab-opt-transfer').classList.toggle('selected',tipo==='transfer');}
@@ -1637,7 +1598,7 @@ function selPago(ctx,tipo){
 function abrirAdmin(){document.getElementById('modal-login').classList.add('show');}
 function checkPass(){if(document.getElementById('pass').value===PASS){document.getElementById('pass-err').style.display='none';document.getElementById('pass').value='';cerrarModal('modal-login');S.loggedIn=true;document.getElementById('admin-panel').classList.add('show');renderAdmDias();renderAdmGrid(S.diaAdm);renderReviews();}else{document.getElementById('pass-err').style.display='block';}}
 function logout(){S.loggedIn=false;document.getElementById('admin-panel').classList.remove('show');renderReviews();}
-function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';if(tab==='abiertas')setTimeout(renderAdmAbiertas,50);document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';document.getElementById('adm-fixture').style.display=tab==='fixture'?'block':'none';document.getElementById('adm-torneos').style.display=tab==='torneos'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='abiertas')setTimeout(renderAdmAbiertas,50);if(tab==='partidos')setTimeout(renderAdmPartidos,50);if(tab==='fixture')setTimeout(renderAdmFixture,50);if(tab==='torneos'){setTimeout(renderAdmTorneos,50);setTimeout(renderAdmBP,50);}}
+function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';if(tab==='abiertas')setTimeout(renderAdmAbiertas,50);document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';document.getElementById('adm-fixture').style.display=tab==='fixture'?'block':'none';document.getElementById('adm-torneos').style.display=tab==='torneos'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='abiertas')renderAdmAbiertas();if(tab==='partidos')setTimeout(renderAdmPartidos,50);if(tab==='fixture')setTimeout(renderAdmFixture,50);if(tab==='torneos'){setTimeout(renderAdmTorneos,50);setTimeout(renderAdmBP,50);}}
 function renderAdmDias(){const c=document.getElementById('adm-dias');c.innerHTML='';DIAS.forEach(d=>{const b=document.createElement('div');b.className='dia-tab'+(d===S.diaAdm?' active':'')+(d==='sabado'||d==='domingo'?' we':'');b.textContent=DIAS_L[d];b.onclick=()=>{S.diaAdm=d;renderAdmDias();renderAdmGrid(d);};c.appendChild(b);});}
 function renderAdmGrid(d){const g=document.getElementById('adm-grid');g.innerHTML='';horas(d).forEach(h=>{const st=slotSt(d,h);const res=S.reservas.find(x=>x.dia===d&&x.hora===h&&x.estado!=='cancelada');const div=document.createElement('div');div.className='slot adm-'+st;const lbl=st==='libre'?'Disponible':st==='pendiente'?'⏳ '+(res?.nombre||''):(res?.nombre||'Ocupado');div.innerHTML=`<div class="slot-hora">${h}</div><div class="slot-lbl">${lbl}</div>`;div.onclick=()=>abrirAdmSlot(d,h,st,res);g.appendChild(div);});}
 function abrirAdmSlot(d,h,st,res){
@@ -1653,10 +1614,30 @@ function desbloquear(d,h){delete S.slots[key(d,h)];save();cerrarModal('modal-adm
 function confirmarRes(id){const r=S.reservas.find(x=>x.id===id);if(r){r.estado='confirmada';updateReserva(id,{estado:'confirmada'});}cerrarModal('modal-adm-slot');renderAdmGrid(S.diaAdm);renderAlumnoGrid(S.diaA);toast('Pago confirmado ✓');}
 function cancelarRes(id){const r=S.reservas.find(x=>x.id===id);if(r){r.estado='cancelada';deleteReserva(id);}cerrarModal('modal-adm-slot');renderAdmGrid(S.diaAdm);renderAlumnoGrid(S.diaA);renderAdmReservas();toast('Reserva cancelada');}
 function renderAdmReservas(){const el=document.getElementById('adm-res-list');const activas=S.reservas.filter(r=>r.estado!=='cancelada').sort((a,b)=>DIAS.indexOf(a.dia)-DIAS.indexOf(b.dia)||a.hora.localeCompare(b.hora));if(!activas.length){el.innerHTML='<div class="empty">📭 No hay reservas activas.</div>';return;}el.innerHTML=activas.map(r=>`<div class="res-item"><div class="res-info"><div class="res-dia">${DIAS_L[r.dia]} ${r.hora} hs</div><div class="res-alumno">${r.nombre}</div><div class="res-det">📱 ${r.tel} · ${r.tipo} · $${r.precio?.toLocaleString('es-AR')||'—'} · ${r.metodo==='mp'?'MP':'Transf.'} · ${r.fecha}</div></div><span class="res-estado ${r.estado==='pendiente'?'est-pend':'est-conf'}">${r.estado==='pendiente'?'⏳ Pago pendiente':'✓ Pago confirmado'}</span><div class="res-acc">${r.estado==='pendiente'?`<button class="rbtn conf" onclick="confirmarRes(${r.id});renderAdmReservas()">Confirmar pago</button>`:''}<button class="rbtn mov" onclick="iniciarMover(${r.id})">Mover</button><button class="rbtn canc" onclick="cancelarRes(${r.id})">Cancelar</button></div></div>`).join('');}
-
-
-
-
+function renderAdmAbiertas(){
+  const el=document.getElementById('adm-ab-grid');
+  const renderT=(titulo,lista,k)=>{
+    const libre=MAX_CUPOS-lista.length;
+    const opcionesSelect=k==='noche'?`<option value="sin_pizza">🎾 Solo partido — $20.000</option><option value="con_pizza">🍕 Con pizza — $30.000</option>`:`<option value="sin_pizza">🎾 Solo partido — $20.000</option>`;
+    const addForm=libre>0?`<div class="adm-add-form"><div class="adm-add-title">✦ Anotar persona manualmente</div><div class="adm-add-row"><input type="text" id="adm-nombre-${k}" placeholder="Nombre"><input type="tel" id="adm-tel-${k}" placeholder="WhatsApp (opcional)"><select id="adm-opcion-${k}">${opcionesSelect}</select><button class="adm-add-btn" onclick="adminAnotarPersona('${k}')">Anotar</button></div></div>`:'<div style="background:var(--rojo-light);border-radius:10px;padding:.75rem 1rem;font-size:.82rem;color:var(--rojo);margin-bottom:1rem">⚠️ Cupo completo — no se pueden agregar más personas.</div>';
+    return`<div><div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:500;color:var(--azul);margin-bottom:.65rem">${titulo} <span style="font-size:.8rem;font-weight:400;font-family:'DM Sans',sans-serif;color:var(--gris)">(${lista.length}/${MAX_CUPOS} · ${libre} libre${libre===1?'':'s'})</span></div>${addForm}${lista.length===0?'<div class="empty" style="padding:1rem 0">Sin inscriptos todavía.</div>':lista.map(x=>`<div class="ab-res-item"><div class="ab-badge-adm ${x.opcion==='con_pizza'?'pizza':'std'}">${x.opcion==='con_pizza'?'🍕':'🎾'}</div><div class="res-info"><div class="res-alumno">${x.nombre}${x.es_admin?' <span style="font-size:.65rem;background:var(--azul);color:var(--oro);padding:1px 7px;border-radius:100px;margin-left:4px">Admin</span>':''}</div><div class="res-det">${x.tel?'📱 '+x.tel+' · ':''}$${x.precio?.toLocaleString('es-AR')||'—'} · ${x.es_admin?'Cargado por admin':x.metodo==='mp'?'MP':'Transf.'} · ${x.fecha}</div></div><span class="res-estado ${x.estado==='pendiente'?'est-pend':'est-conf'}" style="font-size:.65rem">${x.estado==='pendiente'?'⏳ Pendiente':'✓ Confirmado'}</span><div class="res-acc">${x.estado!=='confirmada'?`<button class="rbtn conf" onclick="confirmarAb('${k}',${x.id})">✓</button>`:''}<button class="rbtn canc" onclick="cancelarAb('${k}',${x.id})">✕</button></div></div>`).join('')}</div>`;
+  };
+  el.innerHTML=renderT('Tarde · 15–18 hs',S.ins_tarde,'tarde')+renderT('Noche · 18–21 hs',S.ins_noche,'noche');
+}
+async function adminAnotarPersona(turno){
+  const nombre=document.getElementById('adm-nombre-'+turno).value.trim();
+  const tel=document.getElementById('adm-tel-'+turno).value.trim();
+  const opcion=document.getElementById('adm-opcion-'+turno).value;
+  if(!nombre){toast('Ingresá el nombre');return;}
+  const lista=turno==='tarde'?S.ins_tarde:S.ins_noche;
+  if(lista.length>=MAX_CUPOS){toast('Cupo completo');return;}
+  const precio=opcion==='con_pizza'?30000:20000;
+  const na={id:Math.floor(Date.now()/1000),nombre,tel,opcion,precio,metodo:'admin',es_admin:true,estado:'confirmada',fecha:new Date().toLocaleDateString('es-AR')};
+  lista.push(na);await saveInscripto(turno,na);renderAdmAbiertas();renderCupos();renderListaInscriptos();
+  toast(nombre+' anotado/a ✓');
+}
+function confirmarAb(t,id){const lista=t==='tarde'?S.ins_tarde:S.ins_noche;const i=lista.find(x=>x.id===id);if(i){i.estado='confirmada';updateInscripto(id,{estado:'confirmada'});}renderAdmAbiertas();toast('Pago confirmado ✓');}
+function cancelarAb(t,id){if(t==='tarde')S.ins_tarde=S.ins_tarde.filter(x=>x.id!==id);else S.ins_noche=S.ins_noche.filter(x=>x.id!==id);deleteInscripto(id);renderAdmAbiertas();renderCupos();renderListaInscriptos();toast('Inscripción cancelada');}
 function iniciarMover(id){S.pendMover=id;cerrarModal('modal-adm-slot');const r=S.reservas.find(x=>x.id===id);document.getElementById('mv-dia').value=r.dia;actualizarHorasMover();document.getElementById('modal-mover').classList.add('show');}
 document.addEventListener('change',e=>{if(e.target.id==='mv-dia')actualizarHorasMover();});
 function actualizarHorasMover(){const d=document.getElementById('mv-dia').value;document.getElementById('mv-hora').innerHTML=horas(d).map(h=>`<option value="${h}">${h}</option>`).join('');}
@@ -1786,8 +1767,8 @@ function checkResetAbiertas(){
     }
   }
 
-  // Reiniciar turno domingo a las 18:00 del domingo
-  if(ahora.getDay()===0 && hora >= 18){
+  // Reiniciar turno noche a las 21:00 del sábado
+  if(esSabado && hora >= 21){
     const ultimoResetNoche = S.ultimoResetNoche || '';
     if(ultimoResetNoche !== hoyStr){
       sbFetch('inscriptos_abierta?turno=eq.noche','DELETE');
@@ -3064,6 +3045,7 @@ async function init(){
   checkResetAbiertas();
   renderAlumnoDias();
   renderAlumnoGrid('lunes');
+  renderCupos();
   renderReviews();
   initStars();
 }
