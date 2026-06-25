@@ -1167,16 +1167,19 @@ async function sbFetch(path, method='GET', body=null){
 }
 
 async function save(){
-  // También guardamos en localStorage como backup
   localStorage.setItem('pdo_v3',JSON.stringify(S));
 
-  // Slots bloqueados
+  // Slots bloqueados: delete todos y reinserta solo los actuales
   await sbFetch('slots_bloqueados','DELETE');
   for(const k of Object.keys(S.slots)){
-    await sbFetch('slots_bloqueados','POST',{id:k});
+    const r=await fetch(SB_URL+'/rest/v1/slots_bloqueados',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=representation'},
+      body:JSON.stringify({id:k})
+    });
   }
 
-  // Config (reset timestamps)
+  // Config
   await sbFetch('config?clave=in.(ultimoResetTarde,ultimoResetNoche)','DELETE');
   await sbFetch('config','POST',{clave:'ultimoResetTarde',valor:S.ultimoResetTarde||''});
   await sbFetch('config','POST',{clave:'ultimoResetNoche',valor:S.ultimoResetNoche||''});
