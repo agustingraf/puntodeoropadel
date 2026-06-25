@@ -1169,20 +1169,36 @@ async function sbFetch(path, method='GET', body=null){
 async function save(){
   localStorage.setItem('pdo_v3',JSON.stringify(S));
 
-  // Slots bloqueados: delete todos y reinserta solo los actuales
-  await sbFetch('slots_bloqueados','DELETE');
-  for(const k of Object.keys(S.slots)){
-    const r=await fetch(SB_URL+'/rest/v1/slots_bloqueados',{
-      method:'POST',
-      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'resolution=merge-duplicates,return=representation'},
-      body:JSON.stringify({id:k})
+  // Slots: borramos todos, esperamos, y recién después insertamos
+  try{
+    const delRes=await fetch(SB_URL+'/rest/v1/slots_bloqueados',{
+      method:'DELETE',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
     });
+    await delRes.text(); // esperar que termine
+  }catch(e){}
+
+  // Pequeño delay para asegurar que el DELETE se propagó
+  await new Promise(r=>setTimeout(r,300));
+
+  const keys=Object.keys(S.slots);
+  if(keys.length>0){
+    // Insertar todos de una sola vez como array
+    try{
+      await fetch(SB_URL+'/rest/v1/slots_bloqueados',{
+        method:'POST',
+        headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+        body:JSON.stringify(keys.map(k=>({id:k})))
+      });
+    }catch(e){console.warn('Error saving slots',e);}
   }
 
   // Config
-  await sbFetch('config?clave=in.(ultimoResetTarde,ultimoResetNoche)','DELETE');
-  await sbFetch('config','POST',{clave:'ultimoResetTarde',valor:S.ultimoResetTarde||''});
-  await sbFetch('config','POST',{clave:'ultimoResetNoche',valor:S.ultimoResetNoche||''});
+  try{
+    await sbFetch('config?clave=in.(ultimoResetTarde,ultimoResetNoche)','DELETE');
+    await sbFetch('config','POST',{clave:'ultimoResetTarde',valor:S.ultimoResetTarde||''});
+    await sbFetch('config','POST',{clave:'ultimoResetNoche',valor:S.ultimoResetNoche||''});
+  }catch(e){}
 }
 
 async function saveReserva(r){
