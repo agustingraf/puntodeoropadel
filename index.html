@@ -1653,30 +1653,10 @@ function desbloquear(d,h){delete S.slots[key(d,h)];save();cerrarModal('modal-adm
 function confirmarRes(id){const r=S.reservas.find(x=>x.id===id);if(r){r.estado='confirmada';updateReserva(id,{estado:'confirmada'});}cerrarModal('modal-adm-slot');renderAdmGrid(S.diaAdm);renderAlumnoGrid(S.diaA);toast('Pago confirmado ✓');}
 function cancelarRes(id){const r=S.reservas.find(x=>x.id===id);if(r){r.estado='cancelada';deleteReserva(id);}cerrarModal('modal-adm-slot');renderAdmGrid(S.diaAdm);renderAlumnoGrid(S.diaA);renderAdmReservas();toast('Reserva cancelada');}
 function renderAdmReservas(){const el=document.getElementById('adm-res-list');const activas=S.reservas.filter(r=>r.estado!=='cancelada').sort((a,b)=>DIAS.indexOf(a.dia)-DIAS.indexOf(b.dia)||a.hora.localeCompare(b.hora));if(!activas.length){el.innerHTML='<div class="empty">📭 No hay reservas activas.</div>';return;}el.innerHTML=activas.map(r=>`<div class="res-item"><div class="res-info"><div class="res-dia">${DIAS_L[r.dia]} ${r.hora} hs</div><div class="res-alumno">${r.nombre}</div><div class="res-det">📱 ${r.tel} · ${r.tipo} · $${r.precio?.toLocaleString('es-AR')||'—'} · ${r.metodo==='mp'?'MP':'Transf.'} · ${r.fecha}</div></div><span class="res-estado ${r.estado==='pendiente'?'est-pend':'est-conf'}">${r.estado==='pendiente'?'⏳ Pago pendiente':'✓ Pago confirmado'}</span><div class="res-acc">${r.estado==='pendiente'?`<button class="rbtn conf" onclick="confirmarRes(${r.id});renderAdmReservas()">Confirmar pago</button>`:''}<button class="rbtn mov" onclick="iniciarMover(${r.id})">Mover</button><button class="rbtn canc" onclick="cancelarRes(${r.id})">Cancelar</button></div></div>`).join('');}
-function renderAdmAbiertas(){
-  const el=document.getElementById('adm-ab-grid');
-  const renderT=(titulo,lista,k)=>{
-    const libre=MAX_CUPOS-lista.length;
-    const opcionesSelect=`<option value="sin_pizza">🎾 Solo partido — $20.000</option>`;
-    const addForm=libre>0?`<div class="adm-add-form"><div class="adm-add-title">✦ Anotar persona manualmente</div><div class="adm-add-row"><input type="text" id="adm-nombre-${k}" placeholder="Nombre"><input type="tel" id="adm-tel-${k}" placeholder="WhatsApp (opcional)"><select id="adm-opcion-${k}">${opcionesSelect}</select><button class="adm-add-btn" onclick="adminAnotarPersona('${k}')">Anotar</button></div></div>`:'<div style="background:var(--rojo-light);border-radius:10px;padding:.75rem 1rem;font-size:.82rem;color:var(--rojo);margin-bottom:1rem">⚠️ Cupo completo — no se pueden agregar más personas.</div>';
-    return`<div><div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:500;color:var(--azul);margin-bottom:.65rem">${titulo} <span style="font-size:.8rem;font-weight:400;font-family:'DM Sans',sans-serif;color:var(--gris)">(${lista.length}/${MAX_CUPOS} · ${libre} libre${libre===1?'':'s'})</span></div>${addForm}${lista.length===0?'<div class="empty" style="padding:1rem 0">Sin inscriptos todavía.</div>':lista.map(x=>`<div class="ab-res-item"><div class="ab-badge-adm ${x.opcion==='con_pizza'?'pizza':'std'}">${x.opcion==='con_pizza'?'🍕':'🎾'}</div><div class="res-info"><div class="res-alumno">${x.nombre}${x.es_admin?' <span style="font-size:.65rem;background:var(--azul);color:var(--oro);padding:1px 7px;border-radius:100px;margin-left:4px">Admin</span>':''}</div><div class="res-det">${x.tel?'📱 '+x.tel+' · ':''}$${x.precio?.toLocaleString('es-AR')||'—'} · ${x.es_admin?'Cargado por admin':x.metodo==='mp'?'MP':'Transf.'} · ${x.fecha}</div></div><span class="res-estado ${x.estado==='pendiente'?'est-pend':'est-conf'}" style="font-size:.65rem">${x.estado==='pendiente'?'⏳ Pendiente':'✓ Confirmado'}</span><div class="res-acc">${x.estado!=='confirmada'?`<button class="rbtn conf" onclick="confirmarAb('${k}',${x.id})">✓</button>`:''}<button class="rbtn canc" onclick="cancelarAb('${k}',${x.id})">✕</button></div></div>`).join('')}</div>`;
-  };
-  el.innerHTML=renderT('Tarde · 15–18 hs',S.ins_tarde,'tarde')+renderT('Domingo · 15–18 hs',S.ins_noche,'noche');
-}
-async function adminAnotarPersona(turno){
-  const nombre=document.getElementById('adm-nombre-'+turno).value.trim();
-  const tel=document.getElementById('adm-tel-'+turno).value.trim();
-  const opcion=document.getElementById('adm-opcion-'+turno).value;
-  if(!nombre){toast('Ingresá el nombre');return;}
-  const lista=turno==='tarde'?S.ins_tarde:S.ins_noche;
-  if(lista.length>=MAX_CUPOS){toast('Cupo completo');return;}
-  const precio=opcion==='con_pizza'?30000:20000;
-  const na={id:Math.floor(Date.now()/1000),nombre,tel,opcion,precio,metodo:'admin',es_admin:true,estado:'confirmada',fecha:new Date().toLocaleDateString('es-AR')};
-  lista.push(na);await saveInscripto(turno,na);renderAdmAbiertas();
-  toast(nombre+' anotado/a ✓');
-}
-function confirmarAb(t,id){const lista=t==='tarde'?S.ins_tarde:S.ins_noche;const i=lista.find(x=>x.id===id);if(i){i.estado='confirmada';updateInscripto(id,{estado:'confirmada'});}renderAdmAbiertas();toast('Pago confirmado ✓');}
-function cancelarAb(t,id){if(t==='tarde')S.ins_tarde=S.ins_tarde.filter(x=>x.id!==id);else S.ins_noche=S.ins_noche.filter(x=>x.id!==id);deleteInscripto(id);renderAdmAbiertas();toast('Inscripción cancelada');}
+
+
+
+
 function iniciarMover(id){S.pendMover=id;cerrarModal('modal-adm-slot');const r=S.reservas.find(x=>x.id===id);document.getElementById('mv-dia').value=r.dia;actualizarHorasMover();document.getElementById('modal-mover').classList.add('show');}
 document.addEventListener('change',e=>{if(e.target.id==='mv-dia')actualizarHorasMover();});
 function actualizarHorasMover(){const d=document.getElementById('mv-dia').value;document.getElementById('mv-hora').innerHTML=horas(d).map(h=>`<option value="${h}">${h}</option>`).join('');}
