@@ -1672,11 +1672,11 @@ async function adminAnotarPersona(turno){
   if(lista.length>=MAX_CUPOS){toast('Cupo completo');return;}
   const precio=opcion==='con_pizza'?30000:20000;
   const na={id:Math.floor(Date.now()/1000),nombre,tel,opcion,precio,metodo:'admin',es_admin:true,estado:'confirmada',fecha:new Date().toLocaleDateString('es-AR')};
-  lista.push(na);await saveInscripto(turno,na);renderAdmAbiertas();renderCupos();renderListaInscriptos();
+  lista.push(na);await saveInscripto(turno,na);renderAdmAbiertas();
   toast(nombre+' anotado/a ✓');
 }
 function confirmarAb(t,id){const lista=t==='tarde'?S.ins_tarde:S.ins_noche;const i=lista.find(x=>x.id===id);if(i){i.estado='confirmada';updateInscripto(id,{estado:'confirmada'});}renderAdmAbiertas();toast('Pago confirmado ✓');}
-function cancelarAb(t,id){if(t==='tarde')S.ins_tarde=S.ins_tarde.filter(x=>x.id!==id);else S.ins_noche=S.ins_noche.filter(x=>x.id!==id);deleteInscripto(id);renderAdmAbiertas();renderCupos();renderListaInscriptos();toast('Inscripción cancelada');}
+function cancelarAb(t,id){if(t==='tarde')S.ins_tarde=S.ins_tarde.filter(x=>x.id!==id);else S.ins_noche=S.ins_noche.filter(x=>x.id!==id);deleteInscripto(id);renderAdmAbiertas();toast('Inscripción cancelada');}
 function iniciarMover(id){S.pendMover=id;cerrarModal('modal-adm-slot');const r=S.reservas.find(x=>x.id===id);document.getElementById('mv-dia').value=r.dia;actualizarHorasMover();document.getElementById('modal-mover').classList.add('show');}
 document.addEventListener('change',e=>{if(e.target.id==='mv-dia')actualizarHorasMover();});
 function actualizarHorasMover(){const d=document.getElementById('mv-dia').value;document.getElementById('mv-hora').innerHTML=horas(d).map(h=>`<option value="${h}">${h}</option>`).join('');}
@@ -3084,7 +3084,6 @@ async function init(){
   checkResetAbiertas();
   renderAlumnoDias();
   renderAlumnoGrid('lunes');
-  renderCupos();
   renderReviews();
   initStars();
 }
