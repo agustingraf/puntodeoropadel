@@ -1171,7 +1171,7 @@ async function save(){
 
   // Slots: borramos todos, esperamos, y recién después insertamos
   try{
-    const delRes=await fetch(SB_URL+'/rest/v1/slots_bloqueados',{
+    const delRes=await fetch(SB_URL+'/rest/v1/slots_bloqueados?id=neq.NONE',{
       method:'DELETE',
       headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
     });
