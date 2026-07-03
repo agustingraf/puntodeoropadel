@@ -577,10 +577,10 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <h3>Individual</h3>
       <p class="pc-desc">Atención exclusiva, corrección técnica y progreso acelerado.</p>
       <div class="pc-precio-wrap">
-        <div class="pc-precio">$30.000<small> / hora</small></div>
+        <div class="pc-precio">$36.000<small> / hora</small></div>
         <div class="pc-seña">Pago total al reservar.</div>
       </div>
-      <button class="pc-btn" onclick="elegirClase('Individual',30000,30000)">Reservar turno →</button>
+      <button class="pc-btn" onclick="elegirClase('Individual',36000,36000)">Reservar turno →</button>
     </div>
 
     <div class="pc">
@@ -589,10 +589,10 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <h3>Doble</h3>
       <p class="pc-desc">Dos alumnos. Táctica de pareja y dinámica real de partido.</p>
       <div class="pc-precio-wrap">
-        <div class="pc-precio">$24.000<small> c/u · hora</small></div>
-        <div class="pc-seña">Reservás pagando <strong>$24.000</strong>. Tu compañero/a abona el día de la clase.</div>
+        <div class="pc-precio">$28.000<small> c/u · hora</small></div>
+        <div class="pc-seña">Reservás pagando <strong>$28.000</strong>. Tu compañero/a abona el día de la clase.</div>
       </div>
-      <button class="pc-btn" onclick="elegirClase('Doble',24000,24000)">Reservar turno →</button>
+      <button class="pc-btn" onclick="elegirClase('Doble',28000,28000)">Reservar turno →</button>
     </div>
 
     <div class="pc">
@@ -600,10 +600,10 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <h3>Triple / Cuádruple</h3>
       <p class="pc-desc">Grupos de 3 o 4. Mucho juego, buen ambiente y precio accesible.</p>
       <div class="pc-precio-wrap">
-        <div class="pc-precio">$20.000<small> c/u · hora</small></div>
-        <div class="pc-seña">Reservás pagando <strong>$20.000</strong>. El resto abona el día de la clase.</div>
+        <div class="pc-precio">$24.000<small> c/u · hora</small></div>
+        <div class="pc-seña">Reservás pagando <strong>$24.000</strong>. El resto abona el día de la clase.</div>
       </div>
-      <button class="pc-btn" onclick="elegirClase('Grupal',20000,20000)">Reservar turno →</button>
+      <button class="pc-btn" onclick="elegirClase('Grupal',24000,24000)">Reservar turno →</button>
     </div>
 
   </div>
@@ -967,9 +967,9 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <div style="background:var(--oro-light);border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:.65rem 1rem;font-size:.8rem;color:var(--oro-dark);margin-bottom:.65rem;line-height:1.5" id="cls-sena-info"></div>
       <div style="display:none" id="cls-tipo-wrap">
         <select id="cls-tipo-sel" onchange="cambiarTipoClase(this.value)" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.65rem;color:var(--azul);outline:none;background:var(--blanco)">
-          <option value="Individual">👤 Individual — $30.000 (pago total)</option>
-          <option value="Doble">👥 Doble — $24.000 c/u (señás $24.000)</option>
-          <option value="Grupal">👨‍👩‍👧 Triple/Cuádruple — $20.000 c/u (señás $20.000)</option>
+          <option value="Individual">👤 Individual — $36.000 (pago total)</option>
+          <option value="Doble">👥 Doble — $28.000 c/u (señás $28.000)</option>
+          <option value="Grupal">👨‍👩‍👧 Triple/Cuádruple — $24.000 c/u (señás $24.000)</option>
         </select>
       </div>
       <div class="err" id="cls-err">Completá nombre y WhatsApp.</div>
@@ -1142,7 +1142,7 @@ const DIAS_L={lunes:'Lunes',martes:'Martes',miercoles:'Miércoles',jueves:'Jueve
 const HORAS_LV=['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
 const HORAS_SD=['09:00','10:00','11:00','12:00','13:00','14:00','15:00'];
 const MAX_CUPOS=16;
-const PRECIOS={Individual:30000,Doble:48000,Grupal:20000};
+const PRECIOS={Individual:36000,Doble:56000,Grupal:24000};
 
 let S={slots:{},reservas:[],ins_tarde:[],ins_noche:[],diaA:'lunes',diaAdm:'lunes',loggedIn:false,pendMover:null,ultimoResetTarde:'',ultimoResetNoche:''};
 let CLS={dia:'',hora:'',nombre:'',tel:'',tipo:'Individual',precio:30000,metodo:'mp'};
@@ -1678,7 +1678,7 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 let selectedStars=0;
 
 function cambiarTipoClase(tipo){
-  const precios={Individual:{precio:30000,seña:30000},Doble:{precio:24000,seña:24000},Grupal:{precio:20000,seña:20000}};
+  const precios={Individual:{precio:36000,seña:36000},Doble:{precio:28000,seña:28000},Grupal:{precio:24000,seña:24000}};
   const p=precios[tipo];
   window._clasePreseleccionada={tipo,precio:p.precio,seña:p.seña};
   CLS.tipo=tipo;CLS.precio=p.seña;
