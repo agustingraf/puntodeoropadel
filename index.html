@@ -638,7 +638,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 <section class="partidos-sec" id="partidos">
   <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>Partidos organizados</span></div>
   <div class="sec-title">Anotate a un partido</div>
-  <div class="sec-sub">Agus publica turnos disponibles. El primero elige si es caballeros, damas o mixto, y la categoría. Los siguientes solo pueden unirse si coinciden (±1 categoría). Precio: <strong>$20.000 por persona</strong>.</div>
+  <div class="sec-sub">Agus publica los partidos disponibles. Los detalles de precio y categoría se publican junto con cada partido.</div>
   <div id="partidos-lista"></div>
 
 
@@ -653,7 +653,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
         <div class="step-num">Paso 1 de 3 · Tus datos</div>
         <div class="step-title" id="part-titulo">Anotarme al partido</div>
       </div>
-      <div style="background:var(--oro-light);border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:.65rem 1rem;font-size:.8rem;color:var(--oro-dark);margin-bottom:.65rem">🎾 <strong>$20.000 por persona</strong> · Abonás al reservar y enviás el comprobante por WhatsApp.</div>
+      <div style="background:var(--oro-light);border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:.65rem 1rem;font-size:.8rem;color:var(--oro-dark);margin-bottom:.65rem;display:none" id="part-precio-info"></div>
       <div class="err" id="part-err">Completá todos los campos.</div>
       <input type="text" id="part-nombre" placeholder="Tu nombre completo">
       <input type="tel" id="part-tel" placeholder="WhatsApp (ej: 1134567890)">
@@ -690,13 +690,13 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <div class="step" id="part-3">
       <div class="step-header"><div class="step-num">Paso 3 de 3 · Realizá el pago</div><div class="step-title" id="part-s3-title">Pagá con Mercado Pago</div></div>
       <div id="part-mp-box">
-        <div class="pago-box mp"><div class="pago-box-title">Total a pagar</div><div class="pago-box-monto">$20.000<small> ARS</small></div><div class="pago-dato"><span class="pago-dato-label">A nombre de</span><span class="pago-dato-val">Agustín Graf</span></div><a href="https://link.mercadopago.com.ar/agustingraf" target="_blank" class="btn-mp-link">💳 Ir a Mercado Pago ↗</a></div>
+        <div class="pago-box mp"><div class="pago-box-title">Total a pagar</div><div class="pago-box-monto" id="part-monto-mp" style="font-size:1.2rem">Ver detalle</div><div class="pago-dato"><span class="pago-dato-label">A nombre de</span><span class="pago-dato-val">Agustín Graf</span></div><a href="https://link.mercadopago.com.ar/agustingraf" target="_blank" class="btn-mp-link">💳 Ir a Mercado Pago ↗</a></div>
         <div class="aviso-comprobante"><strong>⚠️ Importante</strong>Después de pagar, enviá el comprobante por WhatsApp para confirmar tu lugar.</div>
         <button class="mb wa" onclick="partEnviarComp()">💬 Enviar comprobante por WhatsApp</button>
         <button class="mb sec full" onclick="partGoStep(2)">← Cambiar método</button>
       </div>
       <div id="part-transfer-box" style="display:none">
-        <div class="pago-box transfer"><div class="pago-box-title">Total a transferir</div><div class="pago-box-monto">$20.000<small> ARS</small></div><div class="pago-dato"><span class="pago-dato-label">Alias</span><span class="pago-dato-val">Agusgrafmp</span><button class="copy-btn" onclick="copiar('Agusgrafmp')">Copiar</button></div><div class="pago-dato"><span class="pago-dato-label">A nombre de</span><span class="pago-dato-val">Agustín Graf</span></div></div>
+        <div class="pago-box transfer"><div class="pago-box-title">Total a transferir</div><div class="pago-box-monto" id="part-monto-tr" style="font-size:1.2rem">Ver detalle</div><div class="pago-dato"><span class="pago-dato-label">Alias</span><span class="pago-dato-val">Agusgrafmp</span><button class="copy-btn" onclick="copiar('Agusgrafmp')">Copiar</button></div><div class="pago-dato"><span class="pago-dato-label">A nombre de</span><span class="pago-dato-val">Agustín Graf</span></div></div>
         <div class="aviso-comprobante"><strong>⚠️ Importante</strong>Después de transferir, enviá el comprobante por WhatsApp para confirmar tu lugar.</div>
         <button class="mb wa" onclick="partEnviarComp()">💬 Enviar comprobante por WhatsApp</button>
         <button class="mb sec full" onclick="partGoStep(2)">← Cambiar método</button>
@@ -718,7 +718,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 <section class="torneos-sec" id="torneos">
   <div class="sec-eyebrow"><div class="sec-eyebrow-line"></div><span>Competencia</span></div>
   <div class="sec-title">Torneos</div>
-  <div class="sec-sub">Inscripción <strong>$25.000 por persona</strong>. Señá <strong>$25.000 por pareja</strong> (uno paga por los dos) y el resto se abona el día del torneo.</div>
+  <div class="sec-sub">Anotate a los próximos torneos. Los detalles de inscripción y precios se publican junto con cada torneo.</div>
   <div id="torneos-lista"></div>
 </section>
 
@@ -733,9 +733,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
         <div class="step-num">Paso 1 de 3 · Datos de la pareja</div>
         <div class="step-title" id="torn-titulo">Inscribirse al torneo</div>
       </div>
-      <div style="background:var(--oro-light);border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:.65rem 1rem;font-size:.8rem;color:var(--oro-dark);margin-bottom:.75rem">
-        🏆 <strong>$25.000 por persona</strong> · Señá $25.000 uno por la pareja. El resto se abona el día del torneo.
-      </div>
+      <div style="background:var(--oro-light);border:1px solid rgba(212,175,55,.2);border-radius:10px;padding:.65rem 1rem;font-size:.8rem;color:var(--oro-dark);margin-bottom:.75rem" id="torn-precio-info"></div>
       <div class="err" id="torn-err">Completá todos los campos.</div>
 
       <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.4rem">Jugador 1</div>
@@ -788,7 +786,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <div id="torn-mp-box">
         <div class="pago-box mp">
           <div class="pago-box-title">Seña a pagar</div>
-          <div class="pago-box-monto">$25.000<small> ARS</small></div>
+          <div class="pago-box-monto" id="torn-monto-mp">—<small> ARS</small></div>
           <div class="pago-dato"><span class="pago-dato-label">A nombre de</span><span class="pago-dato-val">Agustín Graf</span></div>
           <a href="https://link.mercadopago.com.ar/agustingraf" target="_blank" class="btn-mp-link">💳 Ir a Mercado Pago ↗</a>
         </div>
@@ -799,7 +797,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <div id="torn-transfer-box" style="display:none">
         <div class="pago-box transfer">
           <div class="pago-box-title">Seña a transferir</div>
-          <div class="pago-box-monto">$25.000<small> ARS</small></div>
+          <div class="pago-box-monto" id="torn-monto-tr">—<small> ARS</small></div>
           <div class="pago-dato"><span class="pago-dato-label">Alias</span><span class="pago-dato-val">Agusgrafmp</span><button class="copy-btn" onclick="copiar('Agusgrafmp')">Copiar</button></div>
           <div class="pago-dato"><span class="pago-dato-label">A nombre de</span><span class="pago-dato-val">Agustín Graf</span></div>
         </div>
@@ -1949,6 +1947,8 @@ function abrirModalPartido(slotId){
   document.getElementById('part-tel').value='';
   document.getElementById('part-err').style.display='none';
   document.getElementById('part-titulo').textContent=fmtFechaPartido(s.fecha)+' · '+s.hora+' hs';
+  const pinfo=document.getElementById('part-precio-info');
+  if(pinfo){if(s.notas){pinfo.textContent='📌 '+s.notas;pinfo.style.display='block';}else{pinfo.style.display='none';}}
 
   /* Tipo */
   const tipoWrap=document.getElementById('part-tipo-wrap');
@@ -2049,7 +2049,7 @@ function renderAdmPartidos(){
         <option value="6">6 cupos</option>
         <option value="8">8 cupos</option>
       </select>
-      <input type="text" id="adm-part-notas" placeholder="Nota opcional">
+      <input type="text" id="adm-part-notas" placeholder="Precio / info (ej: $25.000 · Señá por MP)">
       <button class="adm-add-btn" onclick="adminCrearPartido()">Publicar</button>
     </div>
   </div>`;
@@ -2126,7 +2126,7 @@ function selPagoP(tipo){PART.form.metodo=tipo;document.getElementById("part-opt-
 
 async function partStep2(){const nombre=document.getElementById("part-nombre").value.trim();const tel=document.getElementById("part-tel").value.trim();const errEl=document.getElementById("part-err");if(!nombre||!tel){errEl.textContent="Completá nombre y WhatsApp.";errEl.style.display="block";return;}if(!PART.form.cat){errEl.textContent="Elegí tu categoría.";errEl.style.display="block";return;}if(PART.form.tipo==="Mixto"&&!PART.form.genero){errEl.textContent="Indicá tu género.";errEl.style.display="block";return;}const s=PART.slots.find(x=>x.id===PART.selectedSlotId);if(!s)return;const ins=s.inscriptos||[];if(PART.form.tipo==="Mixto"||s.tipo==="Mixto"){const cnt=ins.filter(i=>i.genero===PART.form.genero).length;if(cnt>=2){errEl.textContent="Ya hay 2 "+(PART.form.genero==="M"?"caballeros":"damas")+" anotados.";errEl.style.display="block";return;}}errEl.style.display="none";PART.form.nombre=nombre;PART.form.tel=tel;selPagoP("mp");partGoStep(2);}
 
-async function partGoStep(n){if(n===3){const isMp=PART.form.metodo==="mp";document.getElementById("part-s3-title").textContent=isMp?"Pagá con Mercado Pago":"Transferí el monto";document.getElementById("part-mp-box").style.display=isMp?"block":"none";document.getElementById("part-transfer-box").style.display=isMp?"none":"block";}if(n===4){const s=PART.slots.find(x=>x.id===PART.selectedSlotId);if(!s)return;const ins=s.inscriptos||[];const esPrimero=ins.length===0;if(esPrimero){s.tipo=PART.form.tipo;s.cat_base=PART.form.cat;await updatePartidoSlot(s.id,{tipo:PART.form.tipo,cat_base:PART.form.cat});}const ni={id:Math.floor(Date.now()/1000)+"_"+Math.random().toString(36).slice(2,6),slot_id:s.id,nombre:PART.form.nombre,tel:PART.form.tel,tipo:PART.form.tipo||s.tipo,cat:PART.form.cat,genero:PART.form.genero||"M",metodo:PART.form.metodo||"mp",estado:"pendiente",fecha:new Date().toLocaleDateString("es-AR")};ins.push(ni);await savePartidoInscripto(ni);renderPartidos();sendEmailNotification("Partido "+(s.tipo||PART.form.tipo),{dia:fmtFechaPartido(s.fecha),hora:s.hora+" hs",nombre:PART.form.nombre,tel:PART.form.tel,precio:20000,metodo:PART.form.metodo,fecha:ni.fecha});document.getElementById("part-resumen").innerHTML=`<div class="sr-row"><span class="sr-label">Fecha</span><span class="sr-val">${fmtFechaPartido(s.fecha)} ${s.hora} hs</span></div><div class="sr-row"><span class="sr-label">Tipo</span><span class="sr-val">${s.tipo||PART.form.tipo}</span></div><div class="sr-row"><span class="sr-label">Categoría</span><span class="sr-val">${PART.form.cat}</span></div><div class="sr-row"><span class="sr-label">Total</span><span class="sr-val" style="color:var(--oro-dark)">$20.000</span></div><div class="sr-row"><span class="sr-label">Método</span><span class="sr-val">${PART.form.metodo==="mp"?"Mercado Pago":"Transferencia"}</span></div>`;}document.querySelectorAll("#modal-partido .step").forEach(x=>x.classList.remove("active"));document.getElementById("part-"+n).classList.add("active");const pcts={1:"33%",2:"66%",3:"90%",4:"100%"};document.getElementById("prog-partido").style.width=pcts[n]||"33%";}
+async function partGoStep(n){if(n===3){const isMp=PART.form.metodo==="mp";document.getElementById("part-s3-title").textContent=isMp?"Pagá con Mercado Pago":"Transferí el monto";document.getElementById("part-mp-box").style.display=isMp?"block":"none";document.getElementById("part-transfer-box").style.display=isMp?"none":"block";const ss=PART.slots.find(x=>x.id===PART.selectedSlotId)||{};const montoP=ss.notas||"Consultar precio";const pm=document.getElementById("part-monto-mp"),pt=document.getElementById("part-monto-tr");if(pm)pm.textContent=montoP;if(pt)pt.textContent=montoP;}if(n===4){const s=PART.slots.find(x=>x.id===PART.selectedSlotId);if(!s)return;const ins=s.inscriptos||[];const esPrimero=ins.length===0;if(esPrimero){s.tipo=PART.form.tipo;s.cat_base=PART.form.cat;await updatePartidoSlot(s.id,{tipo:PART.form.tipo,cat_base:PART.form.cat});}const ni={id:Math.floor(Date.now()/1000)+"_"+Math.random().toString(36).slice(2,6),slot_id:s.id,nombre:PART.form.nombre,tel:PART.form.tel,tipo:PART.form.tipo||s.tipo,cat:PART.form.cat,genero:PART.form.genero||"M",metodo:PART.form.metodo||"mp",estado:"pendiente",fecha:new Date().toLocaleDateString("es-AR")};ins.push(ni);await savePartidoInscripto(ni);renderPartidos();sendEmailNotification("Partido "+(s.tipo||PART.form.tipo),{dia:fmtFechaPartido(s.fecha),hora:s.hora+" hs",nombre:PART.form.nombre,tel:PART.form.tel,precio:20000,metodo:PART.form.metodo,fecha:ni.fecha});document.getElementById("part-resumen").innerHTML=`<div class="sr-row"><span class="sr-label">Fecha</span><span class="sr-val">${fmtFechaPartido(s.fecha)} ${s.hora} hs</span></div><div class="sr-row"><span class="sr-label">Tipo</span><span class="sr-val">${s.tipo||PART.form.tipo}</span></div><div class="sr-row"><span class="sr-label">Categoría</span><span class="sr-val">${PART.form.cat}</span></div><div class="sr-row"><span class="sr-label">Método</span><span class="sr-val">${PART.form.metodo==="mp"?"Mercado Pago":"Transferencia"}</span></div>`;}document.querySelectorAll("#modal-partido .step").forEach(x=>x.classList.remove("active"));document.getElementById("part-"+n).classList.add("active");const pcts={1:"33%",2:"66%",3:"90%",4:"100%"};document.getElementById("prog-partido").style.width=pcts[n]||"33%";}
 
 function partEnviarComp(){const s=PART.slots.find(x=>x.id===PART.selectedSlotId)||{};const metodoTxt=PART.form.metodo==="mp"?"Mercado Pago":"transferencia (alias: Agusgrafmp)";const msg=encodeURIComponent(`Hola Agus! Te mando el comprobante para el partido del ${fmtFechaPartido(s.fecha||"")} ${s.hora||""} hs.\n👤 ${PART.form.nombre}\n📱 ${PART.form.tel}\n🎾 ${s.tipo||PART.form.tipo} · ${PART.form.cat}\n💰 $20.000\n💳 ${metodoTxt}\n\n[Adjunto comprobante]`);window.open("https://wa.me/5491134634000?text="+msg,"_blank");if(document.getElementById("part-3").classList.contains("active"))partGoStep(4);}
 
@@ -2218,7 +2218,7 @@ function renderTorneos(){
         <div class="torneo-parejas">${parejasPills}${vaciosPills}</div>
       </div>
       <div class="torneo-foot">
-        <div style="font-size:.78rem;color:var(--gris)">💰 <strong style="color:var(--azul)">$25.000 por persona</strong> · Seña $25.000 por pareja</div>
+        <div style="font-size:.78rem;color:var(--gris)">${t.descripcion_precio?'💰 '+t.descripcion_precio:''}</div>
         ${lleno
           ?'<div style="font-size:.84rem;font-weight:500;color:var(--verde)">✓ Cupo completo</div>'
           :`<button class="pc-btn" style="width:auto;padding:.62rem 1.5rem" onclick="abrirModalTorneo('${t.id}')">Inscribirse →</button>`}
@@ -2235,6 +2235,11 @@ function abrirModalTorneo(id){
   ['torn-j1-nombre','torn-j1-tel','torn-j2-nombre','torn-j2-tel'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
   ['torn-j1-cat','torn-j2-cat'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
   document.getElementById('torn-titulo').textContent=t.nombre;
+  const precioInfo=document.getElementById('torn-precio-info');
+  if(precioInfo){
+    if(t.descripcion_precio){precioInfo.textContent=t.descripcion_precio;precioInfo.style.display='block';}
+    else{precioInfo.style.display='none';}
+  }
   document.getElementById('torn-err').style.display='none';
   selPagoT('mp');
   tornGoStep(1);
@@ -2268,6 +2273,12 @@ async function tornGoStep(n){
     document.getElementById('torn-s3-title').textContent=isMp?'Pagá con Mercado Pago':'Transferí el monto';
     document.getElementById('torn-mp-box').style.display=isMp?'block':'none';
     document.getElementById('torn-transfer-box').style.display=isMp?'none':'block';
+    const tt=TORN.lista.find(x=>x.id===TORN.selectedId)||{};
+    const montoLabel=tt.descripcion_precio||'Ver detalle';
+    const mpM=document.getElementById('torn-monto-mp');
+    const trM=document.getElementById('torn-monto-tr');
+    if(mpM)mpM.innerHTML=montoLabel+'<small> ARS</small>';
+    if(trM)trM.innerHTML=montoLabel+'<small> ARS</small>';
   }
   if(n===4){
     const t=TORN.lista.find(x=>x.id===TORN.selectedId);
@@ -2285,11 +2296,12 @@ async function tornGoStep(n){
     await saveTorneoInscripto(ni);
     renderTorneos();
     sendEmailNotification('Torneo: '+t.nombre,{dia:fmtFechaTorneo(t.fecha).full,hora:t.hora||'',nombre:TORN.form.j1nombre+' & '+TORN.form.j2nombre,tel:TORN.form.j1tel,precio:25000,metodo:TORN.form.metodo,fecha:ni.fecha});
+    const tt2=TORN.lista.find(x=>x.id===TORN.selectedId)||{};
     document.getElementById('torn-resumen').innerHTML=`
       <div class="sr-row"><span class="sr-label">Torneo</span><span class="sr-val">${t.nombre}</span></div>
       <div class="sr-row"><span class="sr-label">Fecha</span><span class="sr-val">${fmtFechaTorneo(t.fecha).full}</span></div>
       <div class="sr-row"><span class="sr-label">Pareja</span><span class="sr-val">${TORN.form.j1nombre} & ${TORN.form.j2nombre}</span></div>
-      <div class="sr-row"><span class="sr-label">Seña</span><span class="sr-val" style="color:var(--oro-dark)">$25.000</span></div>
+      ${tt2.descripcion_precio?`<div class="sr-row"><span class="sr-label">Precio</span><span class="sr-val" style="color:var(--oro-dark)">${tt2.descripcion_precio}</span></div>`:''}
       <div class="sr-row"><span class="sr-label">Método</span><span class="sr-val">${TORN.form.metodo==='mp'?'Mercado Pago':'Transferencia'}</span></div>`;
   }
   document.querySelectorAll('#modal-torneo .step').forEach(x=>x.classList.remove('active'));
@@ -2322,6 +2334,7 @@ function renderAdmTorneos(){
       <input type="number" id="adm-torn-cupo" placeholder="Cupo (parejas)" value="16" style="width:100px">
       <input type="number" id="adm-torn-precio" placeholder="Precio total" value="50000" style="width:120px">
       <input type="text" id="adm-torn-desc" placeholder="Descripción (opcional)" style="flex:100%">
+      <input type="text" id="adm-torn-precio-desc" placeholder="Info de precio (ej: Seña $25.000 por pareja)" style="flex:100%">
       <button class="adm-add-btn" onclick="adminCrearTorneo()">Crear torneo</button>
     </div>
   </div>`;
@@ -2406,8 +2419,9 @@ async function adminCrearTorneo(){
   const cupo=parseInt(document.getElementById('adm-torn-cupo').value)||16;
   const precio_total=parseInt(document.getElementById('adm-torn-precio').value)||50000;
   const descripcion=document.getElementById('adm-torn-desc').value.trim();
+  const descripcion_precio=document.getElementById('adm-torn-precio-desc').value.trim();
   if(!nombre||!fecha){toast('Completá nombre y fecha');return;}
-  const nt={id:'t'+Date.now(),nombre,fecha,hora,tipo,categoria,lugar,cupo,precio_total,descripcion,activo:true};
+  const nt={id:'t'+Date.now(),nombre,fecha,hora,tipo,categoria,lugar,cupo,precio_total,descripcion,descripcion_precio,activo:true};
   await saveTorneo(nt);
   nt.parejas=[];
   TORN.lista.push(nt);
