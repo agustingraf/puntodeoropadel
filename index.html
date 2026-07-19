@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- PUNTO DE ORO v8 -->
+<!-- PUNTO DE ORO v8 + CRM -->
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -1062,6 +1062,79 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
   <div class="modal"><div style="padding:2rem"><h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:500;color:var(--azul);margin-bottom:.2rem">Mover reserva</h2><p style="font-size:.83rem;color:var(--gris);margin-bottom:1.1rem">Elegí el nuevo día y horario.</p><select id="mv-dia" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.6rem;color:var(--azul);outline:none"><option value="lunes">Lunes</option><option value="martes">Martes</option><option value="miercoles">Miércoles</option><option value="jueves">Jueves</option><option value="viernes">Viernes</option><option value="sabado">Sábado</option><option value="domingo">Domingo</option></select><select id="mv-hora" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.6rem;color:var(--azul);outline:none"></select><div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-mover')">Cancelar</button><button class="mb pri" onclick="ejecutarMover()">Mover</button></div></div></div>
 </div>
 
+<!-- MODAL LOGIN CRM -->
+<div class="modal-bg" id="modal-crm-login">
+  <div class="modal"><div style="padding:2rem">
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:500;color:var(--azul);margin-bottom:.25rem">Acceso al CRM</h2>
+    <p style="font-size:.83rem;color:var(--gris);margin-bottom:1.1rem">Ingresá con tu usuario de Supabase.</p>
+    <div class="err" id="ccl-err">Email o contraseña incorrectos.</div>
+    <input type="email" id="ccl-email" placeholder="Email" onkeydown="if(event.key==='Enter')crmLogin()">
+    <input type="password" id="ccl-pass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')crmLogin()">
+    <div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-crm-login')">Cancelar</button><button class="mb pri" onclick="crmLogin()">Entrar</button></div>
+  </div></div>
+</div>
+
+<!-- MODAL ALUMNO -->
+<div class="modal-bg" id="modal-crm-alumno">
+  <div class="modal"><div style="padding:2rem">
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:500;color:var(--azul);margin-bottom:1.1rem" id="cal-titulo">Alumno</h2>
+    <input type="hidden" id="cal-id">
+    <input type="text" id="cal-nombre" placeholder="Nombre completo">
+    <input type="tel" id="cal-tel" placeholder="WhatsApp">
+    <div style="display:flex;gap:.6rem">
+      <input type="text" id="cal-cat" placeholder="Categoría (ej. 5ta)" style="flex:1">
+      <select id="cal-formato" style="flex:1">
+        <option value="individual">Individual</option><option value="dupla">Dupla</option><option value="grupal">Grupal</option><option value="cancha_libre">Cancha libre</option>
+      </select>
+    </div>
+    <input type="number" id="cal-cuota" placeholder="Cuota mensual">
+    <textarea id="cal-notas" placeholder="Notas de juego (mano, punto fuerte, debilidades…)" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.6rem;color:var(--azul);outline:none;resize:vertical;min-height:60px"></textarea>
+    <label style="display:flex;align-items:center;gap:8px;font-size:.83rem;color:var(--azul);margin-bottom:.5rem"><input type="checkbox" id="cal-activo" style="width:auto" checked> Alumno activo</label>
+    <div class="mbtns" id="cal-del-wrap" style="display:none"><button class="mb dan" onclick="eliminarAlumno()" style="flex:none;width:100%">Eliminar alumno</button></div>
+    <div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-crm-alumno')">Cancelar</button><button class="mb pri" onclick="guardarAlumno()">Guardar</button></div>
+  </div></div>
+</div>
+
+<!-- MODAL TURNO -->
+<div class="modal-bg" id="modal-crm-turno">
+  <div class="modal"><div style="padding:2rem">
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:500;color:var(--azul);margin-bottom:1.1rem" id="ctu-titulo">Turno</h2>
+    <input type="hidden" id="ctu-id">
+    <div style="display:flex;gap:.6rem">
+      <select id="ctu-dia" style="flex:1"></select>
+      <input type="time" id="ctu-hora" style="flex:1">
+    </div>
+    <div style="display:flex;gap:.6rem">
+      <input type="number" id="ctu-dur" placeholder="Duración (min)" style="flex:1">
+      <select id="ctu-formato" style="flex:1">
+        <option value="individual">Individual</option><option value="dupla">Dupla</option><option value="grupal">Grupal</option><option value="cancha_libre">Cancha libre</option>
+      </select>
+    </div>
+    <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin:.6rem 0 .5rem">Alumnos en este turno</div>
+    <div id="ctu-alumnos" style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.75rem"></div>
+    <textarea id="ctu-notas" placeholder="Notas" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.6rem;color:var(--azul);outline:none;resize:vertical;min-height:50px"></textarea>
+    <div class="mbtns" id="ctu-del-wrap" style="display:none"><button class="mb dan" onclick="eliminarTurno()" style="flex:none;width:100%">Eliminar turno</button></div>
+    <div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-crm-turno')">Cancelar</button><button class="mb pri" onclick="guardarTurno()">Guardar</button></div>
+  </div></div>
+</div>
+
+<!-- MODAL PAGO -->
+<div class="modal-bg" id="modal-crm-pago">
+  <div class="modal"><div style="padding:2rem">
+    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:500;color:var(--azul);margin-bottom:1.1rem">Nuevo pago</h2>
+    <select id="cpa-alumno"></select>
+    <div style="display:flex;gap:.6rem">
+      <input type="number" id="cpa-monto" placeholder="Monto" style="flex:1">
+      <input type="month" id="cpa-periodo" style="flex:1">
+    </div>
+    <div style="display:flex;gap:.6rem">
+      <select id="cpa-metodo" style="flex:1"><option value="efectivo">Efectivo</option><option value="transferencia">Transferencia</option><option value="mp">Mercado Pago</option></select>
+      <select id="cpa-estado" style="flex:1"><option value="pendiente">Pendiente</option><option value="pagado">Pagado</option></select>
+    </div>
+    <div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-crm-pago')">Cancelar</button><button class="mb pri" onclick="guardarPago()">Guardar</button></div>
+  </div></div>
+</div>
+
 <!-- MODAL LOGIN ADMIN -->
 <div class="modal-bg" id="modal-login">
   <div class="modal"><div style="padding:2rem"><h2 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:500;color:var(--azul);margin-bottom:.25rem">Panel Admin</h2><p style="font-size:.83rem;color:var(--gris);margin-bottom:1.4rem">Ingresá tu contraseña.</p><input type="password" id="pass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')checkPass()" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.6rem;color:var(--azul);outline:none"><div class="pass-err" id="pass-err">Contraseña incorrecta.</div><div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-login')">Cancelar</button><button class="mb pri" onclick="checkPass()">Entrar</button></div></div></div>
@@ -1078,6 +1151,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <button class="atab" onclick="adminTab('partidos',this)">Partidos</button>
       <button class="atab" onclick="adminTab('torneos',this)">Torneos</button>
       <button class="atab" onclick="adminTab('fixture',this)">Fixture</button>
+      <button class="atab" onclick="adminTab('crm',this)">Alumnos</button>
     </div>
     <button class="logout" onclick="logout()">Salir ×</button>
   </div>
@@ -1128,6 +1202,55 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <div class="adm-sub">Publicá partidos de caballeros, damas o mixtos. Los jugadores se anotan y pagan solos.</div>
       <div id="adm-partidos-content"></div>
     </div>
+    <div id="adm-crm" style="display:none">
+      <div id="crm-gate" style="text-align:center;padding:3rem 1rem">
+        <div class="adm-title">CRM de alumnos</div>
+        <div class="adm-sub">Sección protegida con un segundo login. Solo vos entrás acá.</div>
+        <button class="mb pri" style="max-width:220px;margin:0 auto" onclick="document.getElementById('modal-crm-login').classList.add('show')">Iniciar sesión</button>
+      </div>
+      <div id="crm-body" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem">
+          <div>
+            <div class="adm-title">CRM de alumnos</div>
+            <div class="adm-sub">Fichas, agenda semanal y pagos.</div>
+          </div>
+          <button class="logout" style="color:var(--gris)" onclick="crmLogout()">Cerrar sesión CRM ×</button>
+        </div>
+        <div class="dias-tabs" id="crm-subtabs">
+          <div class="dia-tab active" data-sub="alumnos" onclick="crmSubTab('alumnos')">Alumnos</div>
+          <div class="dia-tab" data-sub="agenda" onclick="crmSubTab('agenda')">Agenda</div>
+          <div class="dia-tab" data-sub="pagos" onclick="crmSubTab('pagos')">Pagos</div>
+        </div>
+
+        <div id="crm-alumnos-view">
+          <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.9rem;align-items:center">
+            <input type="text" id="crm-buscar" placeholder="Buscar alumno…" oninput="renderCrmAlumnos()" style="flex:1;min-width:180px;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.6rem 1rem;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none">
+            <button class="adm-add-btn" onclick="abrirModalAlumno()">+ Nuevo alumno</button>
+          </div>
+          <div class="res-list" id="crm-alumnos-list"></div>
+        </div>
+
+        <div id="crm-agenda-view" style="display:none">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:.6rem">
+            <button class="adm-add-btn" onclick="abrirModalTurno()">+ Nuevo turno</button>
+          </div>
+          <div class="dias-tabs" id="crm-dia-tabs"></div>
+          <div class="res-list" id="crm-agenda-list"></div>
+        </div>
+
+        <div id="crm-pagos-view" style="display:none">
+          <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.6rem;align-items:center">
+            <input type="month" id="crm-periodo" onchange="renderCrmPagos()" style="border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.55rem .9rem;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none">
+            <select id="crm-pagos-filtro" onchange="renderCrmPagos()" style="border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.55rem .9rem;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none">
+              <option value="todos">Todos</option><option value="pendiente">Pendientes</option><option value="pagado">Pagados</option>
+            </select>
+            <button class="adm-add-btn" onclick="abrirModalPago()">+ Nuevo pago</button>
+            <span id="crm-pagos-resumen" style="font-size:.78rem;color:var(--gris);margin-left:auto"></span>
+          </div>
+          <div class="res-list" id="crm-pagos-list"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1167,21 +1290,18 @@ async function sbFetch(path, method='GET', body=null){
 async function save(){
   localStorage.setItem('pdo_v3',JSON.stringify(S));
 
-  // Slots: borramos todos, esperamos, y recién después insertamos
   try{
     const delRes=await fetch(SB_URL+'/rest/v1/slots_bloqueados?id=neq.NONE',{
       method:'DELETE',
       headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
     });
-    await delRes.text(); // esperar que termine
+    await delRes.text();
   }catch(e){}
 
-  // Pequeño delay para asegurar que el DELETE se propagó
   await new Promise(r=>setTimeout(r,300));
 
   const keys=Object.keys(S.slots);
   if(keys.length>0){
-    // Insertar todos de una sola vez como array
     try{
       await fetch(SB_URL+'/rest/v1/slots_bloqueados',{
         method:'POST',
@@ -1191,7 +1311,6 @@ async function save(){
     }catch(e){console.warn('Error saving slots',e);}
   }
 
-  // Config
   try{
     await sbFetch('config?clave=in.(ultimoResetTarde,ultimoResetNoche)','DELETE');
     await sbFetch('config','POST',{clave:'ultimoResetTarde',valor:S.ultimoResetTarde||''});
@@ -1257,11 +1376,6 @@ async function load(){
       sbFetch('config?select=*')
     ]);
 
-    console.log('slots:', slots);
-    console.log('reservas:', reservas);
-    console.log('inscriptos:', inscriptos);
-    console.log('reviews:', reviews);
-
     S.slots={};
     (slots||[]).forEach(s=>S.slots[s.id]='ocupado');
 
@@ -1270,9 +1384,6 @@ async function load(){
     const allIns=(inscriptos||[]).map(x=>({...x,esAdmin:x.es_admin}));
     S.ins_tarde=allIns.filter(x=>x.turno==='tarde');
     S.ins_noche=allIns.filter(x=>x.turno==='noche');
-
-    console.log('ins_tarde:', S.ins_tarde);
-    console.log('ins_noche:', S.ins_noche);
 
     S.reviews=(reviews||[]);
 
@@ -1293,7 +1404,6 @@ function horas(d){return(d==='sabado'||d==='domingo')?HORAS_SD:HORAS_LV;}
 function key(d,h){return d+'_'+h;}
 function slotSt(d,h){if(S.slots[key(d,h)]==='ocupado')return'ocupado';const r=S.reservas.find(x=>x.dia===d&&x.hora===h&&x.estado!=='cancelada');if(r)return r.estado==='pendiente'?'pendiente':'ocupado';return'libre';}
 
-/* ALUMNO DÍAS */
 function renderAlumnoDias(){
   const c=document.getElementById('alumno-dias');c.innerHTML='';
   DIAS.forEach(d=>{const b=document.createElement('div');b.className='dia-tab'+(d===S.diaA?' active':'')+(d==='sabado'||d==='domingo'?' we':'');b.textContent=DIAS_L[d];b.onclick=()=>{S.diaA=d;renderAlumnoDias();renderAlumnoGrid(d);};c.appendChild(b);});
@@ -1303,7 +1413,6 @@ function renderAlumnoGrid(d){
   horas(d).forEach(h=>{const st=slotSt(d,h);const div=document.createElement('div');div.className='slot '+st;div.innerHTML=`<div class="slot-hora">${h}</div><div class="slot-lbl">${st==='libre'?'✦ Disponible':st==='pendiente'?'⏳ Pendiente pago':'✗ Ocupado'}</div>`;if(st==='libre')div.onclick=()=>abrirModalClase(d,h);g.appendChild(div);});
 }
 
-/* MODAL CLASE */
 function abrirModalClase(d,h){
   const pre = window._clasePreseleccionada || {tipo:'Individual',precio:30000,seña:30000};
   CLS={dia:d,hora:h,nombre:'',tel:'',tipo:pre.tipo,precio:pre.seña,metodo:'mp'};
@@ -1326,12 +1435,10 @@ function abrirModalClase(d,h){
     else
       senaInfo.innerHTML=icono+' <strong>'+pre.tipo+'</strong> · Señás '+monto+'. El resto del grupo abona el día de la clase.';
   }
-  // Show type selector if no preselection
   const tipoWrap=document.getElementById('cls-tipo-wrap');
   if(tipoWrap){
     if(!window._clasePreseleccionada){
       tipoWrap.style.display='block';
-      // Set default
       window._clasePreseleccionada={tipo:'Individual',precio:30000,seña:30000};
       cambiarTipoClase('Individual');
     } else {
@@ -1361,9 +1468,6 @@ function enviarCompClase(){
   if(document.getElementById('cls-3').classList.contains('active'))clsStep(4);
 }
 
-/* ═══════════════════════════════════════
-   CANCHAS ABIERTAS — SISTEMA DINÁMICO
-   ═══════════════════════════════════════ */
 let CA={lista:[],selectedId:null,form:{nombre:'',tel:'',metodo:'mp'}};
 
 async function loadAbiertas(){
@@ -1503,7 +1607,6 @@ function enviarCompAbierta(){
   if(document.getElementById('ab-2').classList.contains('active'))abStep(3);
 }
 
-/* ── ADMIN ABIERTAS ── */
 function renderAdmAbiertas(){
   const el=document.getElementById('adm-ab-content');if(!el)return;
   const addForm=`<div class="adm-add-form">
@@ -1607,18 +1710,15 @@ async function cancelarCA(cid,iid){
   renderAbiertas();renderAdmAbiertas();toast('Cancelado');
 }
 
-
-/* PAGO SELECTOR */
 function selPago(ctx,tipo){
   if(ctx==='cls'){CLS.metodo=tipo;document.getElementById('cls-opt-mp').classList.toggle('selected',tipo==='mp');document.getElementById('cls-opt-transfer').classList.toggle('selected',tipo==='transfer');}
   else{AB.metodo=tipo;document.getElementById('ab-opt-mp').classList.toggle('selected',tipo==='mp');document.getElementById('ab-opt-transfer').classList.toggle('selected',tipo==='transfer');}
 }
 
-/* ADMIN */
 function abrirAdmin(){document.getElementById('modal-login').classList.add('show');}
 function checkPass(){if(document.getElementById('pass').value===PASS){document.getElementById('pass-err').style.display='none';document.getElementById('pass').value='';cerrarModal('modal-login');S.loggedIn=true;document.getElementById('admin-panel').classList.add('show');renderAdmDias();renderAdmGrid(S.diaAdm);renderReviews();}else{document.getElementById('pass-err').style.display='block';}}
 function logout(){S.loggedIn=false;document.getElementById('admin-panel').classList.remove('show');renderReviews();}
-function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';if(tab==='abiertas')setTimeout(renderAdmAbiertas,50);document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';document.getElementById('adm-fixture').style.display=tab==='fixture'?'block':'none';document.getElementById('adm-torneos').style.display=tab==='torneos'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='partidos')setTimeout(renderAdmPartidos,50);if(tab==='fixture')setTimeout(renderAdmFixture,50);if(tab==='torneos'){setTimeout(renderAdmTorneos,50);setTimeout(renderAdmBP,50);}}
+function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';if(tab==='abiertas')setTimeout(renderAdmAbiertas,50);document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';document.getElementById('adm-fixture').style.display=tab==='fixture'?'block':'none';document.getElementById('adm-torneos').style.display=tab==='torneos'?'block':'none';document.getElementById('adm-crm').style.display=tab==='crm'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='partidos')setTimeout(renderAdmPartidos,50);if(tab==='fixture')setTimeout(renderAdmFixture,50);if(tab==='torneos'){setTimeout(renderAdmTorneos,50);setTimeout(renderAdmBP,50);}if(tab==='crm'){const s=crmLoadSession();if(s){CRM_SESSION=s;document.getElementById('crm-gate').style.display='none';document.getElementById('crm-body').style.display='block';loadCRM();}else{document.getElementById('crm-gate').style.display='block';document.getElementById('crm-body').style.display='none';}}}
 function renderAdmDias(){const c=document.getElementById('adm-dias');c.innerHTML='';DIAS.forEach(d=>{const b=document.createElement('div');b.className='dia-tab'+(d===S.diaAdm?' active':'')+(d==='sabado'||d==='domingo'?' we':'');b.textContent=DIAS_L[d];b.onclick=()=>{S.diaAdm=d;renderAdmDias();renderAdmGrid(d);};c.appendChild(b);});}
 function renderAdmGrid(d){const g=document.getElementById('adm-grid');g.innerHTML='';horas(d).forEach(h=>{const st=slotSt(d,h);const res=S.reservas.find(x=>x.dia===d&&x.hora===h&&x.estado!=='cancelada');const div=document.createElement('div');div.className='slot adm-'+st;const lbl=st==='libre'?'Disponible':st==='pendiente'?'⏳ '+(res?.nombre||''):(res?.nombre||'Ocupado');div.innerHTML=`<div class="slot-hora">${h}</div><div class="slot-lbl">${lbl}</div>`;div.onclick=()=>abrirAdmSlot(d,h,st,res);g.appendChild(div);});}
 function abrirAdmSlot(d,h,st,res){
@@ -1655,7 +1755,6 @@ function ejecutarMover(){const r=S.reservas.find(x=>x.id===S.pendMover);if(!r){c
 
 function cerrarModal(id){document.getElementById(id).classList.remove('show');}
 
-/* Nav active link on scroll */
 (function(){
   const sections=['inicio','precios','reservas','abiertas','partidos','torneos','busco-pareja','comunidad','opiniones','contacto'];
   const links=document.querySelectorAll('.nav-links a');
@@ -1690,9 +1789,7 @@ function cambiarTipoClase(tipo){
 
 function elegirClase(tipo, precio, seña){
   window._clasePreseleccionada = {tipo, precio, seña};
-  // Scroll to reservas section
   document.getElementById('reservas').scrollIntoView({behavior:'smooth'});
-  // Highlight the section briefly
   const sec = document.getElementById('reservas');
   sec.style.transition = 'background .4s';
   sec.style.background = 'rgba(212,175,55,0.08)';
@@ -1762,14 +1859,11 @@ function checkResetAbiertas(){
   const ahora = new Date();
   const esSabado = ahora.getDay() === 6;
   const hora = ahora.getHours();
-  const minutos = ahora.getMinutes();
-  const hoyStr = ahora.toISOString().slice(0,10); // YYYY-MM-DD
+  const hoyStr = ahora.toISOString().slice(0,10);
 
-  // Reiniciar turno tarde a las 18:00 del sábado
   if(esSabado && hora >= 18){
     const ultimoResetTarde = S.ultimoResetTarde || '';
     if(ultimoResetTarde !== hoyStr){
-      // Borrar inscriptos tarde en Supabase
       sbFetch('inscriptos_abierta?turno=eq.tarde','DELETE');
       S.ins_tarde = [];
       S.ultimoResetTarde = hoyStr;
@@ -1777,7 +1871,6 @@ function checkResetAbiertas(){
     }
   }
 
-  // Reiniciar turno noche a las 21:00 del sábado
   if(esSabado && hora >= 21){
     const ultimoResetNoche = S.ultimoResetNoche || '';
     if(ultimoResetNoche !== hoyStr){
@@ -1801,16 +1894,11 @@ async function sendEmailNotification(tipo, datos){
       metodo: datos.metodo === 'mp' ? 'Mercado Pago' : datos.metodo === 'admin' ? 'Cargado por admin' : 'Transferencia bancaria',
       fecha: datos.fecha || new Date().toLocaleDateString('es-AR')
     });
-    console.log('Email enviado OK');
   } catch(e){
     console.warn('Error enviando email:', e);
   }
 }
 
-
-/* ═══════════════════════════════════════
-   PARTIDOS ORGANIZADOS
-   ═══════════════════════════════════════ */
 const CATS_P=['9ª','8ª','7ª','6ª','5ª','4ª','3ª','2ª','1ª'];
 const TIPO_COLOR_P={Caballeros:'cab',Damas:'dam',Mixto:'mix'};
 const TIPO_ICON_P={Caballeros:'♂',Damas:'♀',Mixto:'⚤'};
@@ -1821,7 +1909,6 @@ let PART={
   form:{nombre:'',tel:'',tipo:'Caballeros',cat:'',genero:'M'}
 };
 
-/* Supabase helpers para partidos */
 async function loadPartidos(){
   const rows=await sbFetch('partidos_slots?select=*&order=fecha.asc,hora.asc&activo=eq.true');
   const inscs=await sbFetch('partidos_inscriptos?select=*&order=id.asc');
@@ -1853,7 +1940,6 @@ async function updatePartidoSlot(id,fields){
   await sbFetch('partidos_slots?id=eq.'+id,'PATCH',fields);
 }
 
-/* Render lista pública */
 function renderPartidos(){
   const el=document.getElementById('partidos-lista');
   if(!el)return;
@@ -1861,7 +1947,6 @@ function renderPartidos(){
   const slots=PART.slots.filter(s=>{
     if(!s.activo)return false;
     if(!s.fecha||!s.hora)return true;
-    const [h,m]=s.hora.split(':');
     const fechaSlot=new Date(s.fecha+'T'+s.hora+':00');
     return fechaSlot>ahora;
   });
@@ -1933,7 +2018,6 @@ function renderPartidoCard(s){
   </div>`;
 }
 
-/* Abrir modal */
 function abrirModalPartido(slotId){
   const s=PART.slots.find(x=>x.id===slotId);
   if(!s)return;
@@ -1950,7 +2034,6 @@ function abrirModalPartido(slotId){
   const pinfo=document.getElementById('part-precio-info');
   if(pinfo){if(s.notas){pinfo.textContent='📌 '+s.notas;pinfo.style.display='block';}else{pinfo.style.display='none';}}
 
-  /* Tipo */
   const tipoWrap=document.getElementById('part-tipo-wrap');
   if(esPrimero){
     tipoWrap.style.display='block';
@@ -1961,13 +2044,9 @@ function abrirModalPartido(slotId){
     tipoWrap.style.display='none';
   }
 
-  /* Género (mixto) */
   actualizarGeneroWrap();
-
-  /* Categorías */
   actualizarCatsPartido(s,esPrimero);
 
-  /* Texto de regla */
   const regla=document.getElementById('part-regla-txt');
   if(esPrimero){
     regla.textContent='Vos definís el tipo y la categoría base. Los siguientes podrán anotarse ±1 categoría.';
@@ -1989,7 +2068,6 @@ function actualizarGeneroWrap(){
 function actualizarCatsPartido(s,esPrimero){
   const wrap=document.getElementById('part-cats');
   const lbl=document.getElementById('part-cat-lbl');
-  const ins=s.inscriptos||[];
   const baseCat=s.cat_base;
 
   let catsDisponibles;
@@ -2013,7 +2091,6 @@ function selTipo(btn){
   btn.classList.add('active');
   PART.form.tipo=btn.dataset.tipo;
   actualizarGeneroWrap();
-  /* Recalcular cats si es el primero */
   const s=PART.slots.find(x=>x.id===PART.selectedSlotId);
   if(s)actualizarCatsPartido(s,s.inscriptos.length===0);
 }
@@ -2030,9 +2107,6 @@ function selCat(cat,btn){
   PART.form.cat=cat;
 }
 
-/* partStep2 y partWhatsapp definidos más abajo */
-
-/* ── ADMIN: tab Partidos ── */
 function renderAdmPartidos(){
   const el=document.getElementById('adm-partidos-content');
   if(!el)return;
@@ -2061,7 +2135,6 @@ function renderAdmPartidos(){
       const cupo=s.cupo||4;
       const libre=cupo-ins.length;
       const tipo=s.tipo||'Sin definir';
-      const tipoCls=s.tipo?TIPO_COLOR_P[s.tipo]:'libre';
       return`<div class="ab-res-item" style="flex-direction:column;align-items:flex-start;gap:.75rem">
         <div style="display:flex;justify-content:space-between;width:100%;align-items:center;flex-wrap:wrap;gap:.5rem">
           <div>
@@ -2092,7 +2165,7 @@ async function adminCrearPartido(){
   const notas=document.getElementById('adm-part-notas').value.trim();
   if(!fecha||!hora){toast('Completá fecha y hora');return;}
   const ns={id:'p'+Date.now(),fecha,hora,lugar,cupo,notas,tipo:null,cat_base:null,activo:true};
-  const res=await savePartidoSlot(ns);
+  await savePartidoSlot(ns);
   ns.inscriptos=[];
   PART.slots.push(ns);
   renderPartidos();
@@ -2121,7 +2194,6 @@ async function adminQuitarInscripto(slotId,insId){
   toast('Inscripto quitado');
 }
 
-
 function selPagoP(tipo){PART.form.metodo=tipo;document.getElementById("part-opt-mp").classList.toggle("selected",tipo==="mp");document.getElementById("part-opt-transfer").classList.toggle("selected",tipo==="transfer");}
 
 async function partStep2(){const nombre=document.getElementById("part-nombre").value.trim();const tel=document.getElementById("part-tel").value.trim();const errEl=document.getElementById("part-err");if(!nombre||!tel){errEl.textContent="Completá nombre y WhatsApp.";errEl.style.display="block";return;}if(!PART.form.cat){errEl.textContent="Elegí tu categoría.";errEl.style.display="block";return;}if(PART.form.tipo==="Mixto"&&!PART.form.genero){errEl.textContent="Indicá tu género.";errEl.style.display="block";return;}const s=PART.slots.find(x=>x.id===PART.selectedSlotId);if(!s)return;const ins=s.inscriptos||[];if(PART.form.tipo==="Mixto"||s.tipo==="Mixto"){const cnt=ins.filter(i=>i.genero===PART.form.genero).length;if(cnt>=2){errEl.textContent="Ya hay 2 "+(PART.form.genero==="M"?"caballeros":"damas")+" anotados.";errEl.style.display="block";return;}}errEl.style.display="none";PART.form.nombre=nombre;PART.form.tel=tel;selPagoP("mp");partGoStep(2);}
@@ -2130,10 +2202,6 @@ async function partGoStep(n){if(n===3){const isMp=PART.form.metodo==="mp";docume
 
 function partEnviarComp(){const s=PART.slots.find(x=>x.id===PART.selectedSlotId)||{};const metodoTxt=PART.form.metodo==="mp"?"Mercado Pago":"transferencia (alias: Agusgrafmp)";const msg=encodeURIComponent(`Hola Agus! Te mando el comprobante para el partido del ${fmtFechaPartido(s.fecha||"")} ${s.hora||""} hs.\n👤 ${PART.form.nombre}\n📱 ${PART.form.tel}\n🎾 ${s.tipo||PART.form.tipo} · ${PART.form.cat}\n💰 $20.000\n💳 ${metodoTxt}\n\n[Adjunto comprobante]`);window.open("https://wa.me/5491134634000?text="+msg,"_blank");if(document.getElementById("part-3").classList.contains("active"))partGoStep(4);}
 
-
-/* ═══════════════════════════════════════
-   TORNEOS
-   ═══════════════════════════════════════ */
 let TORN={
   lista:[],
   selectedId:null,
@@ -2187,8 +2255,7 @@ function renderTorneos(){
     const barCls=pct<50?'bar-verde':pct<80?'bar-amarillo':'bar-rojo';
     const tipoCls=TORN_TIPO_CLS[t.tipo]||'cab';
     const tipoIco=TORN_TIPO_ICO[t.tipo]||'';
-    const pillsCls=tipoCls;
-    const parejasPills=ins.map(p=>`<div class="pareja-pill ${pillsCls}">🎾 ${p.j1nombre.split(' ')[0]} & ${p.j2nombre.split(' ')[0]}</div>`).join('');
+    const parejasPills=ins.map(p=>`<div class="pareja-pill ${tipoCls}">🎾 ${p.j1nombre.split(' ')[0]} & ${p.j2nombre.split(' ')[0]}</div>`).join('');
     const vaciosPills=Array.from({length:Math.min(libre,4)}).map(()=>'<div class="pins-vacio">+</div>').join('');
     return`<div class="torneo-card">
       <div class="torneo-head">
@@ -2318,7 +2385,6 @@ function tornEnviarComp(){
   if(document.getElementById('torn-3').classList.contains('active'))tornGoStep(4);
 }
 
-/* ── ADMIN TORNEOS ── */
 function renderAdmTorneos(){
   const el=document.getElementById('adm-torneos-content');
   if(!el)return;
@@ -2344,7 +2410,6 @@ function renderAdmTorneos(){
     :TORN.lista.map(t=>{
       const ins=t.parejas||[];
       const cupo=t.cupo||16;
-      const libre=cupo-ins.length;
       return`<div class="ab-res-item" style="flex-direction:column;align-items:flex-start;gap:.75rem;margin-bottom:.75rem">
         <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start;flex-wrap:wrap;gap:.5rem">
           <div>
@@ -2453,10 +2518,6 @@ async function cancelarTorneoInsc(torneoId,insId){
   renderAdmTorneos();renderTorneos();toast('Inscripción cancelada');
 }
 
-
-/* ═══════════════════════════════════════
-   BUSCO PAREJA
-   ═══════════════════════════════════════ */
 let BP={lista:[],posicion:'Revés'};
 
 async function loadBP(){
@@ -2524,7 +2585,6 @@ async function confirmarBP(){
   toast('¡Publicado! Otros jugadores van a poder contactarte 🎾');
 }
 
-/* Admin: gestionar busco pareja */
 function renderAdmBP(){
   const el=document.getElementById('adm-bp-content');
   if(!el)return;
@@ -2561,18 +2621,13 @@ async function adminEliminarBP(id){
   toast('Eliminado');
 }
 
-
-/* ═══════════════════════════════════════
-   FIXTURE COMPLETO
-   ═══════════════════════════════════════ */
 let FIX={
   torneoId:null,
-  grupos:{A:[],B:[],C:[],D:[]},   // [nombrePareja, ...]
-  resultadosGrupo:{},              // {A:{0:{1:{s1,s2},...},...},...}
-  llave:[]                         // [{nombre, partidos:[{eq1,eq2,seed1,seed2,score1,score2,ganador}]}]
+  grupos:{A:[],B:[],C:[],D:[]},
+  resultadosGrupo:{},
+  llave:[]
 };
 
-/* ── Supabase ── */
 async function loadFixtures(){
   try{
     const rows=await sbFetch('torneos_fixture?select=*&publicado=eq.true');
@@ -2581,7 +2636,6 @@ async function loadFixtures(){
   }catch(e){document.getElementById('fixture').style.display='none';}
 }
 
-/* ── Cálculo tabla de grupo ── */
 function calcTabla(parejas,res){
   const s=parejas.map((_,i)=>({idx:i,v:0,d:0,gf:0,gc:0}));
   for(let i=0;i<parejas.length;i++){
@@ -2597,7 +2651,6 @@ function calcTabla(parejas,res){
   return s.sort((a,b)=>b.v-a.v||(b.gf-b.gc)-(a.gf-a.gc));
 }
 
-/* ── Vista pública ── */
 function renderFixtureSec(){
   const pub=TORN.lista.filter(t=>t.fixture&&t.fixture.publicado);
   const sec=document.getElementById('fixture');
@@ -2621,7 +2674,6 @@ function mostrarFix(tid,btn){
     if(!ps.length)return`<div class="grupo-fixture"><div class="grupo-fixture-header"><span class="grupo-letra">${g}</span><span style="font-size:.7rem;color:rgba(255,255,255,.4)">Sin parejas</span></div></div>`;
     const tabla=calcTabla(ps,res[g]||{});
     const medals=['🥇','🥈','🥉'];
-    // Solo mostrar resultados si hay al menos un partido cargado en el grupo
     const hayResultados=Object.keys(res[g]||{}).some(i=>Object.keys(res[g][i]||{}).some(j=>{const r=res[g][i][j];return r&&(r.s1!=null||r.s2!=null);}));
     const tablaHTML=`<table class="grupo-tabla">
       <thead><tr><th>Pareja</th>${hayResultados?'<th>V</th><th>D</th><th>Dif</th>':''}</tr></thead>
@@ -2684,7 +2736,6 @@ function mostrarFix(tid,btn){
     ).join('')+'</div>';
 }
 
-/* ═══════════ ADMIN ═══════════ */
 function renderAdmFixture(){
   const el=document.getElementById('adm-fixture-content');if(!el)return;
   if(!TORN.lista.length){el.innerHTML='<div class="empty">Creá un torneo primero.</div>';return;}
@@ -2724,7 +2775,6 @@ function renderFixEd(t){
   const asignadas=getParejasAsignadas();
   const sinAsignar=todasParejas.filter(p=>!asignadas.has(p));
 
-  // Ganadores disponibles de la llave (para arrastrar a siguiente ronda)
   const ganadoresLlave=[];
   FIX.llave.forEach((ronda,ri)=>{
     ronda.partidos.forEach((p,pi)=>{
@@ -2734,7 +2784,6 @@ function renderFixEd(t){
   });
 
   el.innerHTML=`
-  <!-- POOL DE PAREJAS -->
   <div style="margin-bottom:1.25rem">
     <div style="font-size:.7rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.5rem">Parejas inscriptas — arrastrá a un grupo</div>
     <div id="fix-pool" class="fix-drop" style="background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.12);min-height:44px">
@@ -2743,7 +2792,6 @@ function renderFixEd(t){
     </div>
   </div>
 
-  <!-- GRUPOS -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem">
     ${['A','B','C','D'].map(g=>`
       <div>
@@ -2754,7 +2802,6 @@ function renderFixEd(t){
       </div>`).join('')}
   </div>
 
-  <!-- RESULTADOS GRUPOS -->
   <div style="border-top:1px solid rgba(0,0,0,.08);padding-top:1.1rem;margin-bottom:1.1rem">
     <div style="font-size:.7rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.75rem">Resultados fase de grupos</div>
     ${['A','B','C','D'].map(g=>{
@@ -2791,7 +2838,6 @@ function renderFixEd(t){
     }).join('')}
   </div>
 
-  <!-- LLAVE -->
   <div style="border-top:1px solid rgba(0,0,0,.08);padding-top:1.1rem;margin-bottom:1.1rem">
     <div style="font-size:.7rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.75rem">🏆 Llave de playoffs</div>
     
@@ -2859,7 +2905,6 @@ function chipGanador(nombre,de){
 }
 
 function initDrops(t){
-  // Pool (recibe devueltos)
   const pool=document.getElementById('fix-pool');
   if(pool){
     pool.ondragover=e=>{e.preventDefault();pool.classList.add('drag-over');};
@@ -2874,7 +2919,6 @@ function initDrops(t){
       }
     };
   }
-  // Grupos
   ['A','B','C','D'].forEach(g=>{
     const z=document.getElementById('fix-grp-'+g);if(!z)return;
     z.ondragover=e=>{e.preventDefault();z.classList.add('drag-over');};
@@ -2882,15 +2926,12 @@ function initDrops(t){
     z.ondrop=e=>{
       e.preventDefault();z.classList.remove('drag-over');
       const p=e.dataTransfer.getData('par'),or=e.dataTransfer.getData('origen');
-      // Quitar del origen
       if(or==='grp_'+g)return;
       if(or&&or.startsWith('grp_')){const og=or.split('_')[1];FIX.grupos[og]=(FIX.grupos[og]||[]).filter(x=>x!==p);}
-      // Agregar al grupo
       if(!(FIX.grupos[g]||[]).includes(p)){FIX.grupos[g]=FIX.grupos[g]||[];FIX.grupos[g].push(p);}
       renderFixEd(t);
     };
   });
-  // Slots de llave
   document.querySelectorAll('.fix-llave-slot').forEach(slot=>{
     slot.ondragover=e=>{e.preventDefault();slot.classList.add('drag-over');};
     slot.ondragleave=()=>slot.classList.remove('drag-over');
@@ -3016,11 +3057,9 @@ function generarLlaveAutomatica(){
   ];
 }
 
-/* Publicar SOLO los grupos (sin llave) */
 async function publicarGrupos(){
   const t=TORN.lista.find(x=>x.id===FIX.torneoId);
   if(!t){toast('Elegí un torneo');return;}
-  // Guardamos sin llave
   const data={id:'fix_'+FIX.torneoId,torneo_id:FIX.torneoId,grupos:FIX.grupos,resultadosGrupo:FIX.resultadosGrupo,llave:[],publicado:true};
   await sbFetch('torneos_fixture?torneo_id=eq.'+FIX.torneoId,'DELETE');
   const res=await sbFetch('torneos_fixture','POST',data);
@@ -3028,7 +3067,6 @@ async function publicarGrupos(){
   else toast('Error al guardar');
 }
 
-/* Generar llave y publicar TODO */
 async function publicarConLlave(){
   const t=TORN.lista.find(x=>x.id===FIX.torneoId);
   if(!t){toast('Elegí un torneo');return;}
@@ -3040,7 +3078,6 @@ async function publicarConLlave(){
   else toast('Error al guardar');
 }
 
-/* Guardar resultados sin tocar la llave */
 async function guardarResultados(){
   const t=TORN.lista.find(x=>x.id===FIX.torneoId);
   if(!t){toast('Elegí un torneo');return;}
@@ -3052,13 +3089,303 @@ async function guardarResultados(){
   else toast('Error al guardar');
 }
 
-
 async function despublicar(){
   const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(!t)return;
   await sbFetch('torneos_fixture?torneo_id=eq.'+FIX.torneoId,'DELETE');
   t.fixture=null;FIX.llave=[];FIX.resultadosGrupo={};
   renderFixtureSec();selFix(FIX.torneoId);
   toast('Fixture despublicado');
+}
+
+/* ═══════════════════════════════════════
+   CRM DE ALUMNOS (login propio, Supabase Auth)
+   ═══════════════════════════════════════ */
+const CRM_FORMATOS={individual:'Individual',dupla:'Dupla',grupal:'Grupal',cancha_libre:'Cancha libre'};
+let CRM={students:[],slots:[],slotStudents:[],payments:[],sub:'alumnos',diaAgenda:'lunes',periodo:new Date().toISOString().slice(0,7)};
+let CRM_SESSION=null;
+
+function crmLoadSession(){
+  try{
+    const raw=localStorage.getItem('pdo_crm_session');
+    if(!raw)return null;
+    const s=JSON.parse(raw);
+    if(s.expires_at && Date.now()<s.expires_at)return s;
+  }catch(e){}
+  return null;
+}
+function crmSaveSession(s){localStorage.setItem('pdo_crm_session',JSON.stringify(s));}
+function crmClearSession(){localStorage.removeItem('pdo_crm_session');CRM_SESSION=null;}
+
+async function crmLogin(){
+  const email=document.getElementById('ccl-email').value.trim();
+  const pass=document.getElementById('ccl-pass').value;
+  const errEl=document.getElementById('ccl-err');
+  errEl.style.display='none';
+  try{
+    const r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({email,password:pass})
+    });
+    if(!r.ok){errEl.style.display='block';return;}
+    const data=await r.json();
+    CRM_SESSION={access_token:data.access_token,expires_at:Date.now()+((data.expires_in||3600)*1000)-60000};
+    crmSaveSession(CRM_SESSION);
+    cerrarModal('modal-crm-login');
+    document.getElementById('crm-gate').style.display='none';
+    document.getElementById('crm-body').style.display='block';
+    loadCRM();
+  }catch(e){errEl.style.display='block';}
+}
+
+function crmLogout(){
+  crmClearSession();
+  document.getElementById('crm-gate').style.display='block';
+  document.getElementById('crm-body').style.display='none';
+  toast('Sesión del CRM cerrada');
+}
+
+async function sbFetchAuth(path,method='GET',body=null){
+  if(!CRM_SESSION)CRM_SESSION=crmLoadSession();
+  if(!CRM_SESSION){document.getElementById('modal-crm-login').classList.add('show');return null;}
+  const opts={method,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+CRM_SESSION.access_token,'Content-Type':'application/json','Prefer':'return=representation'}};
+  if(body)opts.body=JSON.stringify(body);
+  try{
+    const r=await fetch(SB_URL+'/rest/v1/'+path,opts);
+    if(r.status===401){crmClearSession();document.getElementById('crm-gate').style.display='block';document.getElementById('crm-body').style.display='none';document.getElementById('modal-crm-login').classList.add('show');return null;}
+    if(!r.ok){const err=await r.text();console.error('CRM error',method,path,err);return null;}
+    if(method==='GET')return r.json();
+    const txt=await r.text();
+    return txt?JSON.parse(txt):null;
+  }catch(e){console.error('CRM fetch error',e);return null;}
+}
+
+async function loadCRM(){
+  const [st,sl,ss,pg]=await Promise.all([
+    sbFetchAuth('students?select=*&order=name.asc'),
+    sbFetchAuth('class_slots?select=*&active=eq.true&order=start_time.asc'),
+    sbFetchAuth('slot_students?select=*'),
+    sbFetchAuth('payments?select=*&order=period.desc')
+  ]);
+  CRM.students=st||[];CRM.slots=sl||[];CRM.slotStudents=ss||[];CRM.payments=pg||[];
+  renderCRM();
+}
+
+function crmSubTab(sub){
+  CRM.sub=sub;
+  document.querySelectorAll('#crm-subtabs .dia-tab').forEach(b=>b.classList.toggle('active',b.dataset.sub===sub));
+  document.getElementById('crm-alumnos-view').style.display=sub==='alumnos'?'block':'none';
+  document.getElementById('crm-agenda-view').style.display=sub==='agenda'?'block':'none';
+  document.getElementById('crm-pagos-view').style.display=sub==='pagos'?'block':'none';
+  renderCRM();
+}
+
+function renderCRM(){
+  if(CRM.sub==='alumnos')renderCrmAlumnos();
+  if(CRM.sub==='agenda')renderCrmAgenda();
+  if(CRM.sub==='pagos')renderCrmPagos();
+}
+
+function crmStudentsForSlot(slotId){
+  const ids=CRM.slotStudents.filter(x=>x.slot_id===slotId).map(x=>x.student_id);
+  return CRM.students.filter(s=>ids.includes(s.id));
+}
+
+function renderCrmAlumnos(){
+  const el=document.getElementById('crm-alumnos-list');if(!el)return;
+  const q=(document.getElementById('crm-buscar')?.value||'').trim().toLowerCase();
+  const list=CRM.students.filter(s=>s.name.toLowerCase().includes(q));
+  if(!list.length){el.innerHTML='<div class="empty">No hay alumnos cargados todavía.</div>';return;}
+  el.innerHTML=list.map(s=>`<div class="res-item">
+    <div class="res-info">
+      <div class="res-alumno">${s.name} ${s.active===false?'<span class="res-estado est-pend">inactivo</span>':''}</div>
+      <div class="res-det">${s.category||'sin categoría'} · ${CRM_FORMATOS[s.format]||'—'}${s.phone?' · 📱 '+s.phone:''}${s.notes?' · '+s.notes:''}</div>
+    </div>
+    <div class="res-acc"><button class="rbtn mov" onclick="abrirModalAlumno('${s.id}')">Editar</button></div>
+  </div>`).join('');
+}
+
+function abrirModalAlumno(id){
+  const s=id?CRM.students.find(x=>x.id===id):null;
+  document.getElementById('cal-titulo').textContent=s?'Editar alumno':'Nuevo alumno';
+  document.getElementById('cal-id').value=s?s.id:'';
+  document.getElementById('cal-nombre').value=s?.name||'';
+  document.getElementById('cal-tel').value=s?.phone||'';
+  document.getElementById('cal-cat').value=s?.category||'';
+  document.getElementById('cal-formato').value=s?.format||'individual';
+  document.getElementById('cal-cuota').value=s?.monthly_fee||'';
+  document.getElementById('cal-notas').value=s?.notes||'';
+  document.getElementById('cal-activo').checked=s?s.active!==false:true;
+  document.getElementById('cal-del-wrap').style.display=s?'block':'none';
+  document.getElementById('modal-crm-alumno').classList.add('show');
+}
+
+async function guardarAlumno(){
+  const id=document.getElementById('cal-id').value;
+  const payload={
+    name:document.getElementById('cal-nombre').value.trim(),
+    phone:document.getElementById('cal-tel').value.trim(),
+    category:document.getElementById('cal-cat').value.trim(),
+    format:document.getElementById('cal-formato').value,
+    monthly_fee:document.getElementById('cal-cuota').value?Number(document.getElementById('cal-cuota').value):null,
+    notes:document.getElementById('cal-notas').value.trim(),
+    active:document.getElementById('cal-activo').checked
+  };
+  if(!payload.name){toast('Poné un nombre');return;}
+  if(id){await sbFetchAuth('students?id=eq.'+id,'PATCH',payload);}
+  else{payload.id='al'+Date.now();await sbFetchAuth('students','POST',payload);}
+  cerrarModal('modal-crm-alumno');
+  await loadCRM();
+  toast('Alumno guardado ✓');
+}
+
+async function eliminarAlumno(){
+  const id=document.getElementById('cal-id').value;
+  if(!id)return;
+  if(!confirm('¿Eliminar este alumno? También se borran sus turnos y pagos asociados.'))return;
+  await sbFetchAuth('students?id=eq.'+id,'DELETE');
+  cerrarModal('modal-crm-alumno');
+  await loadCRM();
+  toast('Alumno eliminado');
+}
+
+function renderCrmAgenda(){
+  const tabsEl=document.getElementById('crm-dia-tabs');
+  if(tabsEl && !tabsEl.dataset.built){
+    tabsEl.innerHTML=DIAS.map(d=>`<div class="dia-tab${d===CRM.diaAgenda?' active':''}${d==='sabado'||d==='domingo'?' we':''}" onclick="crmSetDia('${d}')">${DIAS_L[d]}</div>`).join('');
+    tabsEl.dataset.built='1';
+  }
+  document.querySelectorAll('#crm-dia-tabs .dia-tab').forEach((b,i)=>b.classList.toggle('active',DIAS[i]===CRM.diaAgenda));
+  const dow=DIAS.indexOf(CRM.diaAgenda);
+  const el=document.getElementById('crm-agenda-list');if(!el)return;
+  const slots=CRM.slots.filter(s=>s.day_of_week===dow).sort((a,b)=>a.start_time.localeCompare(b.start_time));
+  if(!slots.length){el.innerHTML='<div class="empty">Sin turnos cargados este día.</div>';return;}
+  el.innerHTML=slots.map(s=>{
+    const names=crmStudentsForSlot(s.id).map(x=>x.name).join(', ')||'Sin alumnos asignados';
+    return`<div class="res-item">
+      <div class="res-info">
+        <div class="res-dia">${s.start_time.slice(0,5)} hs</div>
+        <div class="res-alumno">${names}</div>
+        <div class="res-det">${CRM_FORMATOS[s.format]||''} · ${s.duration_minutes||60} min${s.notes?' · '+s.notes:''}</div>
+      </div>
+      <div class="res-acc"><button class="rbtn mov" onclick="abrirModalTurno('${s.id}')">Editar</button></div>
+    </div>`;
+  }).join('');
+}
+function crmSetDia(d){CRM.diaAgenda=d;renderCrmAgenda();}
+
+function abrirModalTurno(id){
+  const s=id?CRM.slots.find(x=>x.id===id):null;
+  const dow=s?s.day_of_week:DIAS.indexOf(CRM.diaAgenda);
+  document.getElementById('ctu-titulo').textContent=s?'Editar turno':'Nuevo turno';
+  document.getElementById('ctu-id').value=s?s.id:'';
+  document.getElementById('ctu-dia').innerHTML=DIAS.map((d,i)=>`<option value="${i}" ${i===dow?'selected':''}>${DIAS_L[d]}</option>`).join('');
+  document.getElementById('ctu-hora').value=s?.start_time?.slice(0,5)||'';
+  document.getElementById('ctu-dur').value=s?.duration_minutes||60;
+  document.getElementById('ctu-formato').value=s?.format||'individual';
+  document.getElementById('ctu-notas').value=s?.notes||'';
+  const assigned=s?CRM.slotStudents.filter(x=>x.slot_id===s.id).map(x=>x.student_id):[];
+  const chipsEl=document.getElementById('ctu-alumnos');
+  chipsEl.innerHTML=CRM.students.filter(x=>x.active!==false).map(x=>`<button type="button" class="ptipo-btn${assigned.includes(x.id)?' active':''}" onclick="this.classList.toggle('active')" data-id="${x.id}">${x.name}</button>`).join('')||'<span style="font-size:.78rem;color:#bbb">Cargá alumnos primero</span>';
+  document.getElementById('ctu-del-wrap').style.display=s?'block':'none';
+  document.getElementById('modal-crm-turno').classList.add('show');
+}
+
+async function guardarTurno(){
+  const id=document.getElementById('ctu-id').value;
+  const payload={
+    day_of_week:Number(document.getElementById('ctu-dia').value),
+    start_time:document.getElementById('ctu-hora').value,
+    duration_minutes:Number(document.getElementById('ctu-dur').value)||60,
+    format:document.getElementById('ctu-formato').value,
+    notes:document.getElementById('ctu-notas').value.trim(),
+    active:true
+  };
+  if(!payload.start_time){toast('Poné un horario');return;}
+  let slotId=id;
+  if(id){
+    await sbFetchAuth('class_slots?id=eq.'+id,'PATCH',payload);
+    await sbFetchAuth('slot_students?slot_id=eq.'+id,'DELETE');
+  }else{
+    slotId='sl'+Date.now();
+    payload.id=slotId;
+    await sbFetchAuth('class_slots','POST',payload);
+  }
+  const chosen=[...document.querySelectorAll('#ctu-alumnos .ptipo-btn.active')].map(c=>c.dataset.id);
+  if(chosen.length)await sbFetchAuth('slot_students','POST',chosen.map(sid=>({slot_id:slotId,student_id:sid})));
+  cerrarModal('modal-crm-turno');
+  await loadCRM();
+  toast('Turno guardado ✓');
+}
+
+async function eliminarTurno(){
+  const id=document.getElementById('ctu-id').value;
+  if(!id)return;
+  if(!confirm('¿Eliminar este turno?'))return;
+  await sbFetchAuth('class_slots?id=eq.'+id,'DELETE');
+  cerrarModal('modal-crm-turno');
+  await loadCRM();
+  toast('Turno eliminado');
+}
+
+function renderCrmPagos(){
+  const periodoInput=document.getElementById('crm-periodo');
+  if(periodoInput && !periodoInput.value)periodoInput.value=CRM.periodo;
+  const periodo=periodoInput?periodoInput.value:CRM.periodo;
+  CRM.periodo=periodo;
+  const filtro=document.getElementById('crm-pagos-filtro')?.value||'todos';
+  let list=CRM.payments.filter(p=>p.period===periodo);
+  if(filtro!=='todos')list=list.filter(p=>p.status===filtro);
+  const el=document.getElementById('crm-pagos-list');if(!el)return;
+  const cobrado=CRM.payments.filter(p=>p.period===periodo&&p.status==='pagado').reduce((a,p)=>a+Number(p.amount),0);
+  const pend=CRM.payments.filter(p=>p.period===periodo&&p.status==='pendiente').length;
+  const resumenEl=document.getElementById('crm-pagos-resumen');
+  if(resumenEl)resumenEl.textContent=`Cobrado: $${cobrado.toLocaleString('es-AR')} · Pendientes: ${pend}`;
+  if(!list.length){el.innerHTML='<div class="empty">No hay pagos cargados para este período.</div>';return;}
+  el.innerHTML=list.map(p=>{
+    const s=CRM.students.find(x=>x.id===p.student_id);
+    return`<div class="res-item">
+      <div class="res-info">
+        <div class="res-alumno">${s?s.name:'Alumno eliminado'}</div>
+        <div class="res-det">$${Number(p.amount).toLocaleString('es-AR')}${p.method?' · '+p.method:''}</div>
+      </div>
+      <span class="res-estado ${p.status==='pagado'?'est-conf':'est-pend'}">${p.status}</span>
+      <div class="res-acc">${p.status!=='pagado'?`<button class="rbtn conf" onclick="marcarPagado('${p.id}')">Marcar pagado</button>`:''}</div>
+    </div>`;
+  }).join('');
+}
+
+function abrirModalPago(){
+  document.getElementById('cpa-alumno').innerHTML=CRM.students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
+  document.getElementById('cpa-monto').value='';
+  document.getElementById('cpa-periodo').value=CRM.periodo;
+  document.getElementById('cpa-metodo').value='efectivo';
+  document.getElementById('cpa-estado').value='pendiente';
+  document.getElementById('modal-crm-pago').classList.add('show');
+}
+
+async function guardarPago(){
+  const status=document.getElementById('cpa-estado').value;
+  const payload={
+    id:'pg'+Date.now(),
+    student_id:document.getElementById('cpa-alumno').value,
+    amount:Number(document.getElementById('cpa-monto').value)||0,
+    period:document.getElementById('cpa-periodo').value,
+    method:document.getElementById('cpa-metodo').value,
+    status,
+    paid_on:status==='pagado'?new Date().toISOString().slice(0,10):null
+  };
+  if(!payload.period){toast('Elegí un período');return;}
+  await sbFetchAuth('payments','POST',payload);
+  cerrarModal('modal-crm-pago');
+  await loadCRM();
+  toast('Pago guardado ✓');
+}
+
+async function marcarPagado(id){
+  await sbFetchAuth('payments?id=eq.'+id,'PATCH',{status:'pagado',paid_on:new Date().toISOString().slice(0,10)});
+  await loadCRM();
+  toast('Pago confirmado ✓');
 }
 
 async function init(){
@@ -3076,43 +3403,12 @@ async function init(){
 }
 init();
 
-/* ── MUNDIAL ARGENTINA 🇦🇷 ── */
 (function(){
   const wrap=document.getElementById('confetti-wrap');
   if(!wrap)return;
-  // Colores papel picado: celeste, blanco, dorado, celeste oscuro
   const colors=['#74acdf','#74acdf','#74acdf','#ffffff','#ffffff','#D4AF37','#5b9fd4','#aed6f1','#ffffff','#74acdf'];
   let active=true;
   let interval=null;
-
-  function createPapel(){
-    const el=document.createElement('div');
-    // Forma de papelito rectangular
-    const w=Math.random()*8+4;
-    const h=Math.random()*14+6;
-    el.style.cssText=`
-      position:absolute;
-      top:-20px;
-      left:${Math.random()*105-2}vw;
-      width:${w}px;
-      height:${h}px;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      opacity:${0.7+Math.random()*0.3};
-      border-radius:${Math.random()>0.5?'50%':'1px'};
-      animation:confettiFall ${2.5+Math.random()*4}s linear forwards;
-      animation-delay:${Math.random()*0.5}s;
-      transform-origin:center center;
-    `;
-    wrap.appendChild(el);
-    const dur=(2.5+Math.random()*4+0.5)*1000;
-    setTimeout(()=>el.remove(), dur);
-  }
-
-  function burst(){
-    // Rafaga de 15-25 papelitos a la vez
-    const n=15+Math.floor(Math.random()*10);
-    for(let i=0;i<n;i++) setTimeout(createPiece2, i*30);
-  }
 
   function createPiece2(){
     const el=document.createElement('canvas');
@@ -3133,10 +3429,8 @@ init();
     const color=colors[Math.floor(Math.random()*colors.length)];
     ctx.fillStyle=color;
     if(Math.random()>0.4){
-      // Rectángulo (papel)
       ctx.fillRect(0,0,w,h);
     } else {
-      // Círculo (confeti redondo)
       ctx.beginPath();
       ctx.arc(w/2,h/2,Math.min(w,h)/2,0,Math.PI*2);
       ctx.fill();
@@ -3147,7 +3441,6 @@ init();
   }
 
   function startRain(){
-    // Lluvia continua: cada 80ms suelta un papelito
     interval=setInterval(()=>{
       for(let i=0;i<3;i++) createPiece2();
     }, 80);
@@ -3155,7 +3448,6 @@ init();
 
   function stopRain(){
     if(interval){clearInterval(interval);interval=null;}
-    // Limpiar los que quedan en pantalla
     setTimeout(()=>{wrap.innerHTML='';}, 5000);
   }
 
@@ -3167,7 +3459,6 @@ init();
     if(flag)flag.style.opacity=active?'.6':'.25';
   };
 
-  // Arranca solo
   startRain();
 })();
 
