@@ -14,7 +14,7 @@
 
 const DIAS_MAP = { domingo:0, lunes:1, martes:2, miercoles:3, "miércoles":3, jueves:4, viernes:5, sabado:6, "sábado":6 };
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Verificación del webhook (Meta la pide una sola vez al configurar)
   if (req.method === "GET") {
     const mode = req.query["hub.mode"];
@@ -260,8 +260,6 @@ async function ejecutarAccion(data, students) {
 
   if (data.action === "cancha_recurrente") {
     if (!data.day) {
-if (data.action === "cancha_recurrente") {
-    if (!data.day) {
       return { respuesta: "❌ Me faltó el día. Probá: 'Todos los domingos de 15 a 18hs, euge, pablo, martin, marcelo'." };
     }
     const dow = DIAS_MAP[data.day.toLowerCase()];
@@ -300,7 +298,6 @@ if (data.action === "cancha_recurrente") {
     return {
       respuesta: `✅ Cancha abierta recurrente creada: todos los ${data.day} ${data.hora || ""}hs con ${nombresNuevos.length} jugador${nombresNuevos.length === 1 ? "" : "es"} fijo${nombresNuevos.length === 1 ? "" : "s"}. Se va a crear sola cada semana.`,
     };
-  }      
   }
 
   if (data.action === "eliminar_alumno") {
