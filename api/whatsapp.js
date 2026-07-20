@@ -217,19 +217,28 @@ async function ejecutarAccion(data, students) {
     if (!data.fecha) {
       return { respuesta: "❌ Me faltó la fecha de la cancha abierta. Probá: 'Cancha abierta sábado 26/7, 9hs, Pablo, Andrea, Juan...'." };
     }
-    const canchaId = "ca" + Date.now();
-    await sbFetch("canchas_abiertas", "POST", {
-      id: canchaId,
-      nombre: data.nombre || "Cancha abierta",
-      fecha: data.fecha,
-      hora: data.hora || "09:00",
-      hora_fin: data.hora_fin || "",
-      cupo: data.cupo || 16,
-      precio: data.precio || 20000,
-      categorias: data.categorias || "",
-      organizador: data.organizador || "",
-      activo: true,
-    });
+    // Buscar si ya existe una cancha abierta para esa fecha (no crear duplicada)
+    const existentes = await sbFetch("canchas_abiertas?select=id&fecha=eq." + data.fecha + "&activo=eq.true");
+    let canchaId = existentes && existentes[0] ? existentes[0].id : null;
+    let creadaNueva = false;
+
+    if (!canchaId) {
+      canchaId = "ca" + Date.now();
+      await sbFetch("canchas_abiertas", "POST", {
+        id: canchaId,
+        nombre: data.nombre || "Cancha abierta",
+        fecha: data.fecha,
+        hora: data.hora || "09:00",
+        hora_fin: data.hora_fin || "",
+        cupo: data.cupo || 16,
+        precio: data.precio || 20000,
+        categorias: data.categorias || "",
+        organizador: data.organizador || "",
+        activo: true,
+      });
+      creadaNueva = true;
+    }
+
     const nombres = data.player_names || [];
     if (nombres.length) {
       const filas = nombres.map((n) => ({
@@ -245,7 +254,7 @@ async function ejecutarAccion(data, students) {
       await sbFetch("canchas_inscriptos", "POST", filas);
     }
     return {
-      respuesta: `✅ Cancha abierta cargada: ${data.fecha} ${data.hora || ""}hs con ${nombres.length} jugador${nombres.length === 1 ? "" : "es"}${nombres.length ? " (" + nombres.join(", ") + ")" : ""}`,
+      respuesta: `✅ ${creadaNueva ? "Cancha abierta creada" : "Jugadores sumados a la cancha existente"}: ${data.fecha} ${data.hora || ""}hs con ${nombres.length} jugador${nombres.length === 1 ? "" : "es"}${nombres.length ? " (" + nombres.join(", ") + ")" : ""}`,
     };
   }
 
