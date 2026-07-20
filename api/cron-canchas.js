@@ -6,10 +6,16 @@
 // que ya configuraste para api/whatsapp.js — no hace falta agregar nada nuevo.
 
 export default async function handler(req, res) {
-  // Seguridad: Vercel Cron manda este header automáticamente. Si alguien
-  // llama a esta URL desde afuera sin el secreto, la rechazamos.
+  // Seguridad: Vercel Cron manda el header Authorization automáticamente.
+  // También se acepta ?secret=... en la URL para poder probarlo a mano
+  // desde el navegador.
   const auth = req.headers.authorization;
-  if (process.env.CRON_SECRET && auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  const querySecret = req.query.secret;
+  const autorizado =
+    !process.env.CRON_SECRET ||
+    auth === `Bearer ${process.env.CRON_SECRET}` ||
+    querySecret === process.env.CRON_SECRET;
+  if (!autorizado) {
     return res.status(401).json({ error: "No autorizado" });
   }
 
