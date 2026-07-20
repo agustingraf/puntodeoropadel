@@ -1062,18 +1062,6 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
   <div class="modal"><div style="padding:2rem"><h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:500;color:var(--azul);margin-bottom:.2rem">Mover reserva</h2><p style="font-size:.83rem;color:var(--gris);margin-bottom:1.1rem">Elegí el nuevo día y horario.</p><select id="mv-dia" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.6rem;color:var(--azul);outline:none"><option value="lunes">Lunes</option><option value="martes">Martes</option><option value="miercoles">Miércoles</option><option value="jueves">Jueves</option><option value="viernes">Viernes</option><option value="sabado">Sábado</option><option value="domingo">Domingo</option></select><select id="mv-hora" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.6rem;color:var(--azul);outline:none"></select><div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-mover')">Cancelar</button><button class="mb pri" onclick="ejecutarMover()">Mover</button></div></div></div>
 </div>
 
-<!-- MODAL LOGIN CRM -->
-<div class="modal-bg" id="modal-crm-login">
-  <div class="modal"><div style="padding:2rem">
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:500;color:var(--azul);margin-bottom:.25rem">Acceso al CRM</h2>
-    <p style="font-size:.83rem;color:var(--gris);margin-bottom:1.1rem">Ingresá con tu usuario de Supabase.</p>
-    <div class="err" id="ccl-err">Email o contraseña incorrectos.</div>
-    <input type="email" id="ccl-email" placeholder="Email" onkeydown="if(event.key==='Enter')crmLogin()">
-    <input type="password" id="ccl-pass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')crmLogin()">
-    <div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-crm-login')">Cancelar</button><button class="mb pri" onclick="crmLogin()">Entrar</button></div>
-  </div></div>
-</div>
-
 <!-- MODAL ALUMNO -->
 <div class="modal-bg" id="modal-crm-alumno">
   <div class="modal"><div style="padding:2rem">
@@ -1203,19 +1191,8 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <div id="adm-partidos-content"></div>
     </div>
     <div id="adm-crm" style="display:none">
-      <div id="crm-gate" style="text-align:center;padding:3rem 1rem">
-        <div class="adm-title">CRM de alumnos</div>
-        <div class="adm-sub">Sección protegida con un segundo login. Solo vos entrás acá.</div>
-        <button class="mb pri" style="max-width:220px;margin:0 auto" onclick="document.getElementById('modal-crm-login').classList.add('show')">Iniciar sesión</button>
-      </div>
-      <div id="crm-body" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem">
-          <div>
-            <div class="adm-title">CRM de alumnos</div>
-            <div class="adm-sub">Fichas, agenda semanal y pagos.</div>
-          </div>
-          <button class="logout" style="color:var(--gris)" onclick="crmLogout()">Cerrar sesión CRM ×</button>
-        </div>
+      <div class="adm-title">CRM de alumnos</div>
+      <div class="adm-sub">Fichas, agenda semanal y pagos.</div>
         <div class="dias-tabs" id="crm-subtabs">
           <div class="dia-tab active" data-sub="alumnos" onclick="crmSubTab('alumnos')">Alumnos</div>
           <div class="dia-tab" data-sub="agenda" onclick="crmSubTab('agenda')">Agenda</div>
@@ -1249,7 +1226,6 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
           </div>
           <div class="res-list" id="crm-pagos-list"></div>
         </div>
-      </div>
     </div>
   </div>
 </div>
@@ -1718,7 +1694,7 @@ function selPago(ctx,tipo){
 function abrirAdmin(){document.getElementById('modal-login').classList.add('show');}
 function checkPass(){if(document.getElementById('pass').value===PASS){document.getElementById('pass-err').style.display='none';document.getElementById('pass').value='';cerrarModal('modal-login');S.loggedIn=true;document.getElementById('admin-panel').classList.add('show');renderAdmDias();renderAdmGrid(S.diaAdm);renderReviews();}else{document.getElementById('pass-err').style.display='block';}}
 function logout(){S.loggedIn=false;document.getElementById('admin-panel').classList.remove('show');renderReviews();}
-function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';if(tab==='abiertas')setTimeout(renderAdmAbiertas,50);document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';document.getElementById('adm-fixture').style.display=tab==='fixture'?'block':'none';document.getElementById('adm-torneos').style.display=tab==='torneos'?'block':'none';document.getElementById('adm-crm').style.display=tab==='crm'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='partidos')setTimeout(renderAdmPartidos,50);if(tab==='fixture')setTimeout(renderAdmFixture,50);if(tab==='torneos'){setTimeout(renderAdmTorneos,50);setTimeout(renderAdmBP,50);}if(tab==='crm'){const s=crmLoadSession();if(s){CRM_SESSION=s;document.getElementById('crm-gate').style.display='none';document.getElementById('crm-body').style.display='block';loadCRM();}else{document.getElementById('crm-gate').style.display='block';document.getElementById('crm-body').style.display='none';}}}
+function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';if(tab==='abiertas')setTimeout(renderAdmAbiertas,50);document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';document.getElementById('adm-fixture').style.display=tab==='fixture'?'block':'none';document.getElementById('adm-torneos').style.display=tab==='torneos'?'block':'none';document.getElementById('adm-crm').style.display=tab==='crm'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='partidos')setTimeout(renderAdmPartidos,50);if(tab==='fixture')setTimeout(renderAdmFixture,50);if(tab==='torneos'){setTimeout(renderAdmTorneos,50);setTimeout(renderAdmBP,50);}if(tab==='crm')setTimeout(loadCRM,50);}
 function renderAdmDias(){const c=document.getElementById('adm-dias');c.innerHTML='';DIAS.forEach(d=>{const b=document.createElement('div');b.className='dia-tab'+(d===S.diaAdm?' active':'')+(d==='sabado'||d==='domingo'?' we':'');b.textContent=DIAS_L[d];b.onclick=()=>{S.diaAdm=d;renderAdmDias();renderAdmGrid(d);};c.appendChild(b);});}
 function renderAdmGrid(d){const g=document.getElementById('adm-grid');g.innerHTML='';horas(d).forEach(h=>{const st=slotSt(d,h);const res=S.reservas.find(x=>x.dia===d&&x.hora===h&&x.estado!=='cancelada');const div=document.createElement('div');div.className='slot adm-'+st;const lbl=st==='libre'?'Disponible':st==='pendiente'?'⏳ '+(res?.nombre||''):(res?.nombre||'Ocupado');div.innerHTML=`<div class="slot-hora">${h}</div><div class="slot-lbl">${lbl}</div>`;div.onclick=()=>abrirAdmSlot(d,h,st,res);g.appendChild(div);});}
 function abrirAdmSlot(d,h,st,res){
@@ -3098,74 +3074,17 @@ async function despublicar(){
 }
 
 /* ═══════════════════════════════════════
-   CRM DE ALUMNOS (login propio, Supabase Auth)
+   CRM DE ALUMNOS (protegido por la clave del panel admin)
    ═══════════════════════════════════════ */
 const CRM_FORMATOS={individual:'Individual',dupla:'Dupla',grupal:'Grupal',cancha_libre:'Cancha libre'};
 let CRM={students:[],slots:[],slotStudents:[],payments:[],sub:'alumnos',diaAgenda:'lunes',periodo:new Date().toISOString().slice(0,7)};
-let CRM_SESSION=null;
-
-function crmLoadSession(){
-  try{
-    const raw=localStorage.getItem('pdo_crm_session');
-    if(!raw)return null;
-    const s=JSON.parse(raw);
-    if(s.expires_at && Date.now()<s.expires_at)return s;
-  }catch(e){}
-  return null;
-}
-function crmSaveSession(s){localStorage.setItem('pdo_crm_session',JSON.stringify(s));}
-function crmClearSession(){localStorage.removeItem('pdo_crm_session');CRM_SESSION=null;}
-
-async function crmLogin(){
-  const email=document.getElementById('ccl-email').value.trim();
-  const pass=document.getElementById('ccl-pass').value;
-  const errEl=document.getElementById('ccl-err');
-  errEl.style.display='none';
-  try{
-    const r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{
-      method:'POST',
-      headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({email,password:pass})
-    });
-    if(!r.ok){errEl.style.display='block';return;}
-    const data=await r.json();
-    CRM_SESSION={access_token:data.access_token,expires_at:Date.now()+((data.expires_in||3600)*1000)-60000};
-    crmSaveSession(CRM_SESSION);
-    cerrarModal('modal-crm-login');
-    document.getElementById('crm-gate').style.display='none';
-    document.getElementById('crm-body').style.display='block';
-    loadCRM();
-  }catch(e){errEl.style.display='block';}
-}
-
-function crmLogout(){
-  crmClearSession();
-  document.getElementById('crm-gate').style.display='block';
-  document.getElementById('crm-body').style.display='none';
-  toast('Sesión del CRM cerrada');
-}
-
-async function sbFetchAuth(path,method='GET',body=null){
-  if(!CRM_SESSION)CRM_SESSION=crmLoadSession();
-  if(!CRM_SESSION){document.getElementById('modal-crm-login').classList.add('show');return null;}
-  const opts={method,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+CRM_SESSION.access_token,'Content-Type':'application/json','Prefer':'return=representation'}};
-  if(body)opts.body=JSON.stringify(body);
-  try{
-    const r=await fetch(SB_URL+'/rest/v1/'+path,opts);
-    if(r.status===401){crmClearSession();document.getElementById('crm-gate').style.display='block';document.getElementById('crm-body').style.display='none';document.getElementById('modal-crm-login').classList.add('show');return null;}
-    if(!r.ok){const err=await r.text();console.error('CRM error',method,path,err);return null;}
-    if(method==='GET')return r.json();
-    const txt=await r.text();
-    return txt?JSON.parse(txt):null;
-  }catch(e){console.error('CRM fetch error',e);return null;}
-}
 
 async function loadCRM(){
   const [st,sl,ss,pg]=await Promise.all([
-    sbFetchAuth('students?select=*&order=name.asc'),
-    sbFetchAuth('class_slots?select=*&active=eq.true&order=start_time.asc'),
-    sbFetchAuth('slot_students?select=*'),
-    sbFetchAuth('payments?select=*&order=period.desc')
+    sbFetch('students?select=*&order=name.asc'),
+    sbFetch('class_slots?select=*&active=eq.true&order=start_time.asc'),
+    sbFetch('slot_students?select=*'),
+    sbFetch('payments?select=*&order=period.desc')
   ]);
   CRM.students=st||[];CRM.slots=sl||[];CRM.slotStudents=ss||[];CRM.payments=pg||[];
   renderCRM();
@@ -3232,8 +3151,8 @@ async function guardarAlumno(){
     active:document.getElementById('cal-activo').checked
   };
   if(!payload.name){toast('Poné un nombre');return;}
-  if(id){await sbFetchAuth('students?id=eq.'+id,'PATCH',payload);}
-  else{payload.id='al'+Date.now();await sbFetchAuth('students','POST',payload);}
+  if(id){await sbFetch('students?id=eq.'+id,'PATCH',payload);}
+  else{payload.id='al'+Date.now();await sbFetch('students','POST',payload);}
   cerrarModal('modal-crm-alumno');
   await loadCRM();
   toast('Alumno guardado ✓');
@@ -3243,7 +3162,7 @@ async function eliminarAlumno(){
   const id=document.getElementById('cal-id').value;
   if(!id)return;
   if(!confirm('¿Eliminar este alumno? También se borran sus turnos y pagos asociados.'))return;
-  await sbFetchAuth('students?id=eq.'+id,'DELETE');
+  await sbFetch('students?id=eq.'+id,'DELETE');
   cerrarModal('modal-crm-alumno');
   await loadCRM();
   toast('Alumno eliminado');
@@ -3304,15 +3223,15 @@ async function guardarTurno(){
   if(!payload.start_time){toast('Poné un horario');return;}
   let slotId=id;
   if(id){
-    await sbFetchAuth('class_slots?id=eq.'+id,'PATCH',payload);
-    await sbFetchAuth('slot_students?slot_id=eq.'+id,'DELETE');
+    await sbFetch('class_slots?id=eq.'+id,'PATCH',payload);
+    await sbFetch('slot_students?slot_id=eq.'+id,'DELETE');
   }else{
     slotId='sl'+Date.now();
     payload.id=slotId;
-    await sbFetchAuth('class_slots','POST',payload);
+    await sbFetch('class_slots','POST',payload);
   }
   const chosen=[...document.querySelectorAll('#ctu-alumnos .ptipo-btn.active')].map(c=>c.dataset.id);
-  if(chosen.length)await sbFetchAuth('slot_students','POST',chosen.map(sid=>({slot_id:slotId,student_id:sid})));
+  if(chosen.length)await sbFetch('slot_students','POST',chosen.map(sid=>({slot_id:slotId,student_id:sid})));
   cerrarModal('modal-crm-turno');
   await loadCRM();
   toast('Turno guardado ✓');
@@ -3322,7 +3241,7 @@ async function eliminarTurno(){
   const id=document.getElementById('ctu-id').value;
   if(!id)return;
   if(!confirm('¿Eliminar este turno?'))return;
-  await sbFetchAuth('class_slots?id=eq.'+id,'DELETE');
+  await sbFetch('class_slots?id=eq.'+id,'DELETE');
   cerrarModal('modal-crm-turno');
   await loadCRM();
   toast('Turno eliminado');
@@ -3376,14 +3295,14 @@ async function guardarPago(){
     paid_on:status==='pagado'?new Date().toISOString().slice(0,10):null
   };
   if(!payload.period){toast('Elegí un período');return;}
-  await sbFetchAuth('payments','POST',payload);
+  await sbFetch('payments','POST',payload);
   cerrarModal('modal-crm-pago');
   await loadCRM();
   toast('Pago guardado ✓');
 }
 
 async function marcarPagado(id){
-  await sbFetchAuth('payments?id=eq.'+id,'PATCH',{status:'pagado',paid_on:new Date().toISOString().slice(0,10)});
+  await sbFetch('payments?id=eq.'+id,'PATCH',{status:'pagado',paid_on:new Date().toISOString().slice(0,10)});
   await loadCRM();
   toast('Pago confirmado ✓');
 }
