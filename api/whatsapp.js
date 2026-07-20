@@ -217,7 +217,7 @@ function matchStudent(name, students) {
 
 // ---------- Enviar mensaje de WhatsApp ----------
 async function enviarWhatsApp(to, texto) {
-  await fetch(`https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_ID}/messages`, {
+  const r = await fetch(`https://graph.facebook.com/v20.0/${process.env.WHATSAPP_PHONE_ID}/messages`, {
     method: "POST",
     headers: {
       Authorization: "Bearer " + process.env.WHATSAPP_TOKEN,
@@ -229,4 +229,9 @@ async function enviarWhatsApp(to, texto) {
       text: { body: texto },
     }),
   });
+  const data = await r.json();
+  console.log("Respuesta de WhatsApp API:", JSON.stringify(data));
+  if (!r.ok) {
+    console.error("ERROR enviando WhatsApp:", JSON.stringify(data));
+  }
 }
