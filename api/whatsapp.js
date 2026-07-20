@@ -45,6 +45,7 @@ export default async function handler(req, res) {
 
     // 2. Pedirle a Claude que interprete el mensaje
     const interpretado = await interpretarMensaje(texto, students);
+    console.log("Interpretado:", JSON.stringify(interpretado));
 
     // 3. Ejecutar la acción correspondiente
     const resultado = await ejecutarAccion(interpretado, students);
@@ -101,6 +102,9 @@ Para un pago:
 
 Para una cancha abierta con lista de jugadores (el mensaje puede traer muchos nombres separados por coma, salto de línea, "y", etc.):
 {"action":"nueva_cancha_abierta","nombre":"Cancha abierta","fecha":"YYYY-MM-DD","hora":"HH:MM","hora_fin":"HH:MM","cupo":16,"precio":20000,"categorias":"","organizador":"","player_names":["...","..."]}
+
+Para una cancha abierta RECURRENTE (se repite todas las semanas — usá esta acción cuando el mensaje diga "todos los domingos", "los domingos", "cada sábado", etc., en vez de una fecha puntual):
+{"action":"cancha_recurrente","nombre":"Cancha abierta","day":"lunes|martes|miercoles|jueves|viernes|sabado|domingo","hora":"HH:MM","hora_fin":"HH:MM","cupo":16,"precio":20000,"categorias":"","organizador":"","player_names":["...","..."]}
 
 Para eliminar un alumno:
 {"action":"eliminar_alumno","student_name":"..."}
@@ -242,6 +246,31 @@ async function ejecutarAccion(data, students) {
     }
     return {
       respuesta: `✅ Cancha abierta cargada: ${data.fecha} ${data.hora || ""}hs con ${nombres.length} jugador${nombres.length === 1 ? "" : "es"}${nombres.length ? " (" + nombres.join(", ") + ")" : ""}`,
+    };
+  }
+
+  if (data.action === "cancha_recurrente") {
+    if (!data.day) {
+      return { respuesta: "❌ Me faltó el día. Probá: 'Todos los domingos de 15 a 18hs, euge, pablo, martin, marcelo'." };
+    }
+    const dow = DIAS_MAP[data.day.toLowerCase()];
+    const id = "cr" + Date.now();
+    await sbFetch("canchas_recurrentes", "POST", {
+      id,
+      day_of_week: dow,
+      nombre: data.nombre || "Cancha abierta",
+      hora: data.hora || "09:00",
+      hora_fin: data.hora_fin || "",
+      cupo: data.cupo || 16,
+      precio: data.precio || 20000,
+      categorias: data.categorias || "",
+      organizador: data.organizador || "",
+      player_names: data.player_names || [],
+      active: true,
+    });
+    const nombres = data.player_names || [];
+    return {
+      respuesta: `✅ Cancha abierta recurrente creada: todos los ${data.day} ${data.hora || ""}hs con ${nombres.length} jugador${nombres.length === 1 ? "" : "es"} fijo${nombres.length === 1 ? "" : "s"}. Se va a crear sola cada semana.`,
     };
   }
 
