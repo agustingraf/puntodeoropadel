@@ -38,7 +38,7 @@ export default async function handler(req, res) {
 
     const from = message.from; // número de quien escribió
     const texto = message.text.body;
-
+console.log("Mensaje de:", from, "| Texto:", texto);
     // 1. Traer alumnos existentes para poder matchear nombres
     const students = await sbFetch("students?select=id,name&active=eq.true");
 
