@@ -260,9 +260,29 @@ async function ejecutarAccion(data, students) {
 
   if (data.action === "cancha_recurrente") {
     if (!data.day) {
+if (data.action === "cancha_recurrente") {
+    if (!data.day) {
       return { respuesta: "❌ Me faltó el día. Probá: 'Todos los domingos de 15 a 18hs, euge, pablo, martin, marcelo'." };
     }
     const dow = DIAS_MAP[data.day.toLowerCase()];
+    const nombresNuevos = data.player_names || [];
+
+    // Buscar si ya existe una plantilla recurrente para ese día (no duplicar)
+    const existentes = await sbFetch("canchas_recurrentes?select=*&day_of_week=eq." + dow + "&active=eq.true");
+    const existente = existentes && existentes[0] ? existentes[0] : null;
+
+    if (existente) {
+      const yaTiene = (existente.player_names || []).map((n) => n.toLowerCase());
+      const aAgregar = nombresNuevos.filter((n) => !yaTiene.includes(n.toLowerCase()));
+      const listaFinal = [...(existente.player_names || []), ...aAgregar];
+      await sbFetch("canchas_recurrentes?id=eq." + existente.id, "PATCH", { player_names: listaFinal });
+      return {
+        respuesta: aAgregar.length
+          ? `✅ Sumados a la cancha recurrente de los ${data.day}: ${aAgregar.join(", ")}. Lista completa: ${listaFinal.join(", ")}`
+          : `ℹ️ Esos jugadores ya estaban en la lista de los ${data.day}: ${listaFinal.join(", ")}`,
+      };
+    }
+
     const id = "cr" + Date.now();
     await sbFetch("canchas_recurrentes", "POST", {
       id,
@@ -274,13 +294,13 @@ async function ejecutarAccion(data, students) {
       precio: data.precio || 20000,
       categorias: data.categorias || "",
       organizador: data.organizador || "",
-      player_names: data.player_names || [],
+      player_names: nombresNuevos,
       active: true,
     });
-    const nombres = data.player_names || [];
     return {
-      respuesta: `✅ Cancha abierta recurrente creada: todos los ${data.day} ${data.hora || ""}hs con ${nombres.length} jugador${nombres.length === 1 ? "" : "es"} fijo${nombres.length === 1 ? "" : "s"}. Se va a crear sola cada semana.`,
+      respuesta: `✅ Cancha abierta recurrente creada: todos los ${data.day} ${data.hora || ""}hs con ${nombresNuevos.length} jugador${nombresNuevos.length === 1 ? "" : "es"} fijo${nombresNuevos.length === 1 ? "" : "s"}. Se va a crear sola cada semana.`,
     };
+  }      
   }
 
   if (data.action === "eliminar_alumno") {
