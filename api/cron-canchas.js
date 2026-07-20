@@ -28,24 +28,31 @@ export default async function handler(req, res) {
       if (r.last_created_fecha === proximaFecha) continue; // ya está creada, no duplicar
 
       const canchaId = "ca" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
-      await sbFetch("canchas_abiertas", "POST", {
-        id: canchaId,
-        nombre: r.nombre || "Cancha abierta",
-        fecha: proximaFecha,
-        hora: r.hora,
-        hora_fin: r.hora_fin || "",
-        cupo: r.cupo || 16,
-        precio: r.precio || 20000,
-        categorias: r.categorias || "",
-        organizador: r.organizador || "",
-        activo: true,
-      });
+
+      // Buscar si ya existe una cancha abierta para esa fecha (ej. si Agus la cargó a mano)
+      const existentes = await sbFetch("canchas_abiertas?select=id&fecha=eq." + proximaFecha + "&activo=eq.true");
+      const idFinal = existentes && existentes[0] ? existentes[0].id : canchaId;
+
+      if (!existentes || !existentes[0]) {
+        await sbFetch("canchas_abiertas", "POST", {
+          id: canchaId,
+          nombre: r.nombre || "Cancha abierta",
+          fecha: proximaFecha,
+          hora: r.hora,
+          hora_fin: r.hora_fin || "",
+          cupo: r.cupo || 16,
+          precio: r.precio || 20000,
+          categorias: r.categorias || "",
+          organizador: r.organizador || "",
+          activo: true,
+        });
+      }
 
       const nombres = r.player_names || [];
       if (nombres.length) {
         const filas = nombres.map((n) => ({
           id: "ca" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
-          cancha_id: canchaId,
+          cancha_id: idFinal,
           nombre: n,
           tel: "",
           metodo: "admin",
