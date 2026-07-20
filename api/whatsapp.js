@@ -38,7 +38,8 @@ export default async function handler(req, res) {
 
     const from = message.from; // número de quien escribió
     const texto = message.text.body;
-console.log("Mensaje de:", from, "| Texto:", texto);
+    console.log("Mensaje de:", from, "| Texto:", texto);
+
     // 1. Traer alumnos existentes para poder matchear nombres
     const students = await sbFetch("students?select=id,name&active=eq.true");
 
@@ -98,13 +99,20 @@ Para un turno/clase (día y horario fijo semanal):
 Para un pago:
 {"action":"nuevo_pago","student_name":"...","amount":0,"period":"YYYY-MM","method":"efectivo|transferencia|mp","status":"pendiente|pagado"}
 
+Para una cancha abierta con lista de jugadores (el mensaje puede traer muchos nombres separados por coma, salto de línea, "y", etc.):
+{"action":"nueva_cancha_abierta","nombre":"Cancha abierta","fecha":"YYYY-MM-DD","hora":"HH:MM","hora_fin":"HH:MM","cupo":16,"precio":20000,"categorias":"","organizador":"","player_names":["...","..."]}
+
+Para eliminar un alumno:
+{"action":"eliminar_alumno","student_name":"..."}
+
 Si no entendés el mensaje o falta información clave (ej. no dice el nombre):
 {"action":"desconocido","motivo":"..."}
 
 Reglas:
 - Si dice "pagó" o "pago hecho", status es "pagado". Si solo dice el monto sin confirmar, status "pendiente".
 - Si no dice el período del pago, usá el mes actual.
-- Matcheá student_name / student_names contra los alumnos ya cargados si el nombre es parecido (aunque esté mal escrito o incompleto). Si no hay match razonable, usá el nombre tal cual lo escribió.
+- Para cancha abierta: si no dice fecha, asumí el próximo sábado. Si no dice hora, dejá "09:00". Si no dice cupo, usá 16. Si no dice precio, dejá null. Extraé TODOS los nombres de jugadores que aparezcan en el mensaje, sin importar cuántos sean.
+- Matcheá student_name / student_names / player_names contra los alumnos ya cargados si el nombre es parecido (aunque esté mal escrito o incompleto). Si no hay match razonable, usá el nombre tal cual lo escribió.
 - No inventes datos que no están en el mensaje: dejalos vacíos/null.`;
 
   const r = await fetch("https://api.anthropic.com/v1/messages", {
@@ -201,7 +209,53 @@ async function ejecutarAccion(data, students) {
     return { respuesta: `✅ Pago cargado: ${data.student_name} — $${data.amount} (${data.status === "pagado" ? "pagado" : "pendiente"})` };
   }
 
-  return { respuesta: `🤔 No entendí bien ese mensaje${data.motivo ? " (" + data.motivo + ")" : ""}. Contame de otra forma, por ejemplo:\n• "Nuevo alumno Pablo, 5ta, individual"\n• "Pablo lunes 18hs individual"\n• "Pablo pagó 25000 julio"` };
+  if (data.action === "nueva_cancha_abierta") {
+    if (!data.fecha) {
+      return { respuesta: "❌ Me faltó la fecha de la cancha abierta. Probá: 'Cancha abierta sábado 26/7, 9hs, Pablo, Andrea, Juan...'." };
+    }
+    const canchaId = "ca" + Date.now();
+    await sbFetch("canchas_abiertas", "POST", {
+      id: canchaId,
+      nombre: data.nombre || "Cancha abierta",
+      fecha: data.fecha,
+      hora: data.hora || "09:00",
+      hora_fin: data.hora_fin || "",
+      cupo: data.cupo || 16,
+      precio: data.precio || 20000,
+      categorias: data.categorias || "",
+      organizador: data.organizador || "",
+      activo: true,
+    });
+    const nombres = data.player_names || [];
+    if (nombres.length) {
+      const filas = nombres.map((n) => ({
+        id: "ca" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+        cancha_id: canchaId,
+        nombre: n,
+        tel: "",
+        metodo: "admin",
+        es_admin: true,
+        estado: "confirmada",
+        fecha: new Date().toLocaleDateString("es-AR"),
+      }));
+      await sbFetch("canchas_inscriptos", "POST", filas);
+    }
+    return {
+      respuesta: `✅ Cancha abierta cargada: ${data.fecha} ${data.hora || ""}hs con ${nombres.length} jugador${nombres.length === 1 ? "" : "es"}${nombres.length ? " (" + nombres.join(", ") + ")" : ""}`,
+    };
+  }
+
+  if (data.action === "eliminar_alumno") {
+    if (!data.student_name) return { respuesta: "❌ No entendí a quién eliminar." };
+    const studentId = matchStudent(data.student_name, students);
+    if (!studentId) {
+      return { respuesta: `❌ No encontré a "${data.student_name}" entre los alumnos cargados.` };
+    }
+    await sbFetch("students?id=eq." + studentId, "DELETE");
+    return { respuesta: `✅ Alumno eliminado: ${data.student_name}` };
+  }
+
+  return { respuesta: `🤔 No entendí bien ese mensaje${data.motivo ? " (" + data.motivo + ")" : ""}. Contame de otra forma, por ejemplo:\n• "Nuevo alumno Pablo, 5ta, individual"\n• "Pablo lunes 18hs individual"\n• "Pablo pagó 25000 julio"\n• "Cancha abierta sábado 26/7, 9hs, Pablo, Andrea, Juan"\n• "Eliminar a Pablo"` };
 }
 
 function matchStudent(name, students) {
