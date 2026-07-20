@@ -5,7 +5,7 @@
 // Usa las mismas variables de entorno SUPABASE_URL y SUPABASE_SERVICE_KEY
 // que ya configuraste para api/whatsapp.js — no hace falta agregar nada nuevo.
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Seguridad: Vercel Cron manda el header Authorization automáticamente.
   // También se acepta ?secret=... en la URL para poder probarlo a mano
   // desde el navegador.
