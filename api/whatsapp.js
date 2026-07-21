@@ -103,8 +103,11 @@ Para un pago:
 Para una cancha abierta con lista de jugadores (el mensaje puede traer muchos nombres separados por coma, salto de línea, "y", etc.):
 {"action":"nueva_cancha_abierta","nombre":"Cancha abierta","fecha":"YYYY-MM-DD","hora":"HH:MM","hora_fin":"HH:MM","cupo":16,"precio":20000,"categorias":"","organizador":"","player_names":["...","..."]}
 
-Para una cancha abierta RECURRENTE (se repite todas las semanas — usá esta acción cuando el mensaje diga "todos los domingos", "los domingos", "cada sábado", etc., en vez de una fecha puntual):
+Para una cancha abierta RECURRENTE (se repite todas las semanas — usá esta acción solo cuando el mensaje diga explícitamente "todos los domingos", "cada sábado", etc.):
 {"action":"cancha_recurrente","nombre":"Cancha abierta","day":"lunes|martes|miercoles|jueves|viernes|sabado|domingo","hora":"HH:MM","hora_fin":"HH:MM","cupo":16,"precio":20000,"categorias":"","organizador":"","player_names":["...","..."]}
+
+Para SUMAR jugadores a una cancha que probablemente ya existe (usá esta acción cuando el mensaje diga "agregar/anotar/sumar a X en la cancha/partido del domingo/sábado/etc" mencionando un día SIN la palabra "todos" ni una fecha con número — es la acción más común para este caso):
+{"action":"agregar_a_cancha","day":"lunes|martes|miercoles|jueves|viernes|sabado|domingo","fecha":null,"player_names":["...","..."]}
 
 Para eliminar un alumno:
 {"action":"eliminar_alumno","student_name":"..."}
@@ -115,7 +118,11 @@ Si no entendés el mensaje o falta información clave (ej. no dice el nombre):
 Reglas:
 - Si dice "pagó" o "pago hecho", status es "pagado". Si solo dice el monto sin confirmar, status "pendiente".
 - Si no dice el período del pago, usá el mes actual.
-- Para cancha abierta: si no dice fecha, asumí el próximo sábado. Si no dice hora, dejá "09:00". Si no dice cupo, usá 16. Si no dice precio, dejá null. Extraé TODOS los nombres de jugadores que aparezcan en el mensaje, sin importar cuántos sean.
+- IMPORTANTE — no confundas "nuevo_alumno" con las acciones de cancha: "nuevo_alumno" es SOLO cuando el mensaje agrega a alguien a la lista fija de alumnos de clases (ej. "nuevo alumno Pablo, 5ta"). Si el mensaje menciona "cancha", "cancha abierta", "partido" o un día de la semana en el contexto de sumar gente a un evento puntual, NUNCA uses "nuevo_alumno" — usá "agregar_a_cancha", "nueva_cancha_abierta" o "cancha_recurrente" según corresponda.
+- Usá "cancha_recurrente" solo si dice "todos los", "cada" + día de semana.
+- Usá "nueva_cancha_abierta" solo si da una fecha concreta con número (ej. "26/7", "sábado 26").
+- Usá "agregar_a_cancha" en cualquier otro caso donde mencione sumar/agregar/anotar gente a una cancha o partido de un día de la semana sin fecha numérica ni "todos los".
+- Para cancha abierta: si no dice hora, dejá "09:00". Si no dice cupo, usá 16. Extraé TODOS los nombres de jugadores que aparezcan en el mensaje, sin importar cuántos sean.
 - Matcheá student_name / student_names / player_names contra los alumnos ya cargados si el nombre es parecido (aunque esté mal escrito o incompleto). Si no hay match razonable, usá el nombre tal cual lo escribió.
 - No inventes datos que no están en el mensaje: dejalos vacíos/null.`;
 
@@ -300,6 +307,56 @@ async function ejecutarAccion(data, students) {
     };
   }
 
+  if (data.action === "agregar_a_cancha") {
+    const nombresNuevos = data.player_names || [];
+    if (!nombresNuevos.length) return { respuesta: "❌ No entendí a quién sumar." };
+    if (!data.day && !data.fecha) return { respuesta: "❌ No entendí para qué día. Decime el día (ej. 'el domingo')." };
+
+    const dow = data.day ? DIAS_MAP[data.day.toLowerCase()] : null;
+    const fechaObjetivo = data.fecha || (dow !== null ? proximaFechaDia(dow) : null);
+
+    // 1. Buscar una cancha abierta puntual para esa fecha
+    if (fechaObjetivo) {
+      const existentes = await sbFetch("canchas_abiertas?select=id&fecha=eq." + fechaObjetivo + "&activo=eq.true");
+      if (existentes && existentes[0]) {
+        const canchaId = existentes[0].id;
+        const filas = nombresNuevos.map((n) => ({
+          id: "ca" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
+          cancha_id: canchaId,
+          nombre: n,
+          tel: "",
+          metodo: "admin",
+          es_admin: true,
+          estado: "confirmada",
+          fecha: new Date().toLocaleDateString("es-AR"),
+        }));
+        await sbFetch("canchas_inscriptos", "POST", filas);
+        return { respuesta: `✅ Sumados a la cancha del ${fechaObjetivo}: ${nombresNuevos.join(", ")}` };
+      }
+    }
+
+    // 2. Si no hay una puntual, buscar plantilla recurrente para ese día
+    if (dow !== null) {
+      const recurrentes = await sbFetch("canchas_recurrentes?select=*&day_of_week=eq." + dow + "&active=eq.true");
+      const rec = recurrentes && recurrentes[0] ? recurrentes[0] : null;
+      if (rec) {
+        const yaTiene = (rec.player_names || []).map((n) => n.toLowerCase());
+        const aAgregar = nombresNuevos.filter((n) => !yaTiene.includes(n.toLowerCase()));
+        const listaFinal = [...(rec.player_names || []), ...aAgregar];
+        await sbFetch("canchas_recurrentes?id=eq." + rec.id, "PATCH", { player_names: listaFinal });
+        return {
+          respuesta: aAgregar.length
+            ? `✅ Sumados a la cancha recurrente de los ${data.day}: ${aAgregar.join(", ")}`
+            : `ℹ️ Ya estaban en la lista de los ${data.day}: ${listaFinal.join(", ")}`,
+        };
+      }
+    }
+
+    return {
+      respuesta: `❌ No encontré ninguna cancha abierta cargada para ese día. Primero creála con algo como "Cancha abierta ${data.day || "sábado"} 26/7, 9hs, ${nombresNuevos.join(", ")}" o "Todos los ${data.day || "domingos"} de 9 a 12, ${nombresNuevos.join(", ")}".`,
+    };
+  }
+
   if (data.action === "eliminar_alumno") {
     if (!data.student_name) return { respuesta: "❌ No entendí a quién eliminar." };
     const studentId = matchStudent(data.student_name, students);
@@ -322,6 +379,17 @@ function matchStudent(name, students) {
     (s) => s.name.toLowerCase().includes(n) || n.includes(s.name.toLowerCase().split(" ")[0])
   );
   return partial ? partial.id : null;
+}
+
+// Calcula la próxima fecha (YYYY-MM-DD) para un día de la semana dado (0=domingo…6=sábado).
+function proximaFechaDia(dayOfWeek) {
+  const hoy = new Date();
+  const hoyDow = hoy.getDay();
+  let diff = dayOfWeek - hoyDow;
+  if (diff < 0) diff += 7;
+  const fecha = new Date(hoy);
+  fecha.setDate(hoy.getDate() + diff);
+  return fecha.toISOString().slice(0, 10);
 }
 
 // ---------- Enviar mensaje de WhatsApp ----------
