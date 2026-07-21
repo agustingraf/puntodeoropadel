@@ -9,6 +9,9 @@
 //  devolviendo XML en la misma respuesta HTTP, sin llamar a la API de Twilio.)
 
 const DIAS_MAP = { domingo:0, lunes:1, martes:2, miercoles:3, "miércoles":3, jueves:4, viernes:5, sabado:6, "sábado":6 };
+// El sitio (pestaña Agenda) cuenta los días distinto para class_slots: lunes=0 ... domingo=6.
+// Usamos este mapeo aparte SOLO para turnos, para que coincida con la Agenda.
+const DIAS_MAP_TURNOS = { lunes:0, martes:1, miercoles:2, "miércoles":2, jueves:3, viernes:4, sabado:5, "sábado":5, domingo:6 };
 const DIAS_NOMBRE = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
 
 module.exports = async function handler(req, res) {
@@ -148,12 +151,13 @@ async function responderPregunta(pregunta) {
 
   const nombreDe = (id) => (students || []).find((s) => s.id === id)?.name || "?";
 
+  const DIAS_NOMBRE_TURNOS = ["lunes","martes","miercoles","jueves","viernes","sabado","domingo"];
   const turnosTexto = (slots || [])
     .map((s) => {
       const nombres = (slotStudents || [])
         .filter((x) => x.slot_id === s.id)
         .map((x) => nombreDe(x.student_id));
-      return `${DIAS_NOMBRE[s.day_of_week]} ${s.start_time?.slice(0, 5)}hs (${s.format || ""}): ${nombres.join(", ") || "sin alumnos"}`;
+      return `${DIAS_NOMBRE_TURNOS[s.day_of_week]} ${s.start_time?.slice(0, 5)}hs (${s.format || ""}): ${nombres.join(", ") || "sin alumnos"}`;
     })
     .join("\n");
 
@@ -220,7 +224,7 @@ async function ejecutarAccion(data, students) {
     if (!data.day || !data.start_time) {
       return { respuesta: "❌ Me faltó el día o el horario. Probá: 'Pablo lunes 18hs individual'." };
     }
-    const dow = DIAS_MAP[data.day.toLowerCase()];
+    const dow = DIAS_MAP_TURNOS[data.day.toLowerCase()];
     const slotId = "sl" + Date.now();
     await sbFetch("class_slots", "POST", {
       id: slotId,
@@ -232,12 +236,33 @@ async function ejecutarAccion(data, students) {
       active: true,
     });
     const nombres = data.student_names || [];
-    const ids = nombres.map((n) => matchStudent(n, students)).filter(Boolean);
-    if (ids.length) {
-      await sbFetch("slot_students", "POST", ids.map((sid) => ({ slot_id: slotId, student_id: sid })));
+    const idsFinales = [];
+    const creados = [];
+    for (const n of nombres) {
+      let sid = matchStudent(n, students);
+      if (!sid) {
+        // No existe todavía como alumno: lo creamos automáticamente
+        sid = "al" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
+        await sbFetch("students", "POST", {
+          id: sid,
+          name: n,
+          phone: "",
+          category: "",
+          format: data.format || "individual",
+          monthly_fee: null,
+          notes: "",
+          active: true,
+        });
+        students.push({ id: sid, name: n });
+        creados.push(n);
+      }
+      idsFinales.push(sid);
+    }
+    if (idsFinales.length) {
+      await sbFetch("slot_students", "POST", idsFinales.map((sid) => ({ slot_id: slotId, student_id: sid })));
     }
     return {
-      respuesta: `✅ Turno cargado: ${data.day} ${data.start_time}hs${nombres.length ? " — " + nombres.join(", ") : ""}`,
+      respuesta: `✅ Turno cargado: ${data.day} ${data.start_time}hs${nombres.length ? " — " + nombres.join(", ") : ""}${creados.length ? " (creé de alumno nuevo a: " + creados.join(", ") + ")" : ""}`,
     };
   }
 
