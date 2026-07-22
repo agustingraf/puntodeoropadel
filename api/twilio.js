@@ -108,7 +108,7 @@ Si no entendés el mensaje o falta información clave:
 
 Reglas:
 - Si dice "pagó" o "pago hecho", status es "pagado". Si solo dice el monto sin confirmar, status "pendiente".
-- Si no dice el período del pago, usá el mes actual.
+- Si no dice el período del pago, dejá "period":null (el sistema toma el mes actual real automáticamente — NO lo calcules vos, no adivines el año).
 - IMPORTANTE: si el mensaje es una PREGUNTA (busca información, no da una orden de cargar/sumar/eliminar algo), SIEMPRE usá "consulta", nunca otra acción.
 - Para pagos: interpretá quién recibió el dinero. Si dice "me pagó", "le pagué a él", "cobré yo" → pagado_a:"agus". Si dice "le pagó a Marce", "pagó a Marce", "cobró Marce" → pagado_a:"marce". Si no está claro, dejá pagado_a:null.
 - IMPORTANTE: distinguí "nuevo_pago" (un ALUMNO pagando una clase) de "liquidacion_marce" (VOS entregándole plata a Marce para saldar, o Marce entregándote a VOS). Si el mensaje dice "le di plata a Marce", "le pagué a Marcelo", "le llevé/entregué X a Marce" → es "liquidacion_marce" con direccion "agus_a_marce". Si dice "Marce me dio/pagó" → "liquidacion_marce" con direccion "marce_a_agus".
