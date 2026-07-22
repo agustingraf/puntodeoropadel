@@ -68,7 +68,10 @@ async function sbFetch(path, method = "GET", payload = null) {
 
 async function interpretarMensaje(texto, students) {
   const nombresExistentes = students.map((s) => s.name).join(", ") || "(ninguno todavía)";
+  const hoy = new Date().toISOString().slice(0, 10);
+  const mesActual = hoy.slice(0, 7);
   const systemPrompt = `Interpretás mensajes de WhatsApp de un profesor de pádel para su CRM.
+Hoy es ${hoy} (mes actual: ${mesActual}). Usá esta fecha real para cualquier cálculo de fechas o períodos — NUNCA uses una fecha de tu conocimiento previo.
 Alumnos ya cargados: ${nombresExistentes}
 
 Devolvé SOLO un JSON (sin texto extra, sin markdown) con esta forma exacta:
