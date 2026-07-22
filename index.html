@@ -2088,7 +2088,6 @@ function renderAdmPartidos(){
   const el=document.getElementById('adm-partidos-content');
   if(!el)return;
   const slots=PART.slots;
-
   const addForm=`<div class="adm-add-form">
     <div class="adm-add-title">✦ Publicar nuevo partido</div>
     <div class="adm-add-row">
@@ -2104,7 +2103,6 @@ function renderAdmPartidos(){
       <button class="adm-add-btn" onclick="adminCrearPartido()">Publicar</button>
     </div>
   </div>`;
-
   const lista=slots.length===0
     ?'<div class="empty">No hay partidos publicados todavía.</div>'
     :slots.map(s=>{
@@ -2122,6 +2120,18 @@ function renderAdmPartidos(){
             <button class="rbtn canc" onclick="adminEliminarPartido('${s.id}')">Eliminar</button>
           </div>
         </div>
+        <div style="background:var(--blanco);border:1.5px dashed rgba(212,175,55,.3);border-radius:12px;padding:.85rem 1rem;margin-bottom:.5rem;width:100%">
+          <div style="font-size:.7rem;color:var(--oro-dark);text-transform:uppercase;letter-spacing:1.5px;font-weight:500;margin-bottom:.65rem">✦ Anotar jugador manualmente</div>
+          <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end">
+            <input type="text" id="adm-part-jn-${s.id}" placeholder="Nombre" style="flex:1;min-width:120px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.5rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
+            <input type="text" id="adm-part-jc-${s.id}" placeholder="Cat (ej: 7ma)" style="width:100px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.5rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
+            <select id="adm-part-jg-${s.id}" style="border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.5rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
+              <option value="M">♂ Masc</option>
+              <option value="F">♀ Fem</option>
+            </select>
+            <button class="adm-add-btn" onclick="adminAnotarPartido('${s.id}')">Anotar</button>
+          </div>
+        </div>
         ${ins.length===0?'<div style="font-size:.78rem;color:#bbb;font-style:italic">Sin inscriptos todavía.</div>'
           :`<div style="display:flex;flex-wrap:wrap;gap:.4rem">${ins.map(i=>`
             <div class="inscripto-pill" style="font-size:.75rem">
@@ -2130,8 +2140,41 @@ function renderAdmPartidos(){
             </div>`).join('')}</div>`}
       </div>`;
     }).join('');
-
   el.innerHTML=addForm+lista;
+}
+
+async function adminAnotarPartido(slotId){
+  const nombre=document.getElementById('adm-part-jn-'+slotId)?.value.trim();
+  const cat=document.getElementById('adm-part-jc-'+slotId)?.value.trim();
+  const genero=document.getElementById('adm-part-jg-'+slotId)?.value||'M';
+  if(!nombre){toast('Ingresá el nombre del jugador');return;}
+  const s=PART.slots.find(x=>x.id===slotId);
+  if(!s)return;
+  const ins=s.inscriptos||[];
+  const cupo=s.cupo||4;
+  if(ins.length>=cupo){toast('Cupo completo');return;}
+  const esPrimero=ins.length===0;
+  if(esPrimero){
+    s.tipo=s.tipo||'Sin definir';
+    s.cat_base=cat||s.cat_base;
+    await updatePartidoSlot(s.id,{tipo:s.tipo,cat_base:s.cat_base});
+  }
+  const ni={
+    id:'pi'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
+    slot_id:slotId,
+    nombre,tel:'',
+    tipo:s.tipo||'Sin definir',
+    cat:cat||'—',
+    genero,
+    metodo:'admin',estado:'confirmada',
+    fecha:new Date().toLocaleDateString('es-AR')
+  };
+  ins.push(ni);
+  s.inscriptos=ins;
+  await savePartidoInscripto(ni);
+  renderPartidos();
+  renderAdmPartidos();
+  toast(nombre+' anotado/a ✓');
 }
 
 async function adminCrearPartido(){
