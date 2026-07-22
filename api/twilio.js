@@ -5,12 +5,8 @@
 //   ANTHROPIC_API_KEY    -> ya la tenés
 //   SUPABASE_URL         -> ya la tenés
 //   SUPABASE_SERVICE_KEY -> ya la tenés
-// (No hace falta ninguna variable nueva de Twilio: la respuesta se manda
-//  devolviendo XML en la misma respuesta HTTP, sin llamar a la API de Twilio.)
 
 const DIAS_MAP = { domingo:0, lunes:1, martes:2, miercoles:3, "miércoles":3, jueves:4, viernes:5, sabado:6, "sábado":6 };
-// El sitio (pestaña Agenda) cuenta los días distinto para class_slots: lunes=0 ... domingo=6.
-// Usamos este mapeo aparte SOLO para turnos, para que coincida con la Agenda.
 const DIAS_MAP_TURNOS = { lunes:0, martes:1, miercoles:2, "miércoles":2, jueves:3, viernes:4, sabado:5, "sábado":5, domingo:6 };
 const DIAS_NOMBRE = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
 
@@ -22,7 +18,7 @@ module.exports = async function handler(req, res) {
 
   try {
     const texto = (req.body?.Body || "").trim();
-    const from = req.body?.From || ""; // ej: "whatsapp:+5491134634000"
+    const from = req.body?.From || "";
     console.log("Mensaje de:", from, "| Texto:", texto);
 
     const students = await sbFetch("students?select=id,name&active=eq.true");
@@ -48,7 +44,6 @@ function escapeXml(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-// ---------- Supabase ----------
 async function sbFetch(path, method = "GET", payload = null) {
   const opts = {
     method,
@@ -71,7 +66,6 @@ async function sbFetch(path, method = "GET", payload = null) {
   return txt ? JSON.parse(txt) : null;
 }
 
-// ---------- Interpretación con Claude ----------
 async function interpretarMensaje(texto, students) {
   const nombresExistentes = students.map((s) => s.name).join(", ") || "(ninguno todavía)";
   const systemPrompt = `Interpretás mensajes de WhatsApp de un profesor de pádel para su CRM.
@@ -85,8 +79,8 @@ Para un alumno nuevo:
 Para un turno/clase (día y horario fijo semanal):
 {"action":"nuevo_turno","day":"lunes|martes|miercoles|jueves|viernes|sabado|domingo","start_time":"HH:MM","duration_minutes":60,"format":"individual|dupla|grupal|cancha_libre","student_names":["..."],"notes":""}
 
-Para un pago:
-{"action":"nuevo_pago","student_name":"...","amount":0,"period":"YYYY-MM","method":"efectivo|transferencia|mp","status":"pendiente|pagado"}
+Para un pago (SIEMPRE preguntá o identificá a quién le pagaron: a vos -"agus"- o a Marce -"marce"-; si el mensaje no lo aclara, dejá "pagado_a":null):
+{"action":"nuevo_pago","student_name":"...","amount":0,"period":"YYYY-MM","method":"efectivo|transferencia|mp","status":"pendiente|pagado","pagado_a":"agus|marce|null"}
 
 Para una cancha abierta con fecha concreta (número de día, ej "26/7"):
 {"action":"nueva_cancha_abierta","nombre":"Cancha abierta","fecha":"YYYY-MM-DD","hora":"HH:MM","hora_fin":"HH:MM","cupo":16,"precio":20000,"categorias":"","organizador":"","player_names":["...","..."]}
@@ -96,6 +90,9 @@ Para una cancha RECURRENTE (dice "todos los", "cada" + día):
 
 Para sumar gente a una cancha que probablemente ya existe (menciona un día SIN "todos" ni fecha numérica):
 {"action":"agregar_a_cancha","day":"lunes|martes|miercoles|jueves|viernes|sabado|domingo","fecha":null,"player_names":["...","..."]}
+
+Para una LIQUIDACIÓN con Marce (cuando VOS le das plata a Marce para saldar cuenta, o Marce te da plata a VOS — no es un pago de un alumno, es entre vos y Marce):
+{"action":"liquidacion_marce","monto":0,"direccion":"agus_a_marce|marce_a_agus","notas":""}
 
 Para eliminar un alumno:
 {"action":"eliminar_alumno","student_name":"..."}
@@ -110,6 +107,8 @@ Reglas:
 - Si dice "pagó" o "pago hecho", status es "pagado". Si solo dice el monto sin confirmar, status "pendiente".
 - Si no dice el período del pago, usá el mes actual.
 - IMPORTANTE: si el mensaje es una PREGUNTA (busca información, no da una orden de cargar/sumar/eliminar algo), SIEMPRE usá "consulta", nunca otra acción.
+- Para pagos: interpretá quién recibió el dinero. Si dice "me pagó", "le pagué a él", "cobré yo" → pagado_a:"agus". Si dice "le pagó a Marce", "pagó a Marce", "cobró Marce" → pagado_a:"marce". Si no está claro, dejá pagado_a:null.
+- IMPORTANTE: distinguí "nuevo_pago" (un ALUMNO pagando una clase) de "liquidacion_marce" (VOS entregándole plata a Marce para saldar, o Marce entregándote a VOS). Si el mensaje dice "le di plata a Marce", "le pagué a Marcelo", "le llevé/entregué X a Marce" → es "liquidacion_marce" con direccion "agus_a_marce". Si dice "Marce me dio/pagó" → "liquidacion_marce" con direccion "marce_a_agus".
 - No confundas "nuevo_alumno" con las acciones de cancha: "nuevo_alumno" es SOLO para agregar alguien a la lista fija de alumnos de clases.
 - Usá "cancha_recurrente" solo si dice "todos los"/"cada" + día. Usá "nueva_cancha_abierta" solo con fecha numérica concreta. Usá "agregar_a_cancha" en cualquier otro caso de sumar gente a una cancha/partido de un día sin fecha numérica.
 - Matcheá nombres contra los alumnos ya cargados si son parecidos. No inventes datos que no están en el mensaje.`;
@@ -138,15 +137,15 @@ Reglas:
   }
 }
 
-// ---------- Responder preguntas libres, leyendo los datos reales ----------
 async function responderPregunta(pregunta) {
-  const [students, slots, slotStudents, payments, canchas, recurrentes] = await Promise.all([
+  const [students, slots, slotStudents, payments, canchas, recurrentes, liquidaciones] = await Promise.all([
     sbFetch("students?select=*&active=eq.true"),
     sbFetch("class_slots?select=*&active=eq.true"),
     sbFetch("slot_students?select=*"),
     sbFetch("payments?select=*&order=period.desc"),
     sbFetch("canchas_abiertas?select=*&activo=eq.true&order=fecha.asc"),
     sbFetch("canchas_recurrentes?select=*&active=eq.true"),
+    sbFetch("liquidaciones_marce?select=*&order=fecha.desc"),
   ]);
 
   const nombreDe = (id) => (students || []).find((s) => s.id === id)?.name || "?";
@@ -167,8 +166,30 @@ async function responderPregunta(pregunta) {
 
   const pagosTexto = (payments || [])
     .slice(0, 60)
-    .map((p) => `${nombreDe(p.student_id)} — $${p.amount} — ${p.period} — ${p.status}`)
+    .map((p) => `${nombreDe(p.student_id)} — $${p.amount} — ${p.period} — ${p.status} — pagado a: ${p.pagado_a || "?"}`)
     .join("\n");
+
+  let debeAMarce = 0;
+  let debeMarce = 0;
+  (payments || []).forEach((p) => {
+    const mitad = Number(p.amount || 0) / 2;
+    if (p.pagado_a === "agus") debeAMarce += mitad;
+    else if (p.pagado_a === "marce") debeMarce += mitad;
+  });
+  (liquidaciones || []).forEach((l) => {
+    if (l.direccion === "agus_a_marce") debeAMarce -= Number(l.monto || 0);
+    else if (l.direccion === "marce_a_agus") debeMarce -= Number(l.monto || 0);
+  });
+  const balanceNeto = debeMarce - debeAMarce;
+  const liquidacionesTexto = (liquidaciones || [])
+    .slice(0, 30)
+    .map((l) => `${l.fecha} — ${l.direccion === "agus_a_marce" ? "Agus le dio a Marce" : "Marce le dio a Agus"} $${l.monto}`)
+    .join("\n");
+  const balanceTexto =
+    `Total cobrado por Agus (antes de liquidaciones): la mitad le corresponde a Marce\n` +
+    `Total cobrado por Marce (antes de liquidaciones): la mitad le corresponde a Agus\n` +
+    `Liquidaciones ya hechas entre ellos:\n${liquidacionesTexto || "(ninguna)"}\n` +
+    `Saldo pendiente después de restar liquidaciones: ${balanceNeto >= 0 ? `Marce le debe a Agus $${balanceNeto.toLocaleString("es-AR")}` : `Agus le debe a Marce $${Math.abs(balanceNeto).toLocaleString("es-AR")}`}`;
 
   const canchasTexto = (canchas || [])
     .map((c) => `${c.fecha} ${c.hora}hs: ${c.nombre || "Cancha abierta"} (cupo ${c.cupo})`)
@@ -178,7 +199,7 @@ async function responderPregunta(pregunta) {
     .map((r) => `Todos los ${DIAS_NOMBRE[r.day_of_week]} ${r.hora}hs: ${(r.player_names || []).join(", ")}`)
     .join("\n");
 
-  const contexto = `ALUMNOS:\n${alumnosTexto || "(ninguno)"}\n\nTURNOS SEMANALES:\n${turnosTexto || "(ninguno)"}\n\nPAGOS (más recientes primero):\n${pagosTexto || "(ninguno)"}\n\nCANCHAS ABIERTAS PROGRAMADAS:\n${canchasTexto || "(ninguna)"}\n\nCANCHAS RECURRENTES:\n${recurrentesTexto || "(ninguna)"}`;
+  const contexto = `ALUMNOS:\n${alumnosTexto || "(ninguno)"}\n\nTURNOS SEMANALES:\n${turnosTexto || "(ninguno)"}\n\nPAGOS (más recientes primero):\n${pagosTexto || "(ninguno)"}\n\nCUENTA CORRIENTE CON MARCE (50/50 sobre cada pago):\n${balanceTexto}\n\nCANCHAS ABIERTAS PROGRAMADAS:\n${canchasTexto || "(ninguna)"}\n\nCANCHAS RECURRENTES:\n${recurrentesTexto || "(ninguna)"}`;
 
   const r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -198,7 +219,6 @@ async function responderPregunta(pregunta) {
   return data?.content?.[0]?.text?.trim() || "No pude procesar la pregunta, probá de nuevo.";
 }
 
-// ---------- Ejecutar acciones ----------
 async function ejecutarAccion(data, students) {
   if (data.action === "consulta") {
     const respuesta = await responderPregunta(data.pregunta || "");
@@ -241,7 +261,6 @@ async function ejecutarAccion(data, students) {
     for (const n of nombres) {
       let sid = matchStudent(n, students);
       if (!sid) {
-        // No existe todavía como alumno: lo creamos automáticamente
         sid = "al" + Date.now() + "_" + Math.random().toString(36).slice(2, 6);
         await sbFetch("students", "POST", {
           id: sid,
@@ -268,7 +287,10 @@ async function ejecutarAccion(data, students) {
 
   if (data.action === "nuevo_pago") {
     if (!data.student_name || !data.amount) {
-      return { respuesta: "❌ Me faltó el nombre o el monto. Probá: 'Pablo pagó 25000 julio'." };
+      return { respuesta: "❌ Me faltó el nombre o el monto. Probá: 'Pablo me pagó 25000 julio' o 'Pablo le pagó a Marce 25000 julio'." };
+    }
+    if (!data.pagado_a) {
+      return { respuesta: `❓ ¿A quién le pagó ${data.student_name}, a vos o a Marce? Respondé de nuevo aclarando eso.` };
     }
     const studentId = matchStudent(data.student_name, students);
     if (!studentId) return { respuesta: `❌ No encontré a "${data.student_name}".` };
@@ -280,9 +302,15 @@ async function ejecutarAccion(data, students) {
       period,
       method: data.method || "efectivo",
       status: data.status || "pendiente",
+      pagado_a: data.pagado_a,
       paid_on: data.status === "pagado" ? new Date().toISOString().slice(0, 10) : null,
     });
-    return { respuesta: `✅ Pago cargado: ${data.student_name} — $${data.amount} (${data.status === "pagado" ? "pagado" : "pendiente"})` };
+    const mitad = Number(data.amount) / 2;
+    const debeExplicacion =
+      data.pagado_a === "agus"
+        ? `Le debés $${mitad.toLocaleString("es-AR")} a Marce.`
+        : `Marce te debe $${mitad.toLocaleString("es-AR")} a vos.`;
+    return { respuesta: `✅ Pago cargado: ${data.student_name} — $${data.amount} (${data.status === "pagado" ? "pagado" : "pendiente"}, a ${data.pagado_a === "agus" ? "vos" : "Marce"}). ${debeExplicacion}` };
   }
 
   if (data.action === "nueva_cancha_abierta") {
@@ -397,6 +425,22 @@ async function ejecutarAccion(data, students) {
       }
     }
     return { respuesta: `❌ No encontré ninguna cancha cargada para ese día. Creála primero.` };
+  }
+
+  if (data.action === "liquidacion_marce") {
+    if (!data.monto || !data.direccion) {
+      return { respuesta: "❌ Me faltó el monto o si fue de vos a Marce o al revés. Probá: 'Le di 18000 a Marcelo' o 'Marcelo me dio 18000'." };
+    }
+    await sbFetch("liquidaciones_marce", "POST", {
+      id: "lq" + Date.now(),
+      monto: Number(data.monto),
+      direccion: data.direccion,
+      notas: data.notas || "",
+      fecha: new Date().toISOString().slice(0, 10),
+    });
+    return {
+      respuesta: `✅ Liquidación registrada: ${data.direccion === "agus_a_marce" ? "le diste" : "te dio"} $${Number(data.monto).toLocaleString("es-AR")} ${data.direccion === "agus_a_marce" ? "a Marce" : "Marce"}. Preguntame "¿cuánto le debo a Marce?" para ver el saldo actualizado.`,
+    };
   }
 
   if (data.action === "eliminar_alumno") {
