@@ -2,7 +2,6 @@
 <!-- PUNTO DE ORO v8 + CRM -->
 <html lang="es">
 <head>
-  <meta name="facebook-domain-verification" content="wlzhttdtiwnjw3hudcc4xzhyfwnw43" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Punto de Oro Pádel · Agus Graf</title>
@@ -766,7 +765,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <div class="step-header">
         <div class="step-num">Paso 2 de 3 · Método de pago</div>
         <div class="step-title">¿Cómo querés pagar la seña?</div>
-       <div class="step-sub" id="torn-step2-sub">Confirma tu lugar en el torneo.</div>
+        <div class="step-sub" id="torn-step2-sub">Confirma tu lugar en el torneo.</div>
       </div>
       <div class="pago-opts">
         <div class="pago-opt selected" id="torn-opt-mp" onclick="selPagoT('mp')"><div class="pago-opt-icon">💳</div><div class="pago-opt-name">Mercado Pago</div><div class="pago-opt-desc">Link directo</div></div>
@@ -2088,6 +2087,7 @@ function renderAdmPartidos(){
   const el=document.getElementById('adm-partidos-content');
   if(!el)return;
   const slots=PART.slots;
+
   const addForm=`<div class="adm-add-form">
     <div class="adm-add-title">✦ Publicar nuevo partido</div>
     <div class="adm-add-row">
@@ -2103,6 +2103,7 @@ function renderAdmPartidos(){
       <button class="adm-add-btn" onclick="adminCrearPartido()">Publicar</button>
     </div>
   </div>`;
+
   const lista=slots.length===0
     ?'<div class="empty">No hay partidos publicados todavía.</div>'
     :slots.map(s=>{
@@ -2140,6 +2141,7 @@ function renderAdmPartidos(){
             </div>`).join('')}</div>`}
       </div>`;
     }).join('');
+
   el.innerHTML=addForm+lista;
 }
 
@@ -2327,7 +2329,7 @@ function abrirModalTorneo(id){
     if(t.descripcion_precio){precioInfo.textContent=t.descripcion_precio;precioInfo.style.display='block';}
     else{precioInfo.style.display='none';}
   }
- document.getElementById('torn-err').style.display='none';
+  document.getElementById('torn-err').style.display='none';
   const step2Sub=document.getElementById('torn-step2-sub');
   if(step2Sub){
     const montoTxt=t.descripcion_precio||('Seña de $'+(t.precio_total||50000).toLocaleString('es-AR')+' por pareja');
