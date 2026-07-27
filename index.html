@@ -766,7 +766,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <div class="step-header">
         <div class="step-num">Paso 2 de 3 · Método de pago</div>
         <div class="step-title">¿Cómo querés pagar la seña?</div>
-        <div class="step-sub">Seña de $25.000 por pareja. Confirma tu lugar en el torneo.</div>
+       <div class="step-sub" id="torn-step2-sub">Confirma tu lugar en el torneo.</div>
       </div>
       <div class="pago-opts">
         <div class="pago-opt selected" id="torn-opt-mp" onclick="selPagoT('mp')"><div class="pago-opt-icon">💳</div><div class="pago-opt-name">Mercado Pago</div><div class="pago-opt-desc">Link directo</div></div>
@@ -2291,8 +2291,8 @@ function renderTorneos(){
         </div>
         <div class="torneo-precio-wrap">
           <div class="torneo-precio-lbl">Seña</div>
-          <div class="torneo-precio-val">$25.000</div>
-          <div class="torneo-precio-sub">por pareja</div>
+          <div class="torneo-precio-val">${t.descripcion_precio?t.descripcion_precio:'$'+(t.precio_total||50000).toLocaleString('es-AR')}</div>
+          <div class="torneo-precio-sub">${t.descripcion_precio?'':'por pareja'}</div>
         </div>
       </div>
       <div class="torneo-body">
@@ -2327,7 +2327,12 @@ function abrirModalTorneo(id){
     if(t.descripcion_precio){precioInfo.textContent=t.descripcion_precio;precioInfo.style.display='block';}
     else{precioInfo.style.display='none';}
   }
-  document.getElementById('torn-err').style.display='none';
+ document.getElementById('torn-err').style.display='none';
+  const step2Sub=document.getElementById('torn-step2-sub');
+  if(step2Sub){
+    const montoTxt=t.descripcion_precio||('Seña de $'+(t.precio_total||50000).toLocaleString('es-AR')+' por pareja');
+    step2Sub.textContent=montoTxt+'. Confirma tu lugar en el torneo.';
+  }
   selPagoT('mp');
   tornGoStep(1);
   document.getElementById('modal-torneo').classList.add('show');
@@ -2382,7 +2387,7 @@ async function tornGoStep(n){
     t.parejas.push(ni);
     await saveTorneoInscripto(ni);
     renderTorneos();
-    sendEmailNotification('Torneo: '+t.nombre,{dia:fmtFechaTorneo(t.fecha).full,hora:t.hora||'',nombre:TORN.form.j1nombre+' & '+TORN.form.j2nombre,tel:TORN.form.j1tel,precio:25000,metodo:TORN.form.metodo,fecha:ni.fecha});
+    sendEmailNotification('Torneo: '+t.nombre,{dia:fmtFechaTorneo(t.fecha).full,hora:t.hora||'',nombre:TORN.form.j1nombre+' & '+TORN.form.j2nombre,tel:TORN.form.j1tel,precio:t.precio_total||25000,metodo:TORN.form.metodo,fecha:ni.fecha});
     const tt2=TORN.lista.find(x=>x.id===TORN.selectedId)||{};
     document.getElementById('torn-resumen').innerHTML=`
       <div class="sr-row"><span class="sr-label">Torneo</span><span class="sr-val">${t.nombre}</span></div>
@@ -2400,7 +2405,8 @@ async function tornGoStep(n){
 function tornEnviarComp(){
   const t=TORN.lista.find(x=>x.id===TORN.selectedId)||{};
   const metodoTxt=TORN.form.metodo==='mp'?'Mercado Pago':'transferencia (alias: Agusgrafmp)';
-  const msg=encodeURIComponent(`Hola Agus! Te mando el comprobante para el torneo.\n\n🏆 ${t.nombre||''}\n📅 ${fmtFechaTorneo(t.fecha).full}\n🎾 ${TORN.form.j1nombre} (${TORN.form.j1cat}) & ${TORN.form.j2nombre} (${TORN.form.j2cat})\n📱 ${TORN.form.j1tel}\n💰 Seña $25.000\n💳 ${metodoTxt}\n\n[Adjunto comprobante]`);
+  const montoTxt=t.descripcion_precio||('$'+(t.precio_total||50000).toLocaleString('es-AR'));
+  const msg=encodeURIComponent(`Hola Agus! Te mando el comprobante para el torneo.\n\n🏆 ${t.nombre||''}\n📅 ${fmtFechaTorneo(t.fecha).full}\n🎾 ${TORN.form.j1nombre} (${TORN.form.j1cat}) & ${TORN.form.j2nombre} (${TORN.form.j2cat})\n📱 ${TORN.form.j1tel}\n💰 ${montoTxt}\n💳 ${metodoTxt}\n\n[Adjunto comprobante]`);
   window.open('https://wa.me/5491134634000?text='+msg,'_blank');
   if(document.getElementById('torn-3').classList.contains('active'))tornGoStep(4);
 }
