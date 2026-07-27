@@ -2293,12 +2293,13 @@ function renderTorneos(){
         </div>
         <div class="torneo-precio-wrap">
           <div class="torneo-precio-lbl">Seña</div>
-          <div class="torneo-precio-val">${t.descripcion_precio?t.descripcion_precio:'$'+(t.precio_total||50000).toLocaleString('es-AR')}</div>
+          <div class="torneo-precio-val">${t.descripcion_precio?t.descripcion_precio:'$'+(t.precio_sena||t.precio_total||50000).toLocaleString('es-AR')}</div>
           <div class="torneo-precio-sub">${t.descripcion_precio?'':'por pareja'}</div>
         </div>
       </div>
       <div class="torneo-body">
         ${t.descripcion?`<div class="torneo-desc">${t.descripcion}</div>`:''}
+        <div style="font-size:.75rem;color:var(--gris);margin-bottom:.5rem">💰 Inscripción total: $${(t.precio_total||50000).toLocaleString('es-AR')} (se abona en el predio el día del torneo)</div>
         <div class="torneo-cupos-row">
           <span style="font-size:.75rem;color:var(--gris)">${ins.length} parejas anotadas</span>
           <span style="font-size:.75rem;font-weight:500;color:var(--azul)">${libre} lugar${libre===1?'':'es'} libre${libre===1?'':'s'} de ${cupo}</span>
@@ -2332,7 +2333,7 @@ function abrirModalTorneo(id){
   document.getElementById('torn-err').style.display='none';
   const step2Sub=document.getElementById('torn-step2-sub');
   if(step2Sub){
-    const montoTxt=t.descripcion_precio||('Seña de $'+(t.precio_total||50000).toLocaleString('es-AR')+' por pareja');
+    const montoTxt=t.descripcion_precio||('Seña de $'+(t.precio_sena||t.precio_total||50000).toLocaleString('es-AR')+' por pareja');
     step2Sub.textContent=montoTxt+'. Confirma tu lugar en el torneo.';
   }
   selPagoT('mp');
@@ -2368,7 +2369,7 @@ async function tornGoStep(n){
     document.getElementById('torn-mp-box').style.display=isMp?'block':'none';
     document.getElementById('torn-transfer-box').style.display=isMp?'none':'block';
     const tt=TORN.lista.find(x=>x.id===TORN.selectedId)||{};
-    const montoLabel=tt.descripcion_precio||'Ver detalle';
+    const montoLabel=tt.descripcion_precio||('$'+(tt.precio_sena||tt.precio_total||50000).toLocaleString('es-AR'));
     const mpM=document.getElementById('torn-monto-mp');
     const trM=document.getElementById('torn-monto-tr');
     if(mpM)mpM.innerHTML=montoLabel+'<small> ARS</small>';
@@ -2395,7 +2396,8 @@ async function tornGoStep(n){
       <div class="sr-row"><span class="sr-label">Torneo</span><span class="sr-val">${t.nombre}</span></div>
       <div class="sr-row"><span class="sr-label">Fecha</span><span class="sr-val">${fmtFechaTorneo(t.fecha).full}</span></div>
       <div class="sr-row"><span class="sr-label">Pareja</span><span class="sr-val">${TORN.form.j1nombre} & ${TORN.form.j2nombre}</span></div>
-      ${tt2.descripcion_precio?`<div class="sr-row"><span class="sr-label">Precio</span><span class="sr-val" style="color:var(--oro-dark)">${tt2.descripcion_precio}</span></div>`:''}
+      <div class="sr-row"><span class="sr-label">Seña (ahora)</span><span class="sr-val" style="color:var(--oro-dark)">${tt2.descripcion_precio||'$'+(tt2.precio_sena||tt2.precio_total||50000).toLocaleString('es-AR')}</span></div>
+      <div class="sr-row"><span class="sr-label">Inscripción total (en el predio)</span><span class="sr-val">$${(tt2.precio_total||50000).toLocaleString('es-AR')}</span></div>
       <div class="sr-row"><span class="sr-label">Método</span><span class="sr-val">${TORN.form.metodo==='mp'?'Mercado Pago':'Transferencia'}</span></div>`;
   }
   document.querySelectorAll('#modal-torneo .step').forEach(x=>x.classList.remove('active'));
@@ -2407,7 +2409,7 @@ async function tornGoStep(n){
 function tornEnviarComp(){
   const t=TORN.lista.find(x=>x.id===TORN.selectedId)||{};
   const metodoTxt=TORN.form.metodo==='mp'?'Mercado Pago':'transferencia (alias: Agusgrafmp)';
-  const montoTxt=t.descripcion_precio||('$'+(t.precio_total||50000).toLocaleString('es-AR'));
+  const montoTxt=t.descripcion_precio||('$'+(t.precio_sena||t.precio_total||50000).toLocaleString('es-AR'));
   const msg=encodeURIComponent(`Hola Agus! Te mando el comprobante para el torneo.\n\n🏆 ${t.nombre||''}\n📅 ${fmtFechaTorneo(t.fecha).full}\n🎾 ${TORN.form.j1nombre} (${TORN.form.j1cat}) & ${TORN.form.j2nombre} (${TORN.form.j2cat})\n📱 ${TORN.form.j1tel}\n💰 ${montoTxt}\n💳 ${metodoTxt}\n\n[Adjunto comprobante]`);
   window.open('https://wa.me/5491134634000?text='+msg,'_blank');
   if(document.getElementById('torn-3').classList.contains('active'))tornGoStep(4);
@@ -2426,7 +2428,8 @@ function renderAdmTorneos(){
       <input type="text" id="adm-torn-cat" placeholder="Categoría (ej: 7ma/8va)">
       <input type="text" id="adm-torn-lugar" placeholder="Lugar">
       <input type="number" id="adm-torn-cupo" placeholder="Cupo (parejas)" value="16" style="width:100px">
-      <input type="number" id="adm-torn-precio" placeholder="Precio total" value="50000" style="width:120px">
+      <input type="number" id="adm-torn-precio" placeholder="Precio total inscripción" value="50000" style="width:140px">
+      <input type="number" id="adm-torn-sena" placeholder="Seña (se paga online)" style="width:140px">
       <input type="text" id="adm-torn-desc" placeholder="Descripción (opcional)" style="flex:100%">
       <input type="text" id="adm-torn-precio-desc" placeholder="Info de precio (ej: Seña $25.000 por pareja)" style="flex:100%">
       <button class="adm-add-btn" onclick="adminCrearTorneo()">Crear torneo</button>
@@ -2511,10 +2514,11 @@ async function adminCrearTorneo(){
   const lugar=document.getElementById('adm-torn-lugar').value.trim();
   const cupo=parseInt(document.getElementById('adm-torn-cupo').value)||16;
   const precio_total=parseInt(document.getElementById('adm-torn-precio').value)||50000;
+  const precio_sena=parseInt(document.getElementById('adm-torn-sena').value)||null;
   const descripcion=document.getElementById('adm-torn-desc').value.trim();
   const descripcion_precio=document.getElementById('adm-torn-precio-desc').value.trim();
   if(!nombre||!fecha){toast('Completá nombre y fecha');return;}
-  const nt={id:'t'+Date.now(),nombre,fecha,hora,tipo,categoria,lugar,cupo,precio_total,descripcion,descripcion_precio,activo:true};
+  const nt={id:'t'+Date.now(),nombre,fecha,hora,tipo,categoria,lugar,cupo,precio_total,precio_sena,descripcion,descripcion_precio,activo:true};
   await saveTorneo(nt);
   nt.parejas=[];
   TORN.lista.push(nt);
