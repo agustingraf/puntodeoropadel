@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- PUNTO DE ORO v8 + CRM -->
+<!-- PUNTO DE ORO v8 -->
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -493,6 +493,37 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 .arg-stripe.blanco{background:#fff;position:relative;display:flex;align-items:center;justify-content:center}
 .arg-sol{width:10px;height:10px;background:radial-gradient(circle,#f6b40e 40%,transparent 70%);border-radius:50%;box-shadow:0 0 4px #f6b40e}
 
+
+/* ── SORTEO PALETA ── */
+.sorteo-sec{background:linear-gradient(135deg,var(--azul) 0%,#1a3a5c 100%);padding:5rem 2rem;position:relative;overflow:hidden}
+.sorteo-sec::before{content:'🎾';position:absolute;font-size:8rem;opacity:.05;right:-1rem;top:50%;transform:translateY(-50%)}
+.sorteo-tabs{display:flex;gap:.5rem;margin-bottom:1.75rem}
+.sorteo-tab{padding:.45rem 1.25rem;border-radius:100px;border:1px solid rgba(255,255,255,.2);background:transparent;font-size:.82rem;font-weight:500;cursor:pointer;color:rgba(255,255,255,.5);font-family:'DM Sans',sans-serif;transition:all .2s}
+.sorteo-tab.active{background:var(--oro);color:var(--azul);border-color:var(--oro)}
+.sorteo-ranking{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem}
+.sorteo-row{display:flex;align-items:center;gap:.85rem;padding:.75rem 1rem;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);transition:all .2s}
+.sorteo-row.clasificado{background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.25)}
+.sorteo-row.ganador-actual{background:rgba(212,175,55,.2);border-color:var(--oro);box-shadow:0 0 16px rgba(212,175,55,.2)}
+.sorteo-pos{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:rgba(255,255,255,.25);min-width:28px;text-align:center;font-weight:500}
+.sorteo-pos.oro{color:var(--oro)}
+.sorteo-nombre{flex:1;font-size:.88rem;color:rgba(255,255,255,.85);font-weight:500}
+.sorteo-fechas{display:flex;gap:.25rem}
+.sorteo-fecha-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sorteo-fecha-dot.present{background:#4ade80}
+.sorteo-fecha-dot.absent{background:rgba(255,255,255,.12)}
+.sorteo-badge{font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:100px;letter-spacing:.3px}
+.sorteo-badge.ok{background:rgba(74,222,128,.15);color:#4ade80}
+.sorteo-badge.fuera{background:rgba(255,255,255,.08);color:rgba(255,255,255,.3)}
+.sorteo-info-box{background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.2);border-radius:14px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:.82rem;color:rgba(255,255,255,.6)}
+.sorteo-ganador-card{background:linear-gradient(135deg,rgba(212,175,55,.2),rgba(212,175,55,.08));border:1px solid var(--oro);border-radius:16px;padding:1.25rem 1.5rem;text-align:center;margin-bottom:1.5rem;display:none}
+.sorteo-ganador-card.show{display:block}
+.sorteo-ganador-nombre{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--oro);font-weight:500;margin:.35rem 0}
+.historial-item{display:flex;align-items:center;gap:.75rem;padding:.6rem .85rem;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:.4rem;font-size:.8rem;color:rgba(255,255,255,.6)}
+.historial-trofeo{font-size:1.1rem}
+/* Animación sorteo */
+@keyframes sorteoGiro{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}
+.sorteo-animando{animation:sorteoGiro .15s infinite}
+
 @media(max-width:640px){
   .nav-links{display:none}
   .cg{grid-template-columns:1fr}
@@ -529,6 +560,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <li><a href="#torneos">Torneos</a></li>
     <li><a href="#fixture">Fixture</a></li>
     <li><a href="#busco-pareja">Busco pareja</a></li>
+    <li><a href="#sorteo">Sorteo</a></li>
     <li><a href="#comunidad">Comunidad</a></li>
     <li><a href="#contacto">Contacto</a></li>
   </ul>
@@ -765,7 +797,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <div class="step-header">
         <div class="step-num">Paso 2 de 3 · Método de pago</div>
         <div class="step-title">¿Cómo querés pagar la seña?</div>
-        <div class="step-sub" id="torn-step2-sub">Confirma tu lugar en el torneo.</div>
+        <div class="step-sub">Seña de $25.000 por pareja. Confirma tu lugar en el torneo.</div>
       </div>
       <div class="pago-opts">
         <div class="pago-opt selected" id="torn-opt-mp" onclick="selPagoT('mp')"><div class="pago-opt-icon">💳</div><div class="pago-opt-name">Mercado Pago</div><div class="pago-opt-desc">Link directo</div></div>
@@ -840,6 +872,25 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
     <div class="sec-sub">¿Querés jugar un torneo pero no tenés pareja? Anotate con tu posición y categoría. Los demás jugadores van a poder contactarte por WhatsApp directo.</div>
     <button class="btn-oro" style="margin-bottom:2rem" onclick="abrirModalBP()">+ Publicar mi disponibilidad</button>
     <div id="bp-lista"></div>
+  </div>
+</section>
+
+
+<!-- SORTEO PALETA -->
+<section class="sorteo-sec" id="sorteo">
+  <div class="sec-eyebrow" style="margin-bottom:.7rem"><div class="sec-eyebrow-line" style="background:var(--oro)"></div><span style="color:var(--oro)">Fin de mes</span></div>
+  <div class="sec-title" style="color:#fff;margin-bottom:.4rem">Sorteo de paleta 🎾</div>
+  <div class="sec-sub" style="color:rgba(255,255,255,.45);margin-bottom:1.25rem">El último sábado y domingo de cada mes sorteamos una paleta entre los que tuvieron asistencia perfecta. ¡Vení a todas y participás!</div>
+
+  <div class="sorteo-tabs">
+    <button class="sorteo-tab active" id="stab-sabado" onclick="switchSorteoTab('sabado',this)">Sábados</button>
+    <button class="sorteo-tab" id="stab-domingo" onclick="switchSorteoTab('domingo',this)">Domingos</button>
+  </div>
+
+  <div id="sorteo-content"></div>
+  <div id="sorteo-historial-wrap" style="margin-top:1.5rem;border-top:1px solid rgba(255,255,255,.08);padding-top:1.25rem;display:none">
+    <div style="font-size:.7rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:.75rem">Historial de ganadores</div>
+    <div id="sorteo-historial"></div>
   </div>
 </section>
 
@@ -1062,67 +1113,6 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
   <div class="modal"><div style="padding:2rem"><h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:500;color:var(--azul);margin-bottom:.2rem">Mover reserva</h2><p style="font-size:.83rem;color:var(--gris);margin-bottom:1.1rem">Elegí el nuevo día y horario.</p><select id="mv-dia" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.6rem;color:var(--azul);outline:none"><option value="lunes">Lunes</option><option value="martes">Martes</option><option value="miercoles">Miércoles</option><option value="jueves">Jueves</option><option value="viernes">Viernes</option><option value="sabado">Sábado</option><option value="domingo">Domingo</option></select><select id="mv-hora" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.6rem;color:var(--azul);outline:none"></select><div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-mover')">Cancelar</button><button class="mb pri" onclick="ejecutarMover()">Mover</button></div></div></div>
 </div>
 
-<!-- MODAL ALUMNO -->
-<div class="modal-bg" id="modal-crm-alumno">
-  <div class="modal"><div style="padding:2rem">
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:500;color:var(--azul);margin-bottom:1.1rem" id="cal-titulo">Alumno</h2>
-    <input type="hidden" id="cal-id">
-    <input type="text" id="cal-nombre" placeholder="Nombre completo">
-    <input type="tel" id="cal-tel" placeholder="WhatsApp">
-    <div style="display:flex;gap:.6rem">
-      <input type="text" id="cal-cat" placeholder="Categoría (ej. 5ta)" style="flex:1">
-      <select id="cal-formato" style="flex:1">
-        <option value="individual">Individual</option><option value="dupla">Dupla</option><option value="grupal">Grupal</option><option value="cancha_libre">Cancha libre</option>
-      </select>
-    </div>
-    <input type="number" id="cal-cuota" placeholder="Cuota mensual">
-    <textarea id="cal-notas" placeholder="Notas de juego (mano, punto fuerte, debilidades…)" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.6rem;color:var(--azul);outline:none;resize:vertical;min-height:60px"></textarea>
-    <label style="display:flex;align-items:center;gap:8px;font-size:.83rem;color:var(--azul);margin-bottom:.5rem"><input type="checkbox" id="cal-activo" style="width:auto" checked> Alumno activo</label>
-    <div class="mbtns" id="cal-del-wrap" style="display:none"><button class="mb dan" onclick="eliminarAlumno()" style="flex:none;width:100%">Eliminar alumno</button></div>
-    <div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-crm-alumno')">Cancelar</button><button class="mb pri" onclick="guardarAlumno()">Guardar</button></div>
-  </div></div>
-</div>
-
-<!-- MODAL TURNO -->
-<div class="modal-bg" id="modal-crm-turno">
-  <div class="modal"><div style="padding:2rem">
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:500;color:var(--azul);margin-bottom:1.1rem" id="ctu-titulo">Turno</h2>
-    <input type="hidden" id="ctu-id">
-    <div style="display:flex;gap:.6rem">
-      <select id="ctu-dia" style="flex:1"></select>
-      <input type="time" id="ctu-hora" style="flex:1">
-    </div>
-    <div style="display:flex;gap:.6rem">
-      <input type="number" id="ctu-dur" placeholder="Duración (min)" style="flex:1">
-      <select id="ctu-formato" style="flex:1">
-        <option value="individual">Individual</option><option value="dupla">Dupla</option><option value="grupal">Grupal</option><option value="cancha_libre">Cancha libre</option>
-      </select>
-    </div>
-    <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin:.6rem 0 .5rem">Alumnos en este turno</div>
-    <div id="ctu-alumnos" style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.75rem"></div>
-    <textarea id="ctu-notas" placeholder="Notas" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.6rem;color:var(--azul);outline:none;resize:vertical;min-height:50px"></textarea>
-    <div class="mbtns" id="ctu-del-wrap" style="display:none"><button class="mb dan" onclick="eliminarTurno()" style="flex:none;width:100%">Eliminar turno</button></div>
-    <div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-crm-turno')">Cancelar</button><button class="mb pri" onclick="guardarTurno()">Guardar</button></div>
-  </div></div>
-</div>
-
-<!-- MODAL PAGO -->
-<div class="modal-bg" id="modal-crm-pago">
-  <div class="modal"><div style="padding:2rem">
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:500;color:var(--azul);margin-bottom:1.1rem">Nuevo pago</h2>
-    <select id="cpa-alumno"></select>
-    <div style="display:flex;gap:.6rem">
-      <input type="number" id="cpa-monto" placeholder="Monto" style="flex:1">
-      <input type="month" id="cpa-periodo" style="flex:1">
-    </div>
-    <div style="display:flex;gap:.6rem">
-      <select id="cpa-metodo" style="flex:1"><option value="efectivo">Efectivo</option><option value="transferencia">Transferencia</option><option value="mp">Mercado Pago</option></select>
-      <select id="cpa-estado" style="flex:1"><option value="pendiente">Pendiente</option><option value="pagado">Pagado</option></select>
-    </div>
-    <div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-crm-pago')">Cancelar</button><button class="mb pri" onclick="guardarPago()">Guardar</button></div>
-  </div></div>
-</div>
-
 <!-- MODAL LOGIN ADMIN -->
 <div class="modal-bg" id="modal-login">
   <div class="modal"><div style="padding:2rem"><h2 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:500;color:var(--azul);margin-bottom:.25rem">Panel Admin</h2><p style="font-size:.83rem;color:var(--gris);margin-bottom:1.4rem">Ingresá tu contraseña.</p><input type="password" id="pass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')checkPass()" style="width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.65rem 1rem;font-size:.86rem;font-family:'DM Sans',sans-serif;margin-bottom:.6rem;color:var(--azul);outline:none"><div class="pass-err" id="pass-err">Contraseña incorrecta.</div><div class="mbtns"><button class="mb sec" onclick="cerrarModal('modal-login')">Cancelar</button><button class="mb pri" onclick="checkPass()">Entrar</button></div></div></div>
@@ -1139,7 +1129,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <button class="atab" onclick="adminTab('partidos',this)">Partidos</button>
       <button class="atab" onclick="adminTab('torneos',this)">Torneos</button>
       <button class="atab" onclick="adminTab('fixture',this)">Fixture</button>
-      <button class="atab" onclick="adminTab('crm',this)">Alumnos</button>
+      <button class="atab" onclick="adminTab('sorteo',this)">Sorteo</button>
     </div>
     <button class="logout" onclick="logout()">Salir ×</button>
   </div>
@@ -1185,47 +1175,15 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
       <div class="adm-sub">Arrastrá parejas a grupos, cargá resultados y armá la llave.</div>
       <div id="adm-fixture-content"></div>
     </div>
+    <div id="adm-sorteo" style="display:none">
+      <div class="adm-title">Sorteo de paleta</div>
+      <div class="adm-sub">Marcá la asistencia por fecha y ejecutá el sorteo del mes.</div>
+      <div id="adm-sorteo-content"></div>
+    </div>
     <div id="adm-partidos" style="display:none">
       <div class="adm-title">Partidos organizados</div>
       <div class="adm-sub">Publicá partidos de caballeros, damas o mixtos. Los jugadores se anotan y pagan solos.</div>
       <div id="adm-partidos-content"></div>
-    </div>
-    <div id="adm-crm" style="display:none">
-      <div class="adm-title">CRM de alumnos</div>
-      <div class="adm-sub">Fichas, agenda semanal y pagos.</div>
-        <div class="dias-tabs" id="crm-subtabs">
-          <div class="dia-tab active" data-sub="alumnos" onclick="crmSubTab('alumnos')">Alumnos</div>
-          <div class="dia-tab" data-sub="agenda" onclick="crmSubTab('agenda')">Agenda</div>
-          <div class="dia-tab" data-sub="pagos" onclick="crmSubTab('pagos')">Pagos</div>
-        </div>
-
-        <div id="crm-alumnos-view">
-          <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.9rem;align-items:center">
-            <input type="text" id="crm-buscar" placeholder="Buscar alumno…" oninput="renderCrmAlumnos()" style="flex:1;min-width:180px;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.6rem 1rem;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none">
-            <button class="adm-add-btn" onclick="abrirModalAlumno()">+ Nuevo alumno</button>
-          </div>
-          <div class="res-list" id="crm-alumnos-list"></div>
-        </div>
-
-        <div id="crm-agenda-view" style="display:none">
-          <div style="display:flex;justify-content:flex-end;margin-bottom:.6rem">
-            <button class="adm-add-btn" onclick="abrirModalTurno()">+ Nuevo turno</button>
-          </div>
-          <div class="dias-tabs" id="crm-dia-tabs"></div>
-          <div class="res-list" id="crm-agenda-list"></div>
-        </div>
-
-        <div id="crm-pagos-view" style="display:none">
-          <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.6rem;align-items:center">
-            <input type="month" id="crm-periodo" onchange="renderCrmPagos()" style="border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.55rem .9rem;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none">
-            <select id="crm-pagos-filtro" onchange="renderCrmPagos()" style="border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:.55rem .9rem;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none">
-              <option value="todos">Todos</option><option value="pendiente">Pendientes</option><option value="pagado">Pagados</option>
-            </select>
-            <button class="adm-add-btn" onclick="abrirModalPago()">+ Nuevo pago</button>
-            <span id="crm-pagos-resumen" style="font-size:.78rem;color:var(--gris);margin-left:auto"></span>
-          </div>
-          <div class="res-list" id="crm-pagos-list"></div>
-        </div>
     </div>
   </div>
 </div>
@@ -1266,18 +1224,21 @@ async function sbFetch(path, method='GET', body=null){
 async function save(){
   localStorage.setItem('pdo_v3',JSON.stringify(S));
 
+  // Slots: borramos todos, esperamos, y recién después insertamos
   try{
     const delRes=await fetch(SB_URL+'/rest/v1/slots_bloqueados?id=neq.NONE',{
       method:'DELETE',
       headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'}
     });
-    await delRes.text();
+    await delRes.text(); // esperar que termine
   }catch(e){}
 
+  // Pequeño delay para asegurar que el DELETE se propagó
   await new Promise(r=>setTimeout(r,300));
 
   const keys=Object.keys(S.slots);
   if(keys.length>0){
+    // Insertar todos de una sola vez como array
     try{
       await fetch(SB_URL+'/rest/v1/slots_bloqueados',{
         method:'POST',
@@ -1287,6 +1248,7 @@ async function save(){
     }catch(e){console.warn('Error saving slots',e);}
   }
 
+  // Config
   try{
     await sbFetch('config?clave=in.(ultimoResetTarde,ultimoResetNoche)','DELETE');
     await sbFetch('config','POST',{clave:'ultimoResetTarde',valor:S.ultimoResetTarde||''});
@@ -1352,6 +1314,11 @@ async function load(){
       sbFetch('config?select=*')
     ]);
 
+    console.log('slots:', slots);
+    console.log('reservas:', reservas);
+    console.log('inscriptos:', inscriptos);
+    console.log('reviews:', reviews);
+
     S.slots={};
     (slots||[]).forEach(s=>S.slots[s.id]='ocupado');
 
@@ -1360,6 +1327,9 @@ async function load(){
     const allIns=(inscriptos||[]).map(x=>({...x,esAdmin:x.es_admin}));
     S.ins_tarde=allIns.filter(x=>x.turno==='tarde');
     S.ins_noche=allIns.filter(x=>x.turno==='noche');
+
+    console.log('ins_tarde:', S.ins_tarde);
+    console.log('ins_noche:', S.ins_noche);
 
     S.reviews=(reviews||[]);
 
@@ -1380,6 +1350,7 @@ function horas(d){return(d==='sabado'||d==='domingo')?HORAS_SD:HORAS_LV;}
 function key(d,h){return d+'_'+h;}
 function slotSt(d,h){if(S.slots[key(d,h)]==='ocupado')return'ocupado';const r=S.reservas.find(x=>x.dia===d&&x.hora===h&&x.estado!=='cancelada');if(r)return r.estado==='pendiente'?'pendiente':'ocupado';return'libre';}
 
+/* ALUMNO DÍAS */
 function renderAlumnoDias(){
   const c=document.getElementById('alumno-dias');c.innerHTML='';
   DIAS.forEach(d=>{const b=document.createElement('div');b.className='dia-tab'+(d===S.diaA?' active':'')+(d==='sabado'||d==='domingo'?' we':'');b.textContent=DIAS_L[d];b.onclick=()=>{S.diaA=d;renderAlumnoDias();renderAlumnoGrid(d);};c.appendChild(b);});
@@ -1389,6 +1360,7 @@ function renderAlumnoGrid(d){
   horas(d).forEach(h=>{const st=slotSt(d,h);const div=document.createElement('div');div.className='slot '+st;div.innerHTML=`<div class="slot-hora">${h}</div><div class="slot-lbl">${st==='libre'?'✦ Disponible':st==='pendiente'?'⏳ Pendiente pago':'✗ Ocupado'}</div>`;if(st==='libre')div.onclick=()=>abrirModalClase(d,h);g.appendChild(div);});
 }
 
+/* MODAL CLASE */
 function abrirModalClase(d,h){
   const pre = window._clasePreseleccionada || {tipo:'Individual',precio:30000,seña:30000};
   CLS={dia:d,hora:h,nombre:'',tel:'',tipo:pre.tipo,precio:pre.seña,metodo:'mp'};
@@ -1411,10 +1383,12 @@ function abrirModalClase(d,h){
     else
       senaInfo.innerHTML=icono+' <strong>'+pre.tipo+'</strong> · Señás '+monto+'. El resto del grupo abona el día de la clase.';
   }
+  // Show type selector if no preselection
   const tipoWrap=document.getElementById('cls-tipo-wrap');
   if(tipoWrap){
     if(!window._clasePreseleccionada){
       tipoWrap.style.display='block';
+      // Set default
       window._clasePreseleccionada={tipo:'Individual',precio:30000,seña:30000};
       cambiarTipoClase('Individual');
     } else {
@@ -1444,6 +1418,9 @@ function enviarCompClase(){
   if(document.getElementById('cls-3').classList.contains('active'))clsStep(4);
 }
 
+/* ═══════════════════════════════════════
+   CANCHAS ABIERTAS — SISTEMA DINÁMICO
+   ═══════════════════════════════════════ */
 let CA={lista:[],selectedId:null,form:{nombre:'',tel:'',metodo:'mp'}};
 
 async function loadAbiertas(){
@@ -1583,6 +1560,7 @@ function enviarCompAbierta(){
   if(document.getElementById('ab-2').classList.contains('active'))abStep(3);
 }
 
+/* ── ADMIN ABIERTAS ── */
 function renderAdmAbiertas(){
   const el=document.getElementById('adm-ab-content');if(!el)return;
   const addForm=`<div class="adm-add-form">
@@ -1686,15 +1664,18 @@ async function cancelarCA(cid,iid){
   renderAbiertas();renderAdmAbiertas();toast('Cancelado');
 }
 
+
+/* PAGO SELECTOR */
 function selPago(ctx,tipo){
   if(ctx==='cls'){CLS.metodo=tipo;document.getElementById('cls-opt-mp').classList.toggle('selected',tipo==='mp');document.getElementById('cls-opt-transfer').classList.toggle('selected',tipo==='transfer');}
   else{AB.metodo=tipo;document.getElementById('ab-opt-mp').classList.toggle('selected',tipo==='mp');document.getElementById('ab-opt-transfer').classList.toggle('selected',tipo==='transfer');}
 }
 
+/* ADMIN */
 function abrirAdmin(){document.getElementById('modal-login').classList.add('show');}
 function checkPass(){if(document.getElementById('pass').value===PASS){document.getElementById('pass-err').style.display='none';document.getElementById('pass').value='';cerrarModal('modal-login');S.loggedIn=true;document.getElementById('admin-panel').classList.add('show');renderAdmDias();renderAdmGrid(S.diaAdm);renderReviews();}else{document.getElementById('pass-err').style.display='block';}}
 function logout(){S.loggedIn=false;document.getElementById('admin-panel').classList.remove('show');renderReviews();}
-function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';if(tab==='abiertas')setTimeout(renderAdmAbiertas,50);document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';document.getElementById('adm-fixture').style.display=tab==='fixture'?'block':'none';document.getElementById('adm-torneos').style.display=tab==='torneos'?'block':'none';document.getElementById('adm-crm').style.display=tab==='crm'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='partidos')setTimeout(renderAdmPartidos,50);if(tab==='fixture')setTimeout(renderAdmFixture,50);if(tab==='torneos'){setTimeout(renderAdmTorneos,50);setTimeout(renderAdmBP,50);}if(tab==='crm')setTimeout(loadCRM,50);}
+function adminTab(tab,el){document.querySelectorAll('.atab').forEach(a=>a.classList.remove('active'));el.classList.add('active');document.getElementById('adm-horarios').style.display=tab==='horarios'?'block':'none';document.getElementById('adm-clases').style.display=tab==='clases'?'block':'none';document.getElementById('adm-abiertas').style.display=tab==='abiertas'?'block':'none';if(tab==='abiertas')setTimeout(renderAdmAbiertas,50);document.getElementById('adm-partidos').style.display=tab==='partidos'?'block':'none';document.getElementById('adm-fixture').style.display=tab==='fixture'?'block':'none';document.getElementById('adm-sorteo').style.display=tab==='sorteo'?'block':'none';document.getElementById('adm-torneos').style.display=tab==='torneos'?'block':'none';if(tab==='clases')renderAdmReservas();if(tab==='partidos')setTimeout(renderAdmPartidos,50);if(tab==='fixture')setTimeout(renderAdmFixture,50);if(tab==='sorteo')setTimeout(renderAdmSorteo,50);if(tab==='torneos'){setTimeout(renderAdmTorneos,50);setTimeout(renderAdmBP,50);}}
 function renderAdmDias(){const c=document.getElementById('adm-dias');c.innerHTML='';DIAS.forEach(d=>{const b=document.createElement('div');b.className='dia-tab'+(d===S.diaAdm?' active':'')+(d==='sabado'||d==='domingo'?' we':'');b.textContent=DIAS_L[d];b.onclick=()=>{S.diaAdm=d;renderAdmDias();renderAdmGrid(d);};c.appendChild(b);});}
 function renderAdmGrid(d){const g=document.getElementById('adm-grid');g.innerHTML='';horas(d).forEach(h=>{const st=slotSt(d,h);const res=S.reservas.find(x=>x.dia===d&&x.hora===h&&x.estado!=='cancelada');const div=document.createElement('div');div.className='slot adm-'+st;const lbl=st==='libre'?'Disponible':st==='pendiente'?'⏳ '+(res?.nombre||''):(res?.nombre||'Ocupado');div.innerHTML=`<div class="slot-hora">${h}</div><div class="slot-lbl">${lbl}</div>`;div.onclick=()=>abrirAdmSlot(d,h,st,res);g.appendChild(div);});}
 function abrirAdmSlot(d,h,st,res){
@@ -1731,6 +1712,7 @@ function ejecutarMover(){const r=S.reservas.find(x=>x.id===S.pendMover);if(!r){c
 
 function cerrarModal(id){document.getElementById(id).classList.remove('show');}
 
+/* Nav active link on scroll */
 (function(){
   const sections=['inicio','precios','reservas','abiertas','partidos','torneos','busco-pareja','comunidad','opiniones','contacto'];
   const links=document.querySelectorAll('.nav-links a');
@@ -1765,7 +1747,9 @@ function cambiarTipoClase(tipo){
 
 function elegirClase(tipo, precio, seña){
   window._clasePreseleccionada = {tipo, precio, seña};
+  // Scroll to reservas section
   document.getElementById('reservas').scrollIntoView({behavior:'smooth'});
+  // Highlight the section briefly
   const sec = document.getElementById('reservas');
   sec.style.transition = 'background .4s';
   sec.style.background = 'rgba(212,175,55,0.08)';
@@ -1835,11 +1819,14 @@ function checkResetAbiertas(){
   const ahora = new Date();
   const esSabado = ahora.getDay() === 6;
   const hora = ahora.getHours();
-  const hoyStr = ahora.toISOString().slice(0,10);
+  const minutos = ahora.getMinutes();
+  const hoyStr = ahora.toISOString().slice(0,10); // YYYY-MM-DD
 
+  // Reiniciar turno tarde a las 18:00 del sábado
   if(esSabado && hora >= 18){
     const ultimoResetTarde = S.ultimoResetTarde || '';
     if(ultimoResetTarde !== hoyStr){
+      // Borrar inscriptos tarde en Supabase
       sbFetch('inscriptos_abierta?turno=eq.tarde','DELETE');
       S.ins_tarde = [];
       S.ultimoResetTarde = hoyStr;
@@ -1847,6 +1834,7 @@ function checkResetAbiertas(){
     }
   }
 
+  // Reiniciar turno noche a las 21:00 del sábado
   if(esSabado && hora >= 21){
     const ultimoResetNoche = S.ultimoResetNoche || '';
     if(ultimoResetNoche !== hoyStr){
@@ -1870,11 +1858,16 @@ async function sendEmailNotification(tipo, datos){
       metodo: datos.metodo === 'mp' ? 'Mercado Pago' : datos.metodo === 'admin' ? 'Cargado por admin' : 'Transferencia bancaria',
       fecha: datos.fecha || new Date().toLocaleDateString('es-AR')
     });
+    console.log('Email enviado OK');
   } catch(e){
     console.warn('Error enviando email:', e);
   }
 }
 
+
+/* ═══════════════════════════════════════
+   PARTIDOS ORGANIZADOS
+   ═══════════════════════════════════════ */
 const CATS_P=['9ª','8ª','7ª','6ª','5ª','4ª','3ª','2ª','1ª'];
 const TIPO_COLOR_P={Caballeros:'cab',Damas:'dam',Mixto:'mix'};
 const TIPO_ICON_P={Caballeros:'♂',Damas:'♀',Mixto:'⚤'};
@@ -1885,6 +1878,7 @@ let PART={
   form:{nombre:'',tel:'',tipo:'Caballeros',cat:'',genero:'M'}
 };
 
+/* Supabase helpers para partidos */
 async function loadPartidos(){
   const rows=await sbFetch('partidos_slots?select=*&order=fecha.asc,hora.asc&activo=eq.true');
   const inscs=await sbFetch('partidos_inscriptos?select=*&order=id.asc');
@@ -1916,6 +1910,7 @@ async function updatePartidoSlot(id,fields){
   await sbFetch('partidos_slots?id=eq.'+id,'PATCH',fields);
 }
 
+/* Render lista pública */
 function renderPartidos(){
   const el=document.getElementById('partidos-lista');
   if(!el)return;
@@ -1923,6 +1918,7 @@ function renderPartidos(){
   const slots=PART.slots.filter(s=>{
     if(!s.activo)return false;
     if(!s.fecha||!s.hora)return true;
+    const [h,m]=s.hora.split(':');
     const fechaSlot=new Date(s.fecha+'T'+s.hora+':00');
     return fechaSlot>ahora;
   });
@@ -1994,6 +1990,7 @@ function renderPartidoCard(s){
   </div>`;
 }
 
+/* Abrir modal */
 function abrirModalPartido(slotId){
   const s=PART.slots.find(x=>x.id===slotId);
   if(!s)return;
@@ -2010,6 +2007,7 @@ function abrirModalPartido(slotId){
   const pinfo=document.getElementById('part-precio-info');
   if(pinfo){if(s.notas){pinfo.textContent='📌 '+s.notas;pinfo.style.display='block';}else{pinfo.style.display='none';}}
 
+  /* Tipo */
   const tipoWrap=document.getElementById('part-tipo-wrap');
   if(esPrimero){
     tipoWrap.style.display='block';
@@ -2020,9 +2018,13 @@ function abrirModalPartido(slotId){
     tipoWrap.style.display='none';
   }
 
+  /* Género (mixto) */
   actualizarGeneroWrap();
+
+  /* Categorías */
   actualizarCatsPartido(s,esPrimero);
 
+  /* Texto de regla */
   const regla=document.getElementById('part-regla-txt');
   if(esPrimero){
     regla.textContent='Vos definís el tipo y la categoría base. Los siguientes podrán anotarse ±1 categoría.';
@@ -2044,6 +2046,7 @@ function actualizarGeneroWrap(){
 function actualizarCatsPartido(s,esPrimero){
   const wrap=document.getElementById('part-cats');
   const lbl=document.getElementById('part-cat-lbl');
+  const ins=s.inscriptos||[];
   const baseCat=s.cat_base;
 
   let catsDisponibles;
@@ -2067,6 +2070,7 @@ function selTipo(btn){
   btn.classList.add('active');
   PART.form.tipo=btn.dataset.tipo;
   actualizarGeneroWrap();
+  /* Recalcular cats si es el primero */
   const s=PART.slots.find(x=>x.id===PART.selectedSlotId);
   if(s)actualizarCatsPartido(s,s.inscriptos.length===0);
 }
@@ -2083,6 +2087,9 @@ function selCat(cat,btn){
   PART.form.cat=cat;
 }
 
+/* partStep2 y partWhatsapp definidos más abajo */
+
+/* ── ADMIN: tab Partidos ── */
 function renderAdmPartidos(){
   const el=document.getElementById('adm-partidos-content');
   if(!el)return;
@@ -2111,6 +2118,7 @@ function renderAdmPartidos(){
       const cupo=s.cupo||4;
       const libre=cupo-ins.length;
       const tipo=s.tipo||'Sin definir';
+      const tipoCls=s.tipo?TIPO_COLOR_P[s.tipo]:'libre';
       return`<div class="ab-res-item" style="flex-direction:column;align-items:flex-start;gap:.75rem">
         <div style="display:flex;justify-content:space-between;width:100%;align-items:center;flex-wrap:wrap;gap:.5rem">
           <div>
@@ -2119,18 +2127,6 @@ function renderAdmPartidos(){
           </div>
           <div style="display:flex;gap:.4rem">
             <button class="rbtn canc" onclick="adminEliminarPartido('${s.id}')">Eliminar</button>
-          </div>
-        </div>
-        <div style="background:var(--blanco);border:1.5px dashed rgba(212,175,55,.3);border-radius:12px;padding:.85rem 1rem;margin-bottom:.5rem;width:100%">
-          <div style="font-size:.7rem;color:var(--oro-dark);text-transform:uppercase;letter-spacing:1.5px;font-weight:500;margin-bottom:.65rem">✦ Anotar jugador manualmente</div>
-          <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end">
-            <input type="text" id="adm-part-jn-${s.id}" placeholder="Nombre" style="flex:1;min-width:120px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.5rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
-            <input type="text" id="adm-part-jc-${s.id}" placeholder="Cat (ej: 7ma)" style="width:100px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.5rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
-            <select id="adm-part-jg-${s.id}" style="border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.5rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
-              <option value="M">♂ Masc</option>
-              <option value="F">♀ Fem</option>
-            </select>
-            <button class="adm-add-btn" onclick="adminAnotarPartido('${s.id}')">Anotar</button>
           </div>
         </div>
         ${ins.length===0?'<div style="font-size:.78rem;color:#bbb;font-style:italic">Sin inscriptos todavía.</div>'
@@ -2145,40 +2141,6 @@ function renderAdmPartidos(){
   el.innerHTML=addForm+lista;
 }
 
-async function adminAnotarPartido(slotId){
-  const nombre=document.getElementById('adm-part-jn-'+slotId)?.value.trim();
-  const cat=document.getElementById('adm-part-jc-'+slotId)?.value.trim();
-  const genero=document.getElementById('adm-part-jg-'+slotId)?.value||'M';
-  if(!nombre){toast('Ingresá el nombre del jugador');return;}
-  const s=PART.slots.find(x=>x.id===slotId);
-  if(!s)return;
-  const ins=s.inscriptos||[];
-  const cupo=s.cupo||4;
-  if(ins.length>=cupo){toast('Cupo completo');return;}
-  const esPrimero=ins.length===0;
-  if(esPrimero){
-    s.tipo=s.tipo||'Sin definir';
-    s.cat_base=cat||s.cat_base;
-    await updatePartidoSlot(s.id,{tipo:s.tipo,cat_base:s.cat_base});
-  }
-  const ni={
-    id:'pi'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
-    slot_id:slotId,
-    nombre,tel:'',
-    tipo:s.tipo||'Sin definir',
-    cat:cat||'—',
-    genero,
-    metodo:'admin',estado:'confirmada',
-    fecha:new Date().toLocaleDateString('es-AR')
-  };
-  ins.push(ni);
-  s.inscriptos=ins;
-  await savePartidoInscripto(ni);
-  renderPartidos();
-  renderAdmPartidos();
-  toast(nombre+' anotado/a ✓');
-}
-
 async function adminCrearPartido(){
   const fecha=document.getElementById('adm-part-fecha').value;
   const hora=document.getElementById('adm-part-hora').value;
@@ -2187,7 +2149,7 @@ async function adminCrearPartido(){
   const notas=document.getElementById('adm-part-notas').value.trim();
   if(!fecha||!hora){toast('Completá fecha y hora');return;}
   const ns={id:'p'+Date.now(),fecha,hora,lugar,cupo,notas,tipo:null,cat_base:null,activo:true};
-  await savePartidoSlot(ns);
+  const res=await savePartidoSlot(ns);
   ns.inscriptos=[];
   PART.slots.push(ns);
   renderPartidos();
@@ -2216,6 +2178,7 @@ async function adminQuitarInscripto(slotId,insId){
   toast('Inscripto quitado');
 }
 
+
 function selPagoP(tipo){PART.form.metodo=tipo;document.getElementById("part-opt-mp").classList.toggle("selected",tipo==="mp");document.getElementById("part-opt-transfer").classList.toggle("selected",tipo==="transfer");}
 
 async function partStep2(){const nombre=document.getElementById("part-nombre").value.trim();const tel=document.getElementById("part-tel").value.trim();const errEl=document.getElementById("part-err");if(!nombre||!tel){errEl.textContent="Completá nombre y WhatsApp.";errEl.style.display="block";return;}if(!PART.form.cat){errEl.textContent="Elegí tu categoría.";errEl.style.display="block";return;}if(PART.form.tipo==="Mixto"&&!PART.form.genero){errEl.textContent="Indicá tu género.";errEl.style.display="block";return;}const s=PART.slots.find(x=>x.id===PART.selectedSlotId);if(!s)return;const ins=s.inscriptos||[];if(PART.form.tipo==="Mixto"||s.tipo==="Mixto"){const cnt=ins.filter(i=>i.genero===PART.form.genero).length;if(cnt>=2){errEl.textContent="Ya hay 2 "+(PART.form.genero==="M"?"caballeros":"damas")+" anotados.";errEl.style.display="block";return;}}errEl.style.display="none";PART.form.nombre=nombre;PART.form.tel=tel;selPagoP("mp");partGoStep(2);}
@@ -2224,6 +2187,10 @@ async function partGoStep(n){if(n===3){const isMp=PART.form.metodo==="mp";docume
 
 function partEnviarComp(){const s=PART.slots.find(x=>x.id===PART.selectedSlotId)||{};const metodoTxt=PART.form.metodo==="mp"?"Mercado Pago":"transferencia (alias: Agusgrafmp)";const msg=encodeURIComponent(`Hola Agus! Te mando el comprobante para el partido del ${fmtFechaPartido(s.fecha||"")} ${s.hora||""} hs.\n👤 ${PART.form.nombre}\n📱 ${PART.form.tel}\n🎾 ${s.tipo||PART.form.tipo} · ${PART.form.cat}\n💰 $20.000\n💳 ${metodoTxt}\n\n[Adjunto comprobante]`);window.open("https://wa.me/5491134634000?text="+msg,"_blank");if(document.getElementById("part-3").classList.contains("active"))partGoStep(4);}
 
+
+/* ═══════════════════════════════════════
+   TORNEOS
+   ═══════════════════════════════════════ */
 let TORN={
   lista:[],
   selectedId:null,
@@ -2277,7 +2244,8 @@ function renderTorneos(){
     const barCls=pct<50?'bar-verde':pct<80?'bar-amarillo':'bar-rojo';
     const tipoCls=TORN_TIPO_CLS[t.tipo]||'cab';
     const tipoIco=TORN_TIPO_ICO[t.tipo]||'';
-    const parejasPills=ins.map(p=>`<div class="pareja-pill ${tipoCls}">🎾 ${p.j1nombre.split(' ')[0]} & ${p.j2nombre.split(' ')[0]}</div>`).join('');
+    const pillsCls=tipoCls;
+    const parejasPills=ins.map(p=>`<div class="pareja-pill ${pillsCls}">🎾 ${p.j1nombre.split(' ')[0]} & ${p.j2nombre.split(' ')[0]}</div>`).join('');
     const vaciosPills=Array.from({length:Math.min(libre,4)}).map(()=>'<div class="pins-vacio">+</div>').join('');
     return`<div class="torneo-card">
       <div class="torneo-head">
@@ -2293,13 +2261,12 @@ function renderTorneos(){
         </div>
         <div class="torneo-precio-wrap">
           <div class="torneo-precio-lbl">Seña</div>
-          <div class="torneo-precio-val">${t.descripcion_precio?t.descripcion_precio:'$'+(t.precio_sena||t.precio_total||50000).toLocaleString('es-AR')}</div>
-          <div class="torneo-precio-sub">${t.descripcion_precio?'':'por pareja'}</div>
+          <div class="torneo-precio-val">$25.000</div>
+          <div class="torneo-precio-sub">por pareja</div>
         </div>
       </div>
       <div class="torneo-body">
         ${t.descripcion?`<div class="torneo-desc">${t.descripcion}</div>`:''}
-        <div style="font-size:.75rem;color:var(--gris);margin-bottom:.5rem">💰 Inscripción total: $${(t.precio_total||50000).toLocaleString('es-AR')} (se abona en el predio el día del torneo)</div>
         <div class="torneo-cupos-row">
           <span style="font-size:.75rem;color:var(--gris)">${ins.length} parejas anotadas</span>
           <span style="font-size:.75rem;font-weight:500;color:var(--azul)">${libre} lugar${libre===1?'':'es'} libre${libre===1?'':'s'} de ${cupo}</span>
@@ -2331,11 +2298,6 @@ function abrirModalTorneo(id){
     else{precioInfo.style.display='none';}
   }
   document.getElementById('torn-err').style.display='none';
-  const step2Sub=document.getElementById('torn-step2-sub');
-  if(step2Sub){
-    const montoTxt=t.descripcion_precio||('Seña de $'+(t.precio_sena||t.precio_total||50000).toLocaleString('es-AR')+' por pareja');
-    step2Sub.textContent=montoTxt+'. Confirma tu lugar en el torneo.';
-  }
   selPagoT('mp');
   tornGoStep(1);
   document.getElementById('modal-torneo').classList.add('show');
@@ -2369,7 +2331,7 @@ async function tornGoStep(n){
     document.getElementById('torn-mp-box').style.display=isMp?'block':'none';
     document.getElementById('torn-transfer-box').style.display=isMp?'none':'block';
     const tt=TORN.lista.find(x=>x.id===TORN.selectedId)||{};
-    const montoLabel=tt.descripcion_precio||('$'+(tt.precio_sena||tt.precio_total||50000).toLocaleString('es-AR'));
+    const montoLabel=tt.descripcion_precio||'Ver detalle';
     const mpM=document.getElementById('torn-monto-mp');
     const trM=document.getElementById('torn-monto-tr');
     if(mpM)mpM.innerHTML=montoLabel+'<small> ARS</small>';
@@ -2390,14 +2352,13 @@ async function tornGoStep(n){
     t.parejas.push(ni);
     await saveTorneoInscripto(ni);
     renderTorneos();
-    sendEmailNotification('Torneo: '+t.nombre,{dia:fmtFechaTorneo(t.fecha).full,hora:t.hora||'',nombre:TORN.form.j1nombre+' & '+TORN.form.j2nombre,tel:TORN.form.j1tel,precio:t.precio_total||25000,metodo:TORN.form.metodo,fecha:ni.fecha});
+    sendEmailNotification('Torneo: '+t.nombre,{dia:fmtFechaTorneo(t.fecha).full,hora:t.hora||'',nombre:TORN.form.j1nombre+' & '+TORN.form.j2nombre,tel:TORN.form.j1tel,precio:25000,metodo:TORN.form.metodo,fecha:ni.fecha});
     const tt2=TORN.lista.find(x=>x.id===TORN.selectedId)||{};
     document.getElementById('torn-resumen').innerHTML=`
       <div class="sr-row"><span class="sr-label">Torneo</span><span class="sr-val">${t.nombre}</span></div>
       <div class="sr-row"><span class="sr-label">Fecha</span><span class="sr-val">${fmtFechaTorneo(t.fecha).full}</span></div>
       <div class="sr-row"><span class="sr-label">Pareja</span><span class="sr-val">${TORN.form.j1nombre} & ${TORN.form.j2nombre}</span></div>
-      <div class="sr-row"><span class="sr-label">Seña (ahora)</span><span class="sr-val" style="color:var(--oro-dark)">${tt2.descripcion_precio||'$'+(tt2.precio_sena||tt2.precio_total||50000).toLocaleString('es-AR')}</span></div>
-      <div class="sr-row"><span class="sr-label">Inscripción total (en el predio)</span><span class="sr-val">$${(tt2.precio_total||50000).toLocaleString('es-AR')}</span></div>
+      ${tt2.descripcion_precio?`<div class="sr-row"><span class="sr-label">Precio</span><span class="sr-val" style="color:var(--oro-dark)">${tt2.descripcion_precio}</span></div>`:''}
       <div class="sr-row"><span class="sr-label">Método</span><span class="sr-val">${TORN.form.metodo==='mp'?'Mercado Pago':'Transferencia'}</span></div>`;
   }
   document.querySelectorAll('#modal-torneo .step').forEach(x=>x.classList.remove('active'));
@@ -2409,12 +2370,12 @@ async function tornGoStep(n){
 function tornEnviarComp(){
   const t=TORN.lista.find(x=>x.id===TORN.selectedId)||{};
   const metodoTxt=TORN.form.metodo==='mp'?'Mercado Pago':'transferencia (alias: Agusgrafmp)';
-  const montoTxt=t.descripcion_precio||('$'+(t.precio_sena||t.precio_total||50000).toLocaleString('es-AR'));
-  const msg=encodeURIComponent(`Hola Agus! Te mando el comprobante para el torneo.\n\n🏆 ${t.nombre||''}\n📅 ${fmtFechaTorneo(t.fecha).full}\n🎾 ${TORN.form.j1nombre} (${TORN.form.j1cat}) & ${TORN.form.j2nombre} (${TORN.form.j2cat})\n📱 ${TORN.form.j1tel}\n💰 ${montoTxt}\n💳 ${metodoTxt}\n\n[Adjunto comprobante]`);
+  const msg=encodeURIComponent(`Hola Agus! Te mando el comprobante para el torneo.\n\n🏆 ${t.nombre||''}\n📅 ${fmtFechaTorneo(t.fecha).full}\n🎾 ${TORN.form.j1nombre} (${TORN.form.j1cat}) & ${TORN.form.j2nombre} (${TORN.form.j2cat})\n📱 ${TORN.form.j1tel}\n💰 Seña $25.000\n💳 ${metodoTxt}\n\n[Adjunto comprobante]`);
   window.open('https://wa.me/5491134634000?text='+msg,'_blank');
   if(document.getElementById('torn-3').classList.contains('active'))tornGoStep(4);
 }
 
+/* ── ADMIN TORNEOS ── */
 function renderAdmTorneos(){
   const el=document.getElementById('adm-torneos-content');
   if(!el)return;
@@ -2428,8 +2389,7 @@ function renderAdmTorneos(){
       <input type="text" id="adm-torn-cat" placeholder="Categoría (ej: 7ma/8va)">
       <input type="text" id="adm-torn-lugar" placeholder="Lugar">
       <input type="number" id="adm-torn-cupo" placeholder="Cupo (parejas)" value="16" style="width:100px">
-      <input type="number" id="adm-torn-precio" placeholder="Precio total inscripción" value="50000" style="width:140px">
-      <input type="number" id="adm-torn-sena" placeholder="Seña (se paga online)" style="width:140px">
+      <input type="number" id="adm-torn-precio" placeholder="Precio total" value="50000" style="width:120px">
       <input type="text" id="adm-torn-desc" placeholder="Descripción (opcional)" style="flex:100%">
       <input type="text" id="adm-torn-precio-desc" placeholder="Info de precio (ej: Seña $25.000 por pareja)" style="flex:100%">
       <button class="adm-add-btn" onclick="adminCrearTorneo()">Crear torneo</button>
@@ -2441,6 +2401,7 @@ function renderAdmTorneos(){
     :TORN.lista.map(t=>{
       const ins=t.parejas||[];
       const cupo=t.cupo||16;
+      const libre=cupo-ins.length;
       return`<div class="ab-res-item" style="flex-direction:column;align-items:flex-start;gap:.75rem;margin-bottom:.75rem">
         <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start;flex-wrap:wrap;gap:.5rem">
           <div>
@@ -2514,11 +2475,10 @@ async function adminCrearTorneo(){
   const lugar=document.getElementById('adm-torn-lugar').value.trim();
   const cupo=parseInt(document.getElementById('adm-torn-cupo').value)||16;
   const precio_total=parseInt(document.getElementById('adm-torn-precio').value)||50000;
-  const precio_sena=parseInt(document.getElementById('adm-torn-sena').value)||null;
   const descripcion=document.getElementById('adm-torn-desc').value.trim();
   const descripcion_precio=document.getElementById('adm-torn-precio-desc').value.trim();
   if(!nombre||!fecha){toast('Completá nombre y fecha');return;}
-  const nt={id:'t'+Date.now(),nombre,fecha,hora,tipo,categoria,lugar,cupo,precio_total,precio_sena,descripcion,descripcion_precio,activo:true};
+  const nt={id:'t'+Date.now(),nombre,fecha,hora,tipo,categoria,lugar,cupo,precio_total,descripcion,descripcion_precio,activo:true};
   await saveTorneo(nt);
   nt.parejas=[];
   TORN.lista.push(nt);
@@ -2550,6 +2510,10 @@ async function cancelarTorneoInsc(torneoId,insId){
   renderAdmTorneos();renderTorneos();toast('Inscripción cancelada');
 }
 
+
+/* ═══════════════════════════════════════
+   BUSCO PAREJA
+   ═══════════════════════════════════════ */
 let BP={lista:[],posicion:'Revés'};
 
 async function loadBP(){
@@ -2617,6 +2581,7 @@ async function confirmarBP(){
   toast('¡Publicado! Otros jugadores van a poder contactarte 🎾');
 }
 
+/* Admin: gestionar busco pareja */
 function renderAdmBP(){
   const el=document.getElementById('adm-bp-content');
   if(!el)return;
@@ -2653,13 +2618,18 @@ async function adminEliminarBP(id){
   toast('Eliminado');
 }
 
+
+/* ═══════════════════════════════════════
+   FIXTURE COMPLETO
+   ═══════════════════════════════════════ */
 let FIX={
   torneoId:null,
-  grupos:{A:[],B:[],C:[],D:[]},
-  resultadosGrupo:{},
-  llave:[]
+  grupos:{A:[],B:[],C:[],D:[]},   // [nombrePareja, ...]
+  resultadosGrupo:{},              // {A:{0:{1:{s1,s2},...},...},...}
+  llave:[]                         // [{nombre, partidos:[{eq1,eq2,seed1,seed2,score1,score2,ganador}]}]
 };
 
+/* ── Supabase ── */
 async function loadFixtures(){
   try{
     const rows=await sbFetch('torneos_fixture?select=*&publicado=eq.true');
@@ -2668,6 +2638,7 @@ async function loadFixtures(){
   }catch(e){document.getElementById('fixture').style.display='none';}
 }
 
+/* ── Cálculo tabla de grupo ── */
 function calcTabla(parejas,res){
   const s=parejas.map((_,i)=>({idx:i,v:0,d:0,gf:0,gc:0}));
   for(let i=0;i<parejas.length;i++){
@@ -2683,6 +2654,7 @@ function calcTabla(parejas,res){
   return s.sort((a,b)=>b.v-a.v||(b.gf-b.gc)-(a.gf-a.gc));
 }
 
+/* ── Vista pública ── */
 function renderFixtureSec(){
   const pub=TORN.lista.filter(t=>t.fixture&&t.fixture.publicado);
   const sec=document.getElementById('fixture');
@@ -2706,6 +2678,7 @@ function mostrarFix(tid,btn){
     if(!ps.length)return`<div class="grupo-fixture"><div class="grupo-fixture-header"><span class="grupo-letra">${g}</span><span style="font-size:.7rem;color:rgba(255,255,255,.4)">Sin parejas</span></div></div>`;
     const tabla=calcTabla(ps,res[g]||{});
     const medals=['🥇','🥈','🥉'];
+    // Solo mostrar resultados si hay al menos un partido cargado en el grupo
     const hayResultados=Object.keys(res[g]||{}).some(i=>Object.keys(res[g][i]||{}).some(j=>{const r=res[g][i][j];return r&&(r.s1!=null||r.s2!=null);}));
     const tablaHTML=`<table class="grupo-tabla">
       <thead><tr><th>Pareja</th>${hayResultados?'<th>V</th><th>D</th><th>Dif</th>':''}</tr></thead>
@@ -2768,6 +2741,7 @@ function mostrarFix(tid,btn){
     ).join('')+'</div>';
 }
 
+/* ═══════════ ADMIN ═══════════ */
 function renderAdmFixture(){
   const el=document.getElementById('adm-fixture-content');if(!el)return;
   if(!TORN.lista.length){el.innerHTML='<div class="empty">Creá un torneo primero.</div>';return;}
@@ -2807,6 +2781,7 @@ function renderFixEd(t){
   const asignadas=getParejasAsignadas();
   const sinAsignar=todasParejas.filter(p=>!asignadas.has(p));
 
+  // Ganadores disponibles de la llave (para arrastrar a siguiente ronda)
   const ganadoresLlave=[];
   FIX.llave.forEach((ronda,ri)=>{
     ronda.partidos.forEach((p,pi)=>{
@@ -2816,6 +2791,7 @@ function renderFixEd(t){
   });
 
   el.innerHTML=`
+  <!-- POOL DE PAREJAS -->
   <div style="margin-bottom:1.25rem">
     <div style="font-size:.7rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.5rem">Parejas inscriptas — arrastrá a un grupo</div>
     <div id="fix-pool" class="fix-drop" style="background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.12);min-height:44px">
@@ -2824,6 +2800,7 @@ function renderFixEd(t){
     </div>
   </div>
 
+  <!-- GRUPOS -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem">
     ${['A','B','C','D'].map(g=>`
       <div>
@@ -2834,6 +2811,7 @@ function renderFixEd(t){
       </div>`).join('')}
   </div>
 
+  <!-- RESULTADOS GRUPOS -->
   <div style="border-top:1px solid rgba(0,0,0,.08);padding-top:1.1rem;margin-bottom:1.1rem">
     <div style="font-size:.7rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.75rem">Resultados fase de grupos</div>
     ${['A','B','C','D'].map(g=>{
@@ -2870,6 +2848,7 @@ function renderFixEd(t){
     }).join('')}
   </div>
 
+  <!-- LLAVE -->
   <div style="border-top:1px solid rgba(0,0,0,.08);padding-top:1.1rem;margin-bottom:1.1rem">
     <div style="font-size:.7rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.75rem">🏆 Llave de playoffs</div>
     
@@ -2937,6 +2916,7 @@ function chipGanador(nombre,de){
 }
 
 function initDrops(t){
+  // Pool (recibe devueltos)
   const pool=document.getElementById('fix-pool');
   if(pool){
     pool.ondragover=e=>{e.preventDefault();pool.classList.add('drag-over');};
@@ -2951,6 +2931,7 @@ function initDrops(t){
       }
     };
   }
+  // Grupos
   ['A','B','C','D'].forEach(g=>{
     const z=document.getElementById('fix-grp-'+g);if(!z)return;
     z.ondragover=e=>{e.preventDefault();z.classList.add('drag-over');};
@@ -2958,12 +2939,15 @@ function initDrops(t){
     z.ondrop=e=>{
       e.preventDefault();z.classList.remove('drag-over');
       const p=e.dataTransfer.getData('par'),or=e.dataTransfer.getData('origen');
+      // Quitar del origen
       if(or==='grp_'+g)return;
       if(or&&or.startsWith('grp_')){const og=or.split('_')[1];FIX.grupos[og]=(FIX.grupos[og]||[]).filter(x=>x!==p);}
+      // Agregar al grupo
       if(!(FIX.grupos[g]||[]).includes(p)){FIX.grupos[g]=FIX.grupos[g]||[];FIX.grupos[g].push(p);}
       renderFixEd(t);
     };
   });
+  // Slots de llave
   document.querySelectorAll('.fix-llave-slot').forEach(slot=>{
     slot.ondragover=e=>{e.preventDefault();slot.classList.add('drag-over');};
     slot.ondragleave=()=>slot.classList.remove('drag-over');
@@ -3089,9 +3073,11 @@ function generarLlaveAutomatica(){
   ];
 }
 
+/* Publicar SOLO los grupos (sin llave) */
 async function publicarGrupos(){
   const t=TORN.lista.find(x=>x.id===FIX.torneoId);
   if(!t){toast('Elegí un torneo');return;}
+  // Guardamos sin llave
   const data={id:'fix_'+FIX.torneoId,torneo_id:FIX.torneoId,grupos:FIX.grupos,resultadosGrupo:FIX.resultadosGrupo,llave:[],publicado:true};
   await sbFetch('torneos_fixture?torneo_id=eq.'+FIX.torneoId,'DELETE');
   const res=await sbFetch('torneos_fixture','POST',data);
@@ -3099,6 +3085,7 @@ async function publicarGrupos(){
   else toast('Error al guardar');
 }
 
+/* Generar llave y publicar TODO */
 async function publicarConLlave(){
   const t=TORN.lista.find(x=>x.id===FIX.torneoId);
   if(!t){toast('Elegí un torneo');return;}
@@ -3110,6 +3097,7 @@ async function publicarConLlave(){
   else toast('Error al guardar');
 }
 
+/* Guardar resultados sin tocar la llave */
 async function guardarResultados(){
   const t=TORN.lista.find(x=>x.id===FIX.torneoId);
   if(!t){toast('Elegí un torneo');return;}
@@ -3121,6 +3109,7 @@ async function guardarResultados(){
   else toast('Error al guardar');
 }
 
+
 async function despublicar(){
   const t=TORN.lista.find(x=>x.id===FIX.torneoId);if(!t)return;
   await sbFetch('torneos_fixture?torneo_id=eq.'+FIX.torneoId,'DELETE');
@@ -3129,238 +3118,279 @@ async function despublicar(){
   toast('Fixture despublicado');
 }
 
+
 /* ═══════════════════════════════════════
-   CRM DE ALUMNOS (protegido por la clave del panel admin)
+   SORTEO PALETA — ASISTENCIA PERFECTA
    ═══════════════════════════════════════ */
-const CRM_FORMATOS={individual:'Individual',dupla:'Dupla',grupal:'Grupal',cancha_libre:'Cancha libre'};
-let CRM={students:[],slots:[],slotStudents:[],payments:[],sub:'alumnos',diaAgenda:'lunes',periodo:new Date().toISOString().slice(0,7)};
+let SORT={
+  dia:'sabado',   // tab activo
+  data:{sabado:null,domingo:null},  // {fechas:[],jugadores:{nombre:[true/false,...]}}
+  historial:[]
+};
 
-async function loadCRM(){
-  const [st,sl,ss,pg]=await Promise.all([
-    sbFetch('students?select=*&order=name.asc'),
-    sbFetch('class_slots?select=*&active=eq.true&order=start_time.asc'),
-    sbFetch('slot_students?select=*'),
-    sbFetch('payments?select=*&order=period.desc')
-  ]);
-  CRM.students=st||[];CRM.slots=sl||[];CRM.slotStudents=ss||[];CRM.payments=pg||[];
-  renderCRM();
+async function loadSorteo(){
+  try{
+    const fechas=await sbFetch('sorteo_fechas?select=*&order=fecha.asc');
+    const asist=await sbFetch('sorteo_asistencia?select=*');
+    const hist=await sbFetch('sorteo_historial?select=*&order=fecha.desc');
+    SORT.historial=hist||[];
+    // Organizar por dia
+    ['sabado','domingo'].forEach(dia=>{
+      const ff=(fechas||[]).filter(f=>f.dia===dia);
+      const jugadores={};
+      ff.forEach(f=>{
+        (asist||[]).filter(a=>a.fecha_id===f.id).forEach(a=>{
+          if(!jugadores[a.nombre])jugadores[a.nombre]=[];
+          jugadores[a.nombre].push(f.id);
+        });
+      });
+      SORT.data[dia]={fechas:ff,jugadores};
+    });
+    renderSorteoPublic();
+    renderSorteoHistorial();
+  }catch(e){console.warn('sorteo tables not yet created');}
 }
 
-function crmSubTab(sub){
-  CRM.sub=sub;
-  document.querySelectorAll('#crm-subtabs .dia-tab').forEach(b=>b.classList.toggle('active',b.dataset.sub===sub));
-  document.getElementById('crm-alumnos-view').style.display=sub==='alumnos'?'block':'none';
-  document.getElementById('crm-agenda-view').style.display=sub==='agenda'?'block':'none';
-  document.getElementById('crm-pagos-view').style.display=sub==='pagos'?'block':'none';
-  renderCRM();
+function getMesActual(){
+  const now=new Date();
+  return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
 }
 
-function renderCRM(){
-  if(CRM.sub==='alumnos')renderCrmAlumnos();
-  if(CRM.sub==='agenda')renderCrmAgenda();
-  if(CRM.sub==='pagos')renderCrmPagos();
+function getClasificados(dia){
+  const d=SORT.data[dia];if(!d)return[];
+  const mesActual=getMesActual();
+  const fechasMes=d.fechas.filter(f=>f.fecha&&f.fecha.startsWith(mesActual));
+  if(!fechasMes.length)return[];
+  const ids=new Set(fechasMes.map(f=>f.id));
+  return Object.entries(d.jugadores)
+    .map(([nombre,asistIds])=>{
+      const asistMes=asistIds.filter(id=>ids.has(id)).length;
+      return{nombre,asistMes,totalMes:fechasMes.length,perfecta:asistMes===fechasMes.length&&fechasMes.length>0};
+    })
+    .sort((a,b)=>b.asistMes-a.asistMes);
 }
 
-function crmStudentsForSlot(slotId){
-  const ids=CRM.slotStudents.filter(x=>x.slot_id===slotId).map(x=>x.student_id);
-  return CRM.students.filter(s=>ids.includes(s.id));
+function switchSorteoTab(dia,btn){
+  SORT.dia=dia;
+  document.querySelectorAll('.sorteo-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSorteoPublic();
 }
 
-function renderCrmAlumnos(){
-  const el=document.getElementById('crm-alumnos-list');if(!el)return;
-  const q=(document.getElementById('crm-buscar')?.value||'').trim().toLowerCase();
-  const list=CRM.students.filter(s=>s.name.toLowerCase().includes(q));
-  if(!list.length){el.innerHTML='<div class="empty">No hay alumnos cargados todavía.</div>';return;}
-  el.innerHTML=list.map(s=>`<div class="res-item">
-    <div class="res-info">
-      <div class="res-alumno">${s.name} ${s.active===false?'<span class="res-estado est-pend">inactivo</span>':''}</div>
-      <div class="res-det">${s.category||'sin categoría'} · ${CRM_FORMATOS[s.format]||'—'}${s.phone?' · 📱 '+s.phone:''}${s.notes?' · '+s.notes:''}</div>
+function renderSorteoPublic(){
+  const el=document.getElementById('sorteo-content');if(!el)return;
+  const dia=SORT.dia;
+  const d=SORT.data[dia];
+  if(!d){el.innerHTML='<div style="font-size:.85rem;color:rgba(255,255,255,.3);font-style:italic">No hay datos todavía.</div>';return;}
+  const mesActual=getMesActual();
+  const fechasMes=d.fechas.filter(f=>f.fecha&&f.fecha.startsWith(mesActual));
+  const clasificados=getClasificados(dia);
+  const perfectos=clasificados.filter(j=>j.perfecta);
+
+  // Ganador del mes si ya se sorteó
+  const ganadorMes=SORT.historial.find(h=>h.dia===dia&&h.mes===mesActual);
+
+  let html='';
+
+  // Info box
+  html+=`<div class="sorteo-info-box">
+    📅 <strong>${fechasMes.length} fecha${fechasMes.length!==1?'s':''}</strong> este mes · 
+    <strong>${perfectos.length}</strong> jugador${perfectos.length!==1?'es':''} con asistencia perfecta
+    ${ganadorMes?'· ✅ Sorteo realizado':''}
+  </div>`;
+
+  // Ganador card
+  if(ganadorMes){
+    html+=`<div class="sorteo-ganador-card show">
+      <div style="font-size:.75rem;color:var(--oro);text-transform:uppercase;letter-spacing:1.5px;font-weight:600">🏆 Ganador del mes</div>
+      <div class="sorteo-ganador-nombre">🎾 ${ganadorMes.ganador}</div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.4);margin-top:.25rem">${ganadorMes.mes}</div>
+    </div>`;
+  }
+
+  // Ranking
+  if(!clasificados.length){
+    html+='<div style="font-size:.85rem;color:rgba(255,255,255,.3);font-style:italic;padding:1rem 0">Sin jugadores registrados todavía.</div>';
+  } else {
+    html+='<div class="sorteo-ranking">';
+    clasificados.forEach((j,i)=>{
+      const dots=fechasMes.map((f,fi)=>{
+        const asistio=(d.jugadores[j.nombre]||[]).includes(f.id);
+        return`<div class="sorteo-fecha-dot ${asistio?'present':'absent'}" title="${f.fecha}"></div>`;
+      }).join('');
+      const posIcon=i===0&&j.perfecta?'🥇':i===1&&j.perfecta?'🥈':i===2&&j.perfecta?'🥉':(i+1);
+      html+=`<div class="sorteo-row ${j.perfecta?'clasificado':''}">
+        <div class="sorteo-pos ${j.perfecta?'oro':''}">${posIcon}</div>
+        <div class="sorteo-nombre">${j.nombre}</div>
+        <div class="sorteo-fechas">${dots}</div>
+        <span class="sorteo-badge ${j.perfecta?'ok':'fuera'}">${j.perfecta?'✓ Clasificado':''+j.asistMes+'/'+j.totalMes}</span>
+      </div>`;
+    });
+    html+='</div>';
+  }
+
+  el.innerHTML=html;
+}
+
+function renderSorteoHistorial(){
+  const el=document.getElementById('sorteo-historial');
+  const wrap=document.getElementById('sorteo-historial-wrap');
+  if(!el||!wrap)return;
+  if(!SORT.historial.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  el.innerHTML=SORT.historial.slice(0,10).map(h=>`
+    <div class="historial-item">
+      <span class="historial-trofeo">🏆</span>
+      <span style="flex:1;color:rgba(255,255,255,.8);font-weight:500">${h.ganador}</span>
+      <span style="color:rgba(255,255,255,.3)">${h.dia==='sabado'?'Sábado':'Domingo'} · ${h.mes}</span>
+    </div>`).join('');
+}
+
+/* ── ADMIN SORTEO ── */
+function renderAdmSorteo(){
+  const el=document.getElementById('adm-sorteo-content');if(!el)return;
+  const mesActual=getMesActual();
+
+  const tabsHtml=`<div style="display:flex;gap:.5rem;margin-bottom:1.25rem">
+    <button class="rbtn mov" id="adm-stab-sab" onclick="admSorteoTab('sabado')" style="font-weight:600">Sábados</button>
+    <button class="rbtn" id="adm-stab-dom" onclick="admSorteoTab('domingo')">Domingos</button>
+  </div>`;
+
+  el.innerHTML=tabsHtml+'<div id="adm-sorteo-dia-content"></div>';
+  admSorteoTab('sabado');
+}
+
+let ADM_SORT_DIA='sabado';
+function admSorteoTab(dia){
+  ADM_SORT_DIA=dia;
+  document.getElementById('adm-stab-sab').className=dia==='sabado'?'rbtn mov':'rbtn';
+  document.getElementById('adm-stab-dom').className=dia==='domingo'?'rbtn mov':'rbtn';
+  renderAdmSorteoTab(dia);
+}
+
+function renderAdmSorteoTab(dia){
+  const el=document.getElementById('adm-sorteo-dia-content');if(!el)return;
+  const d=SORT.data[dia]||{fechas:[],jugadores:{}};
+  const mesActual=getMesActual();
+  const fechasMes=d.fechas.filter(f=>f.fecha&&f.fecha.startsWith(mesActual));
+  const clasificados=getClasificados(dia);
+  const perfectos=clasificados.filter(j=>j.perfecta);
+  const ganadorMes=SORT.historial.find(h=>h.dia===dia&&h.mes===mesActual);
+
+  // Agregar fecha
+  const addFecha=`<div class="adm-add-form" style="margin-bottom:1rem">
+    <div class="adm-add-title">✦ Agregar fecha de ${dia}</div>
+    <div class="adm-add-row">
+      <input type="date" id="adm-sort-fecha" style="color-scheme:dark">
+      <button class="adm-add-btn" onclick="adminAgregarFechaSort('${dia}')">Agregar fecha</button>
     </div>
-    <div class="res-acc"><button class="rbtn mov" onclick="abrirModalAlumno('${s.id}')">Editar</button></div>
-  </div>`).join('');
+  </div>`;
+
+  // Fechas del mes con asistencia
+  const fechasHTML=fechasMes.length===0
+    ?'<div style="font-size:.82rem;color:#bbb;font-style:italic;margin-bottom:1rem">No hay fechas este mes. Agregá una arriba.</div>'
+    :fechasMes.map(f=>{
+      const asistentes=Object.entries(d.jugadores).filter(([n,ids])=>ids.includes(f.id)).map(([n])=>n);
+      return`<div style="background:var(--blanco);border:1px solid rgba(0,0,0,.07);border-radius:12px;padding:1rem 1.1rem;margin-bottom:.75rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
+          <div style="font-weight:600;color:var(--azul);font-size:.9rem">📅 ${f.fecha}</div>
+          <button class="rbtn canc" onclick="adminEliminarFechaSort('${f.id}','${dia}')">Eliminar fecha</button>
+        </div>
+        <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.5rem">Marcar asistencia</div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.5rem">
+          ${asistentes.map(n=>`<span style="background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:#166534;border-radius:100px;padding:.2rem .75rem;font-size:.75rem;font-weight:500">✓ ${n} <button onclick="adminQuitarAsist('${f.id}','${n}','${dia}')" style="background:none;border:none;cursor:pointer;color:#999;margin-left:2px">✕</button></span>`).join('')}
+        </div>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <input type="text" id="adm-sort-nombre-${f.id}" placeholder="Nombre del jugador"
+            style="flex:1;min-width:140px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.4rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;outline:none;color:var(--azul)">
+          <button class="adm-add-btn" onclick="adminMarcarAsist('${f.id}','${dia}')" style="font-size:.78rem;padding:.4rem .9rem">Marcar ✓</button>
+        </div>
+      </div>`;
+    }).join('');
+
+  // Clasificados y sorteo
+  const sorteoHTML=`<div style="border-top:1px solid rgba(0,0,0,.08);padding-top:1rem;margin-top:.5rem">
+    <div style="font-size:.72rem;color:var(--gris);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:.75rem">Asistencia perfecta este mes</div>
+    ${perfectos.length===0
+      ?'<div style="font-size:.82rem;color:#bbb;font-style:italic">Ninguno con asistencia perfecta todavía.</div>'
+      :`<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.85rem">${perfectos.map(j=>`<span style="background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);color:var(--oro-dark);border-radius:100px;padding:.25rem .85rem;font-size:.78rem;font-weight:500">🏆 ${j.nombre}</span>`).join('')}</div>`}
+    ${ganadorMes
+      ?`<div style="background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);border-radius:12px;padding:.85rem 1rem;font-size:.85rem;color:var(--azul)">✅ Ganador del mes: <strong>${ganadorMes.ganador}</strong></div>`
+      :`<button class="mb pri" onclick="adminSortear('${dia}')" ${perfectos.length===0?'disabled':''} style="margin-top:.25rem">🎲 Sortear paleta ${dia==='sabado'?'sábado':'domingo'}</button>`}
+  </div>`;
+
+  el.innerHTML=addFecha+fechasHTML+sorteoHTML;
 }
 
-function abrirModalAlumno(id){
-  const s=id?CRM.students.find(x=>x.id===id):null;
-  document.getElementById('cal-titulo').textContent=s?'Editar alumno':'Nuevo alumno';
-  document.getElementById('cal-id').value=s?s.id:'';
-  document.getElementById('cal-nombre').value=s?.name||'';
-  document.getElementById('cal-tel').value=s?.phone||'';
-  document.getElementById('cal-cat').value=s?.category||'';
-  document.getElementById('cal-formato').value=s?.format||'individual';
-  document.getElementById('cal-cuota').value=s?.monthly_fee||'';
-  document.getElementById('cal-notas').value=s?.notes||'';
-  document.getElementById('cal-activo').checked=s?s.active!==false:true;
-  document.getElementById('cal-del-wrap').style.display=s?'block':'none';
-  document.getElementById('modal-crm-alumno').classList.add('show');
+async function adminAgregarFechaSort(dia){
+  const f=document.getElementById('adm-sort-fecha').value;
+  if(!f){toast('Elegí una fecha');return;}
+  const id='sf'+Date.now();
+  const row={id,dia,fecha:f,mes:f.slice(0,7)};
+  await sbFetch('sorteo_fechas','POST',row);
+  if(!SORT.data[dia])SORT.data[dia]={fechas:[],jugadores:{}};
+  SORT.data[dia].fechas.push(row);
+  renderAdmSorteoTab(dia);renderSorteoPublic();
+  toast('Fecha agregada ✓');
 }
 
-async function guardarAlumno(){
-  const id=document.getElementById('cal-id').value;
-  const payload={
-    name:document.getElementById('cal-nombre').value.trim(),
-    phone:document.getElementById('cal-tel').value.trim(),
-    category:document.getElementById('cal-cat').value.trim(),
-    format:document.getElementById('cal-formato').value,
-    monthly_fee:document.getElementById('cal-cuota').value?Number(document.getElementById('cal-cuota').value):null,
-    notes:document.getElementById('cal-notas').value.trim(),
-    active:document.getElementById('cal-activo').checked
-  };
-  if(!payload.name){toast('Poné un nombre');return;}
-  if(id){await sbFetch('students?id=eq.'+id,'PATCH',payload);}
-  else{payload.id='al'+Date.now();await sbFetch('students','POST',payload);}
-  cerrarModal('modal-crm-alumno');
-  await loadCRM();
-  toast('Alumno guardado ✓');
+async function adminEliminarFechaSort(id,dia){
+  await sbFetch('sorteo_fechas?id=eq.'+id,'DELETE');
+  await sbFetch('sorteo_asistencia?fecha_id=eq.'+id,'DELETE');
+  SORT.data[dia].fechas=SORT.data[dia].fechas.filter(f=>f.id!==id);
+  Object.keys(SORT.data[dia].jugadores).forEach(n=>{
+    SORT.data[dia].jugadores[n]=SORT.data[dia].jugadores[n].filter(x=>x!==id);
+  });
+  renderAdmSorteoTab(dia);renderSorteoPublic();
+  toast('Fecha eliminada');
 }
 
-async function eliminarAlumno(){
-  const id=document.getElementById('cal-id').value;
-  if(!id)return;
-  if(!confirm('¿Eliminar este alumno? También se borran sus turnos y pagos asociados.'))return;
-  await sbFetch('students?id=eq.'+id,'DELETE');
-  cerrarModal('modal-crm-alumno');
-  await loadCRM();
-  toast('Alumno eliminado');
+async function adminMarcarAsist(fechaId,dia){
+  const inp=document.getElementById('adm-sort-nombre-'+fechaId);
+  const nombre=inp?.value.trim();if(!nombre){toast('Ingresá el nombre');return;}
+  // Verificar si ya está
+  if((SORT.data[dia].jugadores[nombre]||[]).includes(fechaId)){toast('Ya está marcado');return;}
+  await sbFetch('sorteo_asistencia','POST',{id:'sa'+Date.now(),fecha_id:fechaId,nombre,dia});
+  if(!SORT.data[dia].jugadores[nombre])SORT.data[dia].jugadores[nombre]=[];
+  SORT.data[dia].jugadores[nombre].push(fechaId);
+  if(inp)inp.value='';
+  renderAdmSorteoTab(dia);renderSorteoPublic();
+  toast(nombre+' marcado ✓');
 }
 
-function renderCrmAgenda(){
-  const tabsEl=document.getElementById('crm-dia-tabs');
-  if(tabsEl && !tabsEl.dataset.built){
-    tabsEl.innerHTML=DIAS.map(d=>`<div class="dia-tab${d===CRM.diaAgenda?' active':''}${d==='sabado'||d==='domingo'?' we':''}" onclick="crmSetDia('${d}')">${DIAS_L[d]}</div>`).join('');
-    tabsEl.dataset.built='1';
-  }
-  document.querySelectorAll('#crm-dia-tabs .dia-tab').forEach((b,i)=>b.classList.toggle('active',DIAS[i]===CRM.diaAgenda));
-  const dow=DIAS.indexOf(CRM.diaAgenda);
-  const el=document.getElementById('crm-agenda-list');if(!el)return;
-  const slots=CRM.slots.filter(s=>s.day_of_week===dow).sort((a,b)=>a.start_time.localeCompare(b.start_time));
-  if(!slots.length){el.innerHTML='<div class="empty">Sin turnos cargados este día.</div>';return;}
-  el.innerHTML=slots.map(s=>{
-    const names=crmStudentsForSlot(s.id).map(x=>x.name).join(', ')||'Sin alumnos asignados';
-    return`<div class="res-item">
-      <div class="res-info">
-        <div class="res-dia">${s.start_time.slice(0,5)} hs</div>
-        <div class="res-alumno">${names}</div>
-        <div class="res-det">${CRM_FORMATOS[s.format]||''} · ${s.duration_minutes||60} min${s.notes?' · '+s.notes:''}</div>
-      </div>
-      <div class="res-acc"><button class="rbtn mov" onclick="abrirModalTurno('${s.id}')">Editar</button></div>
-    </div>`;
-  }).join('');
-}
-function crmSetDia(d){CRM.diaAgenda=d;renderCrmAgenda();}
-
-function abrirModalTurno(id){
-  const s=id?CRM.slots.find(x=>x.id===id):null;
-  const dow=s?s.day_of_week:DIAS.indexOf(CRM.diaAgenda);
-  document.getElementById('ctu-titulo').textContent=s?'Editar turno':'Nuevo turno';
-  document.getElementById('ctu-id').value=s?s.id:'';
-  document.getElementById('ctu-dia').innerHTML=DIAS.map((d,i)=>`<option value="${i}" ${i===dow?'selected':''}>${DIAS_L[d]}</option>`).join('');
-  document.getElementById('ctu-hora').value=s?.start_time?.slice(0,5)||'';
-  document.getElementById('ctu-dur').value=s?.duration_minutes||60;
-  document.getElementById('ctu-formato').value=s?.format||'individual';
-  document.getElementById('ctu-notas').value=s?.notes||'';
-  const assigned=s?CRM.slotStudents.filter(x=>x.slot_id===s.id).map(x=>x.student_id):[];
-  const chipsEl=document.getElementById('ctu-alumnos');
-  chipsEl.innerHTML=CRM.students.filter(x=>x.active!==false).map(x=>`<button type="button" class="ptipo-btn${assigned.includes(x.id)?' active':''}" onclick="this.classList.toggle('active')" data-id="${x.id}">${x.name}</button>`).join('')||'<span style="font-size:.78rem;color:#bbb">Cargá alumnos primero</span>';
-  document.getElementById('ctu-del-wrap').style.display=s?'block':'none';
-  document.getElementById('modal-crm-turno').classList.add('show');
+async function adminQuitarAsist(fechaId,nombre,dia){
+  await sbFetch('sorteo_asistencia?fecha_id=eq.'+fechaId+'&nombre=eq.'+encodeURIComponent(nombre),'DELETE');
+  SORT.data[dia].jugadores[nombre]=(SORT.data[dia].jugadores[nombre]||[]).filter(x=>x!==fechaId);
+  renderAdmSorteoTab(dia);renderSorteoPublic();
+  toast('Quitado');
 }
 
-async function guardarTurno(){
-  const id=document.getElementById('ctu-id').value;
-  const payload={
-    day_of_week:Number(document.getElementById('ctu-dia').value),
-    start_time:document.getElementById('ctu-hora').value,
-    duration_minutes:Number(document.getElementById('ctu-dur').value)||60,
-    format:document.getElementById('ctu-formato').value,
-    notes:document.getElementById('ctu-notas').value.trim(),
-    active:true
-  };
-  if(!payload.start_time){toast('Poné un horario');return;}
-  let slotId=id;
-  if(id){
-    await sbFetch('class_slots?id=eq.'+id,'PATCH',payload);
-    await sbFetch('slot_students?slot_id=eq.'+id,'DELETE');
-  }else{
-    slotId='sl'+Date.now();
-    payload.id=slotId;
-    await sbFetch('class_slots','POST',payload);
-  }
-  const chosen=[...document.querySelectorAll('#ctu-alumnos .ptipo-btn.active')].map(c=>c.dataset.id);
-  if(chosen.length)await sbFetch('slot_students','POST',chosen.map(sid=>({slot_id:slotId,student_id:sid})));
-  cerrarModal('modal-crm-turno');
-  await loadCRM();
-  toast('Turno guardado ✓');
+async function adminSortear(dia){
+  const clasificados=getClasificados(dia).filter(j=>j.perfecta);
+  if(!clasificados.length){toast('No hay clasificados');return;}
+  const mes=getMesActual();
+
+  // Animación del sorteo
+  const btn=event.target;btn.disabled=true;
+  let i=0,ganadorFinal=null;
+  const intervalo=setInterval(()=>{
+    const rand=clasificados[Math.floor(Math.random()*clasificados.length)];
+    btn.textContent='🎲 '+rand.nombre+'...';
+    i++;
+    if(i>20){
+      clearInterval(intervalo);
+      ganadorFinal=rand;
+      guardarGanador(dia,mes,ganadorFinal.nombre);
+    }
+  },120);
 }
 
-async function eliminarTurno(){
-  const id=document.getElementById('ctu-id').value;
-  if(!id)return;
-  if(!confirm('¿Eliminar este turno?'))return;
-  await sbFetch('class_slots?id=eq.'+id,'DELETE');
-  cerrarModal('modal-crm-turno');
-  await loadCRM();
-  toast('Turno eliminado');
-}
-
-function renderCrmPagos(){
-  const periodoInput=document.getElementById('crm-periodo');
-  if(periodoInput && !periodoInput.value)periodoInput.value=CRM.periodo;
-  const periodo=periodoInput?periodoInput.value:CRM.periodo;
-  CRM.periodo=periodo;
-  const filtro=document.getElementById('crm-pagos-filtro')?.value||'todos';
-  let list=CRM.payments.filter(p=>p.period===periodo);
-  if(filtro!=='todos')list=list.filter(p=>p.status===filtro);
-  const el=document.getElementById('crm-pagos-list');if(!el)return;
-  const cobrado=CRM.payments.filter(p=>p.period===periodo&&p.status==='pagado').reduce((a,p)=>a+Number(p.amount),0);
-  const pend=CRM.payments.filter(p=>p.period===periodo&&p.status==='pendiente').length;
-  const resumenEl=document.getElementById('crm-pagos-resumen');
-  if(resumenEl)resumenEl.textContent=`Cobrado: $${cobrado.toLocaleString('es-AR')} · Pendientes: ${pend}`;
-  if(!list.length){el.innerHTML='<div class="empty">No hay pagos cargados para este período.</div>';return;}
-  el.innerHTML=list.map(p=>{
-    const s=CRM.students.find(x=>x.id===p.student_id);
-    return`<div class="res-item">
-      <div class="res-info">
-        <div class="res-alumno">${s?s.name:'Alumno eliminado'}</div>
-        <div class="res-det">$${Number(p.amount).toLocaleString('es-AR')}${p.method?' · '+p.method:''}</div>
-      </div>
-      <span class="res-estado ${p.status==='pagado'?'est-conf':'est-pend'}">${p.status}</span>
-      <div class="res-acc">${p.status!=='pagado'?`<button class="rbtn conf" onclick="marcarPagado('${p.id}')">Marcar pagado</button>`:''}</div>
-    </div>`;
-  }).join('');
-}
-
-function abrirModalPago(){
-  document.getElementById('cpa-alumno').innerHTML=CRM.students.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
-  document.getElementById('cpa-monto').value='';
-  document.getElementById('cpa-periodo').value=CRM.periodo;
-  document.getElementById('cpa-metodo').value='efectivo';
-  document.getElementById('cpa-estado').value='pendiente';
-  document.getElementById('modal-crm-pago').classList.add('show');
-}
-
-async function guardarPago(){
-  const status=document.getElementById('cpa-estado').value;
-  const payload={
-    id:'pg'+Date.now(),
-    student_id:document.getElementById('cpa-alumno').value,
-    amount:Number(document.getElementById('cpa-monto').value)||0,
-    period:document.getElementById('cpa-periodo').value,
-    method:document.getElementById('cpa-metodo').value,
-    status,
-    paid_on:status==='pagado'?new Date().toISOString().slice(0,10):null
-  };
-  if(!payload.period){toast('Elegí un período');return;}
-  await sbFetch('payments','POST',payload);
-  cerrarModal('modal-crm-pago');
-  await loadCRM();
-  toast('Pago guardado ✓');
-}
-
-async function marcarPagado(id){
-  await sbFetch('payments?id=eq.'+id,'PATCH',{status:'pagado',paid_on:new Date().toISOString().slice(0,10)});
-  await loadCRM();
-  toast('Pago confirmado ✓');
+async function guardarGanador(dia,mes,ganador){
+  const row={id:'sh'+Date.now(),dia,mes,ganador,fecha:new Date().toLocaleDateString('es-AR')};
+  await sbFetch('sorteo_historial','POST',row);
+  SORT.historial.unshift(row);
+  renderAdmSorteoTab(dia);renderSorteoPublic();renderSorteoHistorial();
+  toast('🏆 Ganador: '+ganador+' ¡Felicitaciones!');
 }
 
 async function init(){
@@ -3370,6 +3400,7 @@ async function init(){
   await loadTorneos();
   await loadBP();
   await loadFixtures();
+  await loadSorteo();
   checkResetAbiertas();
   renderAlumnoDias();
   renderAlumnoGrid('lunes');
@@ -3378,12 +3409,43 @@ async function init(){
 }
 init();
 
+/* ── MUNDIAL ARGENTINA 🇦🇷 ── */
 (function(){
   const wrap=document.getElementById('confetti-wrap');
   if(!wrap)return;
+  // Colores papel picado: celeste, blanco, dorado, celeste oscuro
   const colors=['#74acdf','#74acdf','#74acdf','#ffffff','#ffffff','#D4AF37','#5b9fd4','#aed6f1','#ffffff','#74acdf'];
   let active=true;
   let interval=null;
+
+  function createPapel(){
+    const el=document.createElement('div');
+    // Forma de papelito rectangular
+    const w=Math.random()*8+4;
+    const h=Math.random()*14+6;
+    el.style.cssText=`
+      position:absolute;
+      top:-20px;
+      left:${Math.random()*105-2}vw;
+      width:${w}px;
+      height:${h}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      opacity:${0.7+Math.random()*0.3};
+      border-radius:${Math.random()>0.5?'50%':'1px'};
+      animation:confettiFall ${2.5+Math.random()*4}s linear forwards;
+      animation-delay:${Math.random()*0.5}s;
+      transform-origin:center center;
+    `;
+    wrap.appendChild(el);
+    const dur=(2.5+Math.random()*4+0.5)*1000;
+    setTimeout(()=>el.remove(), dur);
+  }
+
+  function burst(){
+    // Rafaga de 15-25 papelitos a la vez
+    const n=15+Math.floor(Math.random()*10);
+    for(let i=0;i<n;i++) setTimeout(createPiece2, i*30);
+  }
 
   function createPiece2(){
     const el=document.createElement('canvas');
@@ -3404,8 +3466,10 @@ init();
     const color=colors[Math.floor(Math.random()*colors.length)];
     ctx.fillStyle=color;
     if(Math.random()>0.4){
+      // Rectángulo (papel)
       ctx.fillRect(0,0,w,h);
     } else {
+      // Círculo (confeti redondo)
       ctx.beginPath();
       ctx.arc(w/2,h/2,Math.min(w,h)/2,0,Math.PI*2);
       ctx.fill();
@@ -3416,6 +3480,7 @@ init();
   }
 
   function startRain(){
+    // Lluvia continua: cada 80ms suelta un papelito
     interval=setInterval(()=>{
       for(let i=0;i<3;i++) createPiece2();
     }, 80);
@@ -3423,6 +3488,7 @@ init();
 
   function stopRain(){
     if(interval){clearInterval(interval);interval=null;}
+    // Limpiar los que quedan en pantalla
     setTimeout(()=>{wrap.innerHTML='';}, 5000);
   }
 
@@ -3434,6 +3500,7 @@ init();
     if(flag)flag.style.opacity=active?'.6':'.25';
   };
 
+  // Arranca solo
   startRain();
 })();
 
