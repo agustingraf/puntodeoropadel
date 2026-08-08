@@ -3315,7 +3315,11 @@ function renderAdmSorteoTab(dia){
       ?'<div style="font-size:.82rem;color:#bbb;font-style:italic">Ninguno con asistencia perfecta todavía.</div>'
       :`<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.85rem">${perfectos.map(j=>`<span style="background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.3);color:var(--oro-dark);border-radius:100px;padding:.25rem .85rem;font-size:.78rem;font-weight:500">🏆 ${j.nombre}</span>`).join('')}</div>`}
     ${ganadorMes
-      ?`<div style="background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);border-radius:12px;padding:.85rem 1rem;font-size:.85rem;color:var(--azul)">✅ Ganador del mes: <strong>${ganadorMes.ganador}</strong></div>`
+      ?`<div style="background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.3);border-radius:12px;padding:.85rem 1rem;font-size:.85rem;color:var(--azul);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+          <span>✅ Ganador del mes: <strong>${ganadorMes.ganador}</strong></span>
+          <button class="rbtn canc" onclick="adminBorrarGanador('${ganadorMes.id}','${dia}')">Borrar sorteo</button>
+        </div>
+        <button class="mb pri" onclick="adminSortear('${dia}')" ${perfectos.length===0?'disabled':''} style="margin-top:.5rem">🎲 Volver a sortear</button>`
       :`<button class="mb pri" onclick="adminSortear('${dia}')" ${perfectos.length===0?'disabled':''} style="margin-top:.25rem">🎲 Sortear paleta ${dia==='sabado'?'sábado':'domingo'}</button>`}
   </div>`;
 
@@ -3383,6 +3387,14 @@ async function adminSortear(dia){
       guardarGanador(dia,mes,ganadorFinal.nombre);
     }
   },120);
+}
+
+async function adminBorrarGanador(id,dia){
+  if(!confirm('¿Borrar este sorteo?'))return;
+  await sbFetch('sorteo_historial?id=eq.'+id,'DELETE');
+  SORT.historial=SORT.historial.filter(h=>h.id!==id);
+  renderAdmSorteoTab(dia);renderSorteoPublic();renderSorteoHistorial();
+  toast('Sorteo eliminado');
 }
 
 async function guardarGanador(dia,mes,ganador){
