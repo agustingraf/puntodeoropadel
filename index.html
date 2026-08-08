@@ -501,7 +501,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 .sorteo-tab{padding:.45rem 1.25rem;border-radius:100px;border:1px solid rgba(255,255,255,.2);background:transparent;font-size:.82rem;font-weight:500;cursor:pointer;color:rgba(255,255,255,.5);font-family:'DM Sans',sans-serif;transition:all .2s}
 .sorteo-tab.active{background:var(--oro);color:var(--azul);border-color:var(--oro)}
 .sorteo-ranking{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem}
-.sorteo-row{display:flex;align-items:center;gap:.85rem;padding:.75rem 1rem;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);transition:all .2s}
+.sorteo-row{display:flex;align-items:center;gap:.85rem;padding:.75rem 1rem;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);transition:all .2s;flex-wrap:wrap}
 .sorteo-row.clasificado{background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.25)}
 .sorteo-row.ganador-actual{background:rgba(212,175,55,.2);border-color:var(--oro);box-shadow:0 0 16px rgba(212,175,55,.2)}
 .sorteo-pos{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:rgba(255,255,255,.25);min-width:28px;text-align:center;font-weight:500}
@@ -3218,12 +3218,10 @@ function renderSorteoPublic(){
         const asistio=(d.jugadores[j.nombre]||[]).includes(f.id);
         return`<div class="sorteo-fecha-dot ${asistio?'present':'absent'}" title="${f.fecha}"></div>`;
       }).join('');
-      const posIcon=i===0&&j.perfecta?'🥇':i===1&&j.perfecta?'🥈':i===2&&j.perfecta?'🥉':(i+1);
       html+=`<div class="sorteo-row ${j.perfecta?'clasificado':''}">
-        <div class="sorteo-pos ${j.perfecta?'oro':''}">${posIcon}</div>
-        <div class="sorteo-nombre">${j.nombre}</div>
+        <div class="sorteo-nombre">${j.perfecta?'🎾 ':''}${j.nombre}</div>
         <div class="sorteo-fechas">${dots}</div>
-        <span class="sorteo-badge ${j.perfecta?'ok':'fuera'}">${j.perfecta?'✓ Clasificado':''+j.asistMes+'/'+j.totalMes}</span>
+        <span class="sorteo-badge ${j.perfecta?'ok':'fuera'}">${j.perfecta?'✓ Clasificado':j.asistMes+'/'+j.totalMes}</span>
       </div>`;
     });
     html+='</div>';
