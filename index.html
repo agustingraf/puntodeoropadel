@@ -2129,6 +2129,21 @@ function renderAdmPartidos(){
             <button class="rbtn canc" onclick="adminEliminarPartido('${s.id}')">Eliminar</button>
           </div>
         </div>
+        <div style="background:var(--blanco);border:1.5px dashed rgba(212,175,55,.3);border-radius:12px;padding:.75rem 1rem;margin-bottom:.75rem">
+          <div style="font-size:.7rem;color:var(--oro-dark);text-transform:uppercase;letter-spacing:1.5px;font-weight:500;margin-bottom:.5rem">✦ Anotar manualmente</div>
+          <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:flex-end">
+            <input type="text" id="adm-part-man-n-${s.id}" placeholder="Nombre"
+              style="flex:1;min-width:120px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.4rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
+            <input type="tel" id="adm-part-man-t-${s.id}" placeholder="WhatsApp"
+              style="width:130px;border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.4rem .75rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
+            <select id="adm-part-man-g-${s.id}"
+              style="border:1px solid rgba(0,0,0,.12);border-radius:8px;padding:.4rem .6rem;font-size:.82rem;font-family:'DM Sans',sans-serif;color:var(--azul);outline:none">
+              <option value="M">♂ Cab</option>
+              <option value="F">♀ Dam</option>
+            </select>
+            <button class="adm-add-btn" onclick="adminAnotarPartido('${s.id}')" style="font-size:.78rem;padding:.4rem .9rem">Anotar</button>
+          </div>
+        </div>
         ${ins.length===0?'<div style="font-size:.78rem;color:#bbb;font-style:italic">Sin inscriptos todavía.</div>'
           :`<div style="display:flex;flex-wrap:wrap;gap:.4rem">${ins.map(i=>`
             <div class="inscripto-pill" style="font-size:.75rem">
@@ -2155,6 +2170,27 @@ async function adminCrearPartido(){
   renderPartidos();
   renderAdmPartidos();
   toast('Partido publicado ✓');
+}
+
+async function adminAnotarPartido(slotId){
+  const n=document.getElementById('adm-part-man-n-'+slotId)?.value.trim();
+  const t=document.getElementById('adm-part-man-t-'+slotId)?.value.trim();
+  const g=document.getElementById('adm-part-man-g-'+slotId)?.value||'M';
+  if(!n){toast('Ingresá el nombre');return;}
+  const slot=PART.slots.find(x=>x.id===slotId);if(!slot)return;
+  const ins=(PART.inscriptos||[]).filter(i=>i.slot_id===slotId);
+  if(ins.length>=(slot.cupo||8)){toast('Cupo completo');return;}
+  const ni={
+    id:'pi'+Date.now()+'_'+Math.random().toString(36).slice(2,5),
+    slot_id:slotId,nombre:n,tel:t||'',genero:g,cat:'',
+    metodo:'admin',es_admin:true,estado:'confirmada',
+    fecha:new Date().toLocaleDateString('es-AR')
+  };
+  PART.inscriptos=PART.inscriptos||[];
+  PART.inscriptos.push(ni);
+  await sbFetch('partidos_inscriptos','POST',ni);
+  renderAdmPartidos();renderPartidos();
+  toast(n+' anotado/a ✓');
 }
 
 async function adminEliminarPartido(id){
