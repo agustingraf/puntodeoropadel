@@ -494,42 +494,7 @@ footer{background:#060f1a;color:rgba(255,255,255,.25);text-align:center;padding:
 .arg-sol{width:10px;height:10px;background:radial-gradient(circle,#f6b40e 40%,transparent 70%);border-radius:50%;box-shadow:0 0 4px #f6b40e}
 
 
-/* ── SORTEO PALETA ── */
-.sorteo-sec{background:linear-gradient(135deg,var(--azul) 0%,#1a3a5c 100%);padding:5rem 2rem;position:relative;overflow:hidden}
-.sorteo-sec::before{content:'🎾';position:absolute;font-size:8rem;opacity:.05;right:-1rem;top:50%;transform:translateY(-50%)}
-.sorteo-tabs{display:flex;gap:.5rem;margin-bottom:1.75rem}
-.sorteo-tab{padding:.45rem 1.25rem;border-radius:100px;border:1px solid rgba(255,255,255,.2);background:transparent;font-size:.82rem;font-weight:500;cursor:pointer;color:rgba(255,255,255,.5);font-family:'DM Sans',sans-serif;transition:all .2s}
-.sorteo-tab.active{background:var(--oro);color:var(--azul);border-color:var(--oro)}
-.sorteo-ranking{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.5rem}
-.sorteo-row{display:flex;align-items:center;gap:.85rem;padding:.75rem 1rem;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);transition:all .2s;flex-wrap:wrap}
-.sorteo-row.clasificado{background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.25)}
-.sorteo-row.ganador-actual{background:rgba(212,175,55,.2);border-color:var(--oro);box-shadow:0 0 16px rgba(212,175,55,.2)}
-.sorteo-pos{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:rgba(255,255,255,.25);min-width:28px;text-align:center;font-weight:500}
-.sorteo-pos.oro{color:var(--oro)}
-.sorteo-nombre{flex:1;font-size:.88rem;color:rgba(255,255,255,.85);font-weight:500}
-.sorteo-fechas{display:flex;gap:.25rem}
-.sorteo-fecha-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.sorteo-fecha-dot.present{background:#4ade80}
-.sorteo-fecha-dot.absent{background:rgba(255,255,255,.12)}
-.sorteo-badge{font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:100px;letter-spacing:.3px}
-.sorteo-badge.ok{background:rgba(74,222,128,.15);color:#4ade80}
-.sorteo-badge.fuera{background:rgba(255,255,255,.08);color:rgba(255,255,255,.3)}
-.sorteo-info-box{background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.2);border-radius:14px;padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:.82rem;color:rgba(255,255,255,.6)}
-.sorteo-ganador-card{background:linear-gradient(135deg,rgba(212,175,55,.2),rgba(212,175,55,.08));border:1px solid var(--oro);border-radius:16px;padding:1.25rem 1.5rem;text-align:center;margin-bottom:1.5rem;display:none}
-.sorteo-ganador-card.show{display:block}
-.sorteo-ganador-nombre{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--oro);font-weight:500;margin:.35rem 0}
-.historial-item{display:flex;align-items:center;gap:.75rem;padding:.6rem .85rem;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);margin-bottom:.4rem;font-size:.8rem;color:rgba(255,255,255,.6)}
-.historial-trofeo{font-size:1.1rem}
-/* Animación sorteo */
-@keyframes sorteoGiro{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}
-.sorteo-animando{animation:sorteoGiro .15s infinite}
 
-@media(max-width:640px){
-  .nav-links{display:none}
-  .cg{grid-template-columns:1fr}
-  .turno-body{grid-template-columns:1fr}
-  .hero h1{font-size:clamp(38px,9vw,56px)}
-}
 </style>
 </head>
 <body>
